@@ -27,9 +27,9 @@ class SyncDispatcher
      */
     public function dispatch($eventName, Event $event, array $listeners, $dispatcher)
     {
-        foreach($listeners as $listener) {
+        foreach ($listeners as $listener) {
             call_user_func($listener, $event, $eventName, $dispatcher);
-            if($event->isPropagationStopped()) {
+            if ($event->isPropagationStopped()) {
                 break;
             }
         }

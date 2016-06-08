@@ -10,8 +10,7 @@
 
 namespace Tnc\Componment\EventDispatcher;
 
-class Event
-    extends \TncCore_Class_Serializable_Abstract
+class Event extends \TncCore_Class_Serializable_Abstract
 {
     /**
      * @var bool Whether no further event listeners should be triggered

@@ -17,20 +17,20 @@ interface BackendInterface
     /**
      * Produce a new message to backend
      *
-     * @param string $channel
+     * @param array  $channels
      * @param string $message
      *
      * @throws Exception
      */
-    public function produce($channel, $message);
+    public function produce(array $channels, $message);
 
     /**
      * Consume messages from backend, And will call $callback with parameters $message
      *
-     * @param string   $channel
+     * @param array    $channels
      * @param callable $callback
      *
      * @throws Exception
      */
-    public function consume($channel, $callback);
+    public function consume(array $channels, $callback);
 }

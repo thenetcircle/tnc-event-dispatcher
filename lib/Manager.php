@@ -56,7 +56,7 @@ class Manager
      */
     public function dispatch($eventName, Event $event = null, $sync = true)
     {
-        if($event === null) {
+        if ($event === null) {
             $event = new Event();
         }
 
@@ -93,10 +93,10 @@ class Manager
      */
     public function removeListener($eventName, $listener)
     {
-        if(isset($this->listeners[$eventName])) {
+        if (isset($this->listeners[$eventName])) {
 
-            foreach($this->listeners[$eventName] as $priority => $listeners) {
-                if(($key = array_search($listener, $listeners, true)) !== false) {
+            foreach ($this->listeners[$eventName] as $priority => $listeners) {
+                if (($key = array_search($listener, $listeners, true)) !== false) {
                     unset($this->listeners[$eventName][$priority][$key], $this->sorted[$eventName]);
                 }
             }
@@ -115,13 +115,13 @@ class Manager
      */
     public function getListeners($eventName = null)
     {
-        if($eventName === null) {
+        if ($eventName === null) {
 
-            if(!isset($this->listeners[$eventName])) {
+            if (!isset($this->listeners[$eventName])) {
                 return array();
             }
 
-            if(!isset($this->sorted[$eventName])) {
+            if (!isset($this->sorted[$eventName])) {
                 $this->sortListeners($eventName);
             }
 
@@ -129,8 +129,8 @@ class Manager
 
         } else {
 
-            foreach($this->listeners as $eventName => $eventListeners) {
-                if(!isset($this->sorted[$eventName])) {
+            foreach ($this->listeners as $eventName => $eventListeners) {
+                if (!isset($this->sorted[$eventName])) {
                     $this->sortListeners($eventName);
                 }
             }
@@ -162,10 +162,10 @@ class Manager
      */
     public function getListenerPriority($eventName, $listener)
     {
-        if(isset($this->listeners[$eventName])) {
+        if (isset($this->listeners[$eventName])) {
 
-            foreach($this->listeners[$eventName] as $priority => $listeners) {
-                if(false !== ($key = array_search($listener, $listeners, true))) {
+            foreach ($this->listeners[$eventName] as $priority => $listeners) {
+                if (false !== ($key = array_search($listener, $listeners, true))) {
                     return $priority;
                 }
             }
