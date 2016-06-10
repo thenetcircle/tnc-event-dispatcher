@@ -3,16 +3,16 @@
 /*
  * This file is part of the Tnc package.
  *
- * (c) Service Team <benn@thenetcircle.com>
+ * (c) Service Team
  *
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Componment\EventDispatcher\Backend;
+namespace Tnc\Service\EventDispatcher;
 
-use Tnc\Componment\EventDispatcher\Exception;
+use Tnc\Service\EventDispatcher\Exception;
 
-interface BackendInterface
+interface Pipe
 {
     const ERROR_TYPE_NO_DATA = 1;
     const ERROR_TYPE_TIMEOUT = 2;

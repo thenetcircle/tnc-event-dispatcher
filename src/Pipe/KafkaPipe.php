@@ -3,16 +3,17 @@
 /*
  * This file is part of the Tnc package.
  *
- * (c) Service Team <benn@thenetcircle.com>
+ * (c) Service Team
  *
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Componment\EventDispatcher\Backend;
+namespace Tnc\Service\EventDispatcher\Pipe;
 
-use Tnc\Componment\EventDispatcher\Exception;
+use Tnc\Service\EventDispatcher\Exception\DefaultException;
+use Tnc\Service\EventDispatcher\Pipe;
 
-class Kafka implements BackendInterface
+class KafkaPipe implements Pipe
 {
     /**
      * @var string
@@ -58,7 +59,7 @@ class Kafka implements BackendInterface
     public function __construct($brokers, array $conf = [], array $topicConf = [], $debug = false)
     {
         if (!class_exists('\RdKafka\Producer')) {
-            throw new Exception(
+            throw new DefaultException(
                 'The kafka backend is based on php-rdKafka(https://github.com/arnaud-lb/php-rdkafka), Please make
                 sure it\'s installed.'
             );
@@ -81,7 +82,7 @@ class Kafka implements BackendInterface
             $topic = $this->getProducerTopic($channel);
 
             if (!$topic) {
-                throw new Exception(
+                throw new DefaultException(
                     sprintf('Create topic failed. Channel: %s', $channel)
                 );
             }

@@ -1,18 +1,24 @@
 {
-  "name": "tnc/tncEventDispatcherPlugin",
-  "description": "Dispatching and Listening to Events, Which replace Symfony EventDispatch Component by support both synchronous and asynchronous ways",
-  "authors": [
-    {
-      "name": "thenetcircle",
-      "email": "benn@thenetcircle.com"
-    }
-  ],
+  "name": "tnc/EventDispatcherService",
+  "description": "Dispatchs and listens to events, Which expends symfony/event-dispatcher to support asynchronous event dispatching and listening.",
+  "keywords": ["event", "event dispatcher"],
+  "type": "library",
+  "license": "proprietary",
+
   "require": {
     "php": ">=5.6",
-    "symfony/event-dispatcher": "~2.3|~3.0"
+    "symfony/event-dispatcher": "~2.3 || ~3.0",
+    "symfony/serializer": "3.1.x-dev"
   },
   "require-dev": {
-    "phpunit/phpunit": ">=5.0.0",
-    "kwn/php-rdkafka-stubs": "0.0.4"
+    "phpunit/phpunit": "~5.0",
+    "kwn/php-rdkafka-stubs": "~0.0.4"
+  },
+
+  "autoload" : {
+    "psr-4" : { "Tnc\\Service\\" : "src/" }
+  },
+  "autoload-dev" : {
+    "psr-4" : { "Tnc\\Service\\Tests\\" : "tests/" }
   }
 }
