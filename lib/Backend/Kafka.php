@@ -35,13 +35,13 @@ class Kafka implements BackendInterface
      */
     private $producerTopics = array();
     /**
-     * @var \RdKafka\Consumer
+     * @var \RdKafka\KafkaConsumer
      */
     private $consumer;
     /**
-     * @var \RdKafka\ConsumerTopic[]
+     * @var callable
      */
-    private $consumerTopics = array();
+    private $errorCallback = null;
     /**
      * @var bool
      */
@@ -65,7 +65,7 @@ class Kafka implements BackendInterface
         }
 
         $this->brokers = $brokers;
-        $this->debug = $debug;
+        $this->debug   = $debug;
         $this->initConfigurations($conf, $topicConf);
     }
 
@@ -74,9 +74,9 @@ class Kafka implements BackendInterface
      *
      * for each of channel, which support regexp with prefix ^
      */
-    public function produce(array $channels, $message)
+    public function produce(array $channels, $message, $key = null, $timeout = 0)
     {
-        foreach($channels as $channel) {
+        foreach ($channels as $channel) {
 
             $topic = $this->getProducerTopic($channel);
 
@@ -86,7 +86,7 @@ class Kafka implements BackendInterface
                 );
             }
 
-            $topic->produce(RD_KAFKA_PARTITION_UA, 0, $message, null);
+            $topic->produce(RD_KAFKA_PARTITION_UA, 0, $message, $key);
 
         }
     }
@@ -96,17 +96,36 @@ class Kafka implements BackendInterface
      *
      * for each of channel, which support regexp with prefix ^
      */
-    public function consume(array $channels, $callback)
+    public function consume(array $channels, $callback, $timeout = (120 * 1000))
     {
         $this->initConsumer();
-        $queue = $this->consumer->newQueue();
+        $this->consumer->subscribe($channels);
+        while (true) {
+            $message = $this->consumer->consume($timeout);
 
-        foreach($channels as $channel) {
-
-            $topic = $this->getConsumerTopic($channel);
-            $topic->consumeQueueStart(RD_KAFKA_OFFSET_STORED);
-
+            switch ($message->err) {
+                case RD_KAFKA_RESP_ERR_NO_ERROR:
+                    call_user_func($callback, $message->topic_name, $message->payload, $message->key);
+                    break;
+                case RD_KAFKA_RESP_ERR__PARTITION_EOF:
+                    $this->throwError(self::ERROR_TYPE_NO_DATA, "No more messages, will wait for more.");
+                    break;
+                case RD_KAFKA_RESP_ERR__TIMED_OUT:
+                    $this->throwError(self::ERROR_TYPE_TIMEOUT, "Timeout");
+                    break;
+                default:
+                    $this->throwError(self::ERROR_TYPE_ERROR, $message->errstr(), $message->err);
+                    break;
+            }
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setErrorCallback($errorCallback)
+    {
+        $this->errorCallback = $errorCallback;
     }
 
     /**
@@ -114,11 +133,10 @@ class Kafka implements BackendInterface
      * @param int    $err
      * @param string $reason
      */
-    public function errorCallback($kafka, $err, $reason)
+    public function kafkaErrorCallback($kafka, $err, $reason)
     {
-        if ($this->debug) {
-            printf("Kafka error: [%s]%s (reason: %s)\n", $err, rd_kafka_err2str($err), $reason);
-        }
+        $this->log(sprintf("Kafka error: [%s]%s (reason: %s)\n", $err, rd_kafka_err2str($err), $reason));
+        $this->throwError(self::ERROR_TYPE_ERROR, $reason, $err);
     }
 
     /**
@@ -128,43 +146,16 @@ class Kafka implements BackendInterface
     public function deliveryMessageCallback(\RdKafka\Producer $producer, \RdKafka\Message $message)
     {
         if ($message->err !== 0) {
-            if ($this->debug) {
-                printf(
-                    "Message Delivery Failed. TopicName: %s, Key: %s, Payload: %s",
-                    $message->topic_name,
-                    $message->key,
-                    $message->payload
-                );
-            }
-        }
-    }
 
-    /**
-     * @param \RdKafka\KafkaConsumer $consumer
-     * @param int                    $err
-     * @param array                  $partitions
-     */
-    public function rebalanceCallback(\RdKafka\KafkaConsumer $consumer, $err, array $partitions = null)
-    {
-        switch ($err) {
-            case RD_KAFKA_RESP_ERR__ASSIGN_PARTITIONS:
-                // application may load offets from arbitrary external
-                // storage here and update partitions
-                // $consumer->assign($partitions);
-                break;
+            $this->log(sprintf(
+                           "Message Delivery Failed. TopicName: %s, Key: %s, Payload: %s",
+                           $message->topic_name,
+                           $message->key,
+                           $message->payload
+                       ));
 
-            case RD_KAFKA_RESP_ERR__REVOKE_PARTITIONS:
-                // Optional explicit manual commit
-                // $consumer->commit($partitions);
-                // $consumer->assign(NULL);
-                break;
+            $this->throwError(self::ERROR_TYPE_ERROR, $message->err, $message->errstr());
 
-            default:
-                if ($this->debug) {
-                    printf("Rebalance Error: [%s] %s\n", $err, rd_kafka_err2str($err));
-                }
-                // $consumer->assign(NULL);
-                break;
         }
     }
 
@@ -175,7 +166,7 @@ class Kafka implements BackendInterface
     private function initConfigurations(array $conf, array $topicConf)
     {
         $defaultConf = [
-            'both' => [
+            'both'     => [
                 'group.id'                           => 'tncEventDispatcher',
                 'client.id'                          => __CLASS__,
                 'topic.metadata.refresh.sparse'      => 'true',
@@ -194,11 +185,12 @@ class Kafka implements BackendInterface
         $this->conf = array_merge_recursive($defaultConf, $conf);
 
         $defaultTopicConf = [
-            'both' => [
-                'request.required.acks' => 0,
-                'message.timeout.ms'    => 200
+            'both'     => [
+                'request.required.acks' => 1,
             ],
-            'producer' => [],
+            'producer' => [
+                'message.timeout.ms'    => 200,
+            ],
             'consumer' => []
         ];
         $this->topicConf  = array_merge_recursive($defaultTopicConf, $topicConf);
@@ -215,7 +207,7 @@ class Kafka implements BackendInterface
             pcntl_sigprocmask(SIG_BLOCK, array(SIGIO)); // once
             $conf->set('internal.termination.signal', SIGIO); // anytime
         }
-        $conf->setErrorCb(array($this, 'errorCallback'));
+        $conf->setErrorCb(array($this, 'kafkaErrorCallback'));
 
         foreach ($this->conf['both'] as $_key => $_value) {
             $conf->set($_key, $_value);
@@ -233,6 +225,7 @@ class Kafka implements BackendInterface
         foreach ($this->topicConf['both'] as $_key => $_value) {
             $topicConf->set($_key, $_value);
         }
+        $topicConf->setPartitioner(RD_KAFKA_MSG_PARTITIONER_CONSISTENT);
 
         return $topicConf;
     }
@@ -260,6 +253,31 @@ class Kafka implements BackendInterface
     }
 
     /**
+     * Init consumer based on the configuration
+     */
+    private function initConsumer()
+    {
+        if (!is_null($this->consumer)) {
+            return;
+        }
+
+        $conf = $this->getDefaultConf();
+        $conf->set('metadata.broker.list', $this->brokers);
+        foreach ($this->conf['consumer'] as $_key => $_value) {
+            $conf->set($_key, $_value);
+        }
+
+        $topicConf = $this->getDefaultTopicConf();
+        foreach ($this->topicConf['consumer'] as $_key => $_value) {
+            $topicConf->set($_key, $_value);
+        }
+        $conf->setDefaultTopicConf($topicConf);
+
+        $consumer       = new \RdKafka\KafkaConsumer($conf);
+        $this->consumer = $consumer;
+    }
+
+    /**
      * @param string $topicName
      *
      * @return \RdKafka\ProducerTopic
@@ -280,44 +298,30 @@ class Kafka implements BackendInterface
     }
 
     /**
-     * Init consumer based on the configuration
+     * call $errorCallback if it's set
+     *
+     * @param int    $type
+     * @param string $errStr
+     * @param int    $errNum
      */
-    private function initConsumer()
+    private function throwError($type, $errStr, $errNum = 0)
     {
-        if (!is_null($this->consumer)) {
+        if(is_null($this->errorCallback)) {
             return;
         }
 
-        $conf = $this->getDefaultConf();
-        $conf->setRebalanceCb(array($this, 'rebalanceCallback'));
-        foreach ($this->conf['consumer'] as $_key => $_value) {
-            $conf->set($_key, $_value);
-        }
-
-        $consumer = new \RdKafka\Producer($conf);
-        $consumer->setLogLevel($this->debug ? LOG_DEBUG : LOG_ERR);
-        $consumer->addBrokers($this->brokers);
-
-        $this->consumer = $consumer;
+        call_user_func($this->errorCallback, $type, $errStr, $errNum);
     }
 
     /**
-     * @param string $topicName
+     * debug log
      *
-     * @return \RdKafka\ConsumerTopic
+     * @param string $message
      */
-    private function getConsumerTopic($topicName)
+    private function log($message)
     {
-        $this->initConsumer();
-
-        if (!isset($this->consumerTopics[$topicName])) {
-            $topicConf = $this->getDefaultTopicConf();
-            foreach ($this->topicConf['consumer'] as $_key => $_value) {
-                $topicConf->set($_key, $_value);
-            }
-            $this->consumerTopics[$topicName] = $this->consumer->newTopic($topicName, $topicConf);
+        if ($this->debug) {
+            printf("%s\n", $message);
         }
-
-        return $this->consumerTopics[$topicName];
     }
 }
