@@ -10,6 +10,6 @@
 
 namespace Tnc\Service\EventDispatcher\Exception;
 
-class DefaultException extends \Exception
+class TimeoutException extends \Exception
 {
 }

@@ -12,8 +12,7 @@ namespace Tnc\Service\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher as BaseEventDispatcher;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Tnc\Service\EventDispatcher\Exception\DefaultException;
+use Tnc\Service\EventDispatcher\Exception\FatalException;
 
 class Dispatcher extends BaseEventDispatcher
 {
@@ -22,36 +21,30 @@ class Dispatcher extends BaseEventDispatcher
     CONST MODE_BOTH  = 3;
 
     /**
-     * @var Producer
+     * @var Pipeline
      */
-    private $producer;
+    private $pipeline;
 
     /**
      * Dispatcher constructor.
      *
-     * @param Producer $producer
+     * @param Pipeline $pipeline
      */
-    public function __construct($producer)
+    public function __construct($pipeline)
     {
-        $this->producer = $producer;
+        $this->pipeline = $pipeline;
     }
 
     /**
      * Dispatches an event to all listeners by synchronous or asynchronous way
      *
-     * @param string                   $eventName
-     * @param Event|null               $event
-     * @param int                      $mode
-     * @param NormalizerInterface|null $normalizer
+     * @param string     $eventName
+     * @param Event|null $event
+     * @param int        $mode
      *
      * @return Event
      */
-    public function dispatch(
-        $eventName,
-        BaseEvent $event = null,
-        $mode = self::MODE_BOTH,
-        NormalizerInterface $normalizer = null
-    )
+    public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_BOTH)
     {
         if ($event === null) {
             $event = new Event();
@@ -63,18 +56,16 @@ class Dispatcher extends BaseEventDispatcher
                 break;
 
             case self::MODE_ASYNC:
-                $message = new Message($eventName, $event, $mode);
-                $this->producer->produce($message);
+                $this->pipeline->push(new WrappedEvent($eventName, $event, $mode));
                 break;
 
             case self::MODE_BOTH:
                 parent::dispatch($eventName, $event);
-                $message = new Message($eventName, $event, $mode);
-                $this->producer->produce($message);
+                $this->pipeline->push(new WrappedEvent($eventName, $event, $mode));
                 break;
 
             default:
-                throw new DefaultException('Unsupported dispatch type.');
+                throw new FatalException('Unsupported dispatch type.');
         }
 
         return $event;

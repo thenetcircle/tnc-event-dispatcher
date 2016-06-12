@@ -16,9 +16,9 @@
   },
 
   "autoload" : {
-    "psr-4" : { "Tnc\\Service\\" : "src/" }
+    "psr-4" : { "Tnc\\Service\\EventDispatcher\\" : "src/" }
   },
   "autoload-dev" : {
-    "psr-4" : { "Tnc\\Service\\Tests\\" : "tests/" }
+    "psr-4" : { "Tnc\\Service\\EventDispatcher\\Tests\\" : "tests/" }
   }
 }

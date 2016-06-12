@@ -3,11 +3,11 @@
 namespace Tnc\Service\EventDispatcher;
 
 /**
- * Class Message
+ * Class WrappedEvent
  *
  * @package Tnc\Service\EventDispatcher
  */
-class Message
+class WrappedEvent
 {
     /**
      * @var string
