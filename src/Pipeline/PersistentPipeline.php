@@ -2,7 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher\Pipeline;
 
-use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Serializer\Serializer;
 use Tnc\Service\EventDispatcher\WrappedEvent;
 use Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Pipeline;
@@ -74,6 +74,11 @@ class PersistentPipeline implements Pipeline
         // TODO: Implement ack() method.
     }
 
+    /**
+     * @param \Tnc\Service\EventDispatcher\WrappedEvent $wrappedEvent
+     *
+     * @return string
+     */
     private function getChannel(WrappedEvent $wrappedEvent)
     {
         $name = $wrappedEvent->getName();

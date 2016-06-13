@@ -1,0 +1,35 @@
+<?php
+
+namespace Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Exception\FatalException;
+
+/**
+ * JsonSerializable
+ *
+ * @package    Tnc\Service\EventDispatcher
+ *
+ * @author     The NetCircle
+ */
+trait JsonSerializable
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize(Serializer $serializer)
+    {
+        return json_encode(get_object_vars($this));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($string, Serializer $serializer)
+    {
+        if (false === ($data = json_decode($string, true))) {
+            throw new FatalException(sprintf('{%s} can not unserialize data %s', get_called_class(), $string));
+        }
+        foreach ($data as $_key => $_value) {
+            $this->{$_key} = $_value;
+        }
+    }
+}

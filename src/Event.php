@@ -11,7 +11,10 @@
 namespace Tnc\Service\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
+use Tnc\Service\EventDispatcher\Serializer\JsonSerializable;
+use Tnc\Service\EventDispatcher\Serializer\Serializable;
 
-class Event extends BaseEvent
+class Event extends BaseEvent implements Serializable
 {
+    use JsonSerializable;
 }
