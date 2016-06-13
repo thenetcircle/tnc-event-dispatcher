@@ -16,20 +16,23 @@ interface Pipeline
 {
     /**
      * @param WrappedEvent $wrappedEvent
+     * @param int          $timeout
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push(WrappedEvent $wrappedEvent);
+    public function push(WrappedEvent $wrappedEvent, $timeout = 200);
 
     /**
+     * @param int $timeout
+     *
      * @return WrappedEvent
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop();
+    public function pop($timeout = 120000);
 
     /**
      * @param WrappedEvent $wrappedEvent

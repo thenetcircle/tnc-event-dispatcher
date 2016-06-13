@@ -39,7 +39,7 @@ interface Driver
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($channel, $timeout = (120 * 1000));
+    public function pop($channel, $timeout = 120000);
 
     /**
      * Acknowledge a message after it's consumed successfully.

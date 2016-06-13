@@ -25,11 +25,6 @@ class PersistentPipeline implements Pipeline
     private $serializer;
 
     /**
-     * @var int
-     */
-    private $timeout;
-
-    /**
      * PersistentQueue constructor.
      *
      * @param string     $name
@@ -37,23 +32,22 @@ class PersistentPipeline implements Pipeline
      * @param Serializer $serializer
      * @param int        $timeout
      */
-    public function __construct($name, Driver $driver, Serializer $serializer, $timeout = 200)
+    public function __construct($name, Driver $driver, Serializer $serializer)
     {
         $this->name       = $name;
         $this->driver     = $driver;
         $this->serializer = $serializer;
-        $this->timeout    = $timeout;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function push(WrappedEvent $wrappedEvent)
+    public function push(WrappedEvent $wrappedEvent, $timeout = 200)
     {
         return $this->driver->push(
             $this->getChannel($wrappedEvent),
             $this->serializer->serialize($wrappedEvent),
-            $this->timeout,
+            $timeout,
             $wrappedEvent->getMode()
         );
     }
@@ -61,7 +55,7 @@ class PersistentPipeline implements Pipeline
     /**
      * {@inheritdoc}
      */
-    public function pop()
+    public function pop($timeout = 120000)
     {
         // TODO: Implement pop() method.
     }

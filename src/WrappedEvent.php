@@ -3,7 +3,7 @@
 namespace Tnc\Service\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
-use Tnc\Service\EventDispatcher\Exception\FatalException;
+use Tnc\Service\EventDispatcher\Exception\InvalidArgumentsException;
 use Tnc\Service\EventDispatcher\Serializer\Serializable;
 use Tnc\Service\EventDispatcher\Serializer\Serializer;
 
@@ -44,12 +44,12 @@ class WrappedEvent implements Serializable
      * @param string    $name
      * @param BaseEvent $event
      *
-     * @throws FatalException
+     * @throws InvalidArgumentsException
      */
     public function __construct($name, BaseEvent $event, $group, $mode)
     {
         if (!$event instanceof Serializable) {
-            throw new FatalException(
+            throw new InvalidArgumentsException(
                 sprintf('{WrappedEvent} Event %s was not an instance of Serializable', get_class($event))
             );
         }
@@ -115,8 +115,8 @@ class WrappedEvent implements Serializable
      */
     public function serialize(Serializer $serializer)
     {
-        $data          = get_object_vars($this);
-        $data['event'] = $serializer->serialize($this->event);
+        $data         = get_object_vars($this);
+        $data['data'] = $serializer->serialize($this->event);
         return json_encode($data);
     }
 
@@ -125,11 +125,15 @@ class WrappedEvent implements Serializable
      */
     public function unserialize($string, Serializer $serializer)
     {
-        $data = json_decode($string, true, 1);
-        if(!isset($data['event'], $data['class'], $data['name'])) {
-            throw new FatalException(sprintf('{WrappedEvent} can not unserialize data %s', $string));
+        if (null === ($data = json_decode($string, true, 2))) {
+            throw new InvalidArgumentsException(sprintf('{WrappedEvent} can not unserialize data %s', $string));
         }
-        $data['event'] = $serializer->unserialize($data['class'], $data['event']);
+        if (!isset($data['class'], $data['data'])) {
+            throw new InvalidArgumentsException(sprintf('{WrappedEvent} some arguments missed in data %s', $string));
+        }
+
+        $this->event = $serializer->unserialize($data['class'], $data['data']);
+        unset($data['data']);
 
         foreach ($data as $_key => $_value) {
             $this->{$_key} = $_value;

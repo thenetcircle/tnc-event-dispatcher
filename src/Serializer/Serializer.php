@@ -2,7 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher\Serializer;
 
-use Tnc\Service\EventDispatcher\Exception\FatalException;
+use Tnc\Service\EventDispatcher\Exception\InvalidArgumentsException;
 
 class Serializer
 {
@@ -22,20 +22,20 @@ class Serializer
      *
      * @return Serializable
      *
-     * @throws FatalException
+     * @throws InvalidArgumentsException
      */
     public function unserialize($class, $data)
     {
         if (!class_exists($class)) {
-            throw new FatalException(sprintf('Class %s does not existed.', $class));
+            throw new InvalidArgumentsException(sprintf('Class %s does not existed.', $class));
         }
 
-        $reflectionObject = new \ReflectionClass($class);
-        if (!$reflectionObject->isSubclassOf('Tnc\Service\EventDispatcher\Serializable')) {
-            throw new FatalException(sprintf('Class %s not serializable.', $class));
+        $reflectionClass = new \ReflectionClass($class);
+        if (!$reflectionClass->isSubclassOf('Tnc\Service\EventDispatcher\Serializer\Serializable')) {
+            throw new InvalidArgumentsException(sprintf('Class %s not serializable.', $class));
         }
 
-        $object = $reflectionObject->newInstanceWithoutConstructor();
+        $object = $reflectionClass->newInstanceWithoutConstructor();
         $object->unserialize($data, $this);
         return $object;
     }

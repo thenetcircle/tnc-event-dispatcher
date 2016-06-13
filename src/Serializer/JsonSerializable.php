@@ -1,7 +1,7 @@
 <?php
 
 namespace Tnc\Service\EventDispatcher\Serializer;
-use Tnc\Service\EventDispatcher\Exception\FatalException;
+use Tnc\Service\EventDispatcher\Exception\InvalidArgumentsException;
 
 /**
  * JsonSerializable
@@ -25,8 +25,8 @@ trait JsonSerializable
      */
     public function unserialize($string, Serializer $serializer)
     {
-        if (false === ($data = json_decode($string, true))) {
-            throw new FatalException(sprintf('{%s} can not unserialize data %s', get_called_class(), $string));
+        if (null === ($data = json_decode($string, true))) {
+            throw new InvalidArgumentsException(sprintf('{%s} can not unserialize data %s', get_called_class(), $string));
         }
         foreach ($data as $_key => $_value) {
             $this->{$_key} = $_value;

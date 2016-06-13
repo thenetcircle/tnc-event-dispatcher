@@ -79,7 +79,7 @@ class KafkaDriver implements Driver
      *
      * $channel supports regexp with prefix ^
      */
-    public function pop($channel, $timeout = (120 * 1000))
+    public function pop($channel, $timeout = 120000)
     {
         $this->initConsumer();
 
