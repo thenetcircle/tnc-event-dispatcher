@@ -2,7 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher\Pipeline;
 
-use Symfony\Component\Serializer\Serializer;
+use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\WrappedEvent;
 use Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Pipeline;
@@ -25,30 +25,36 @@ class PersistentPipeline implements Pipeline
     private $serializer;
 
     /**
+     * @var int
+     */
+    private $timeout;
+
+    /**
      * PersistentQueue constructor.
      *
-     * @param string                                   $name
-     * @param \Tnc\Service\EventDispatcher\Driver      $driver
-     * @param \Symfony\Component\Serializer\Serializer $serializer
+     * @param string     $name
+     * @param Driver     $driver
+     * @param Serializer $serializer
+     * @param int        $timeout
      */
-    public function __construct($name, Driver $driver, Serializer $serializer)
+    public function __construct($name, Driver $driver, Serializer $serializer, $timeout = 200)
     {
         $this->name       = $name;
         $this->driver     = $driver;
         $this->serializer = $serializer;
+        $this->timeout    = $timeout;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function push(WrappedEvent $event)
+    public function push(WrappedEvent $wrappedEvent)
     {
-        $channel = $event->getEventName();
         return $this->driver->push(
-            $channel,
-            $this->serializer->serialize($event),
-            200,
-            $event->getMode()
+            $this->getChannel($wrappedEvent),
+            $this->serializer->serialize($wrappedEvent),
+            $this->timeout,
+            $wrappedEvent->getMode()
         );
     }
 
@@ -63,8 +69,18 @@ class PersistentPipeline implements Pipeline
     /**
      * {@inheritdoc}
      */
-    public function ack(WrappedEvent $event)
+    public function ack(WrappedEvent $wrappedEvent)
     {
         // TODO: Implement ack() method.
+    }
+
+    private function getChannel(WrappedEvent $wrappedEvent)
+    {
+        $name = $wrappedEvent->getName();
+        if (($pos = strpos($name, '.')) !== false) {
+            return substr($name, 0, $pos);
+        } else {
+            return $name;
+        }
     }
 }

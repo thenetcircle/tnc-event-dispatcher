@@ -16,9 +16,9 @@ use Tnc\Service\EventDispatcher\Exception\FatalException;
 
 class Dispatcher extends BaseEventDispatcher
 {
-    CONST MODE_SYNC  = 1;
-    CONST MODE_ASYNC = 2;
-    CONST MODE_BOTH  = 3;
+    CONST MODE_SYNC      = 'sync';
+    CONST MODE_SYNC_PLUS = 'sync_plus';
+    CONST MODE_ASYNC     = 'async';
 
     /**
      * @var Pipeline
@@ -38,34 +38,40 @@ class Dispatcher extends BaseEventDispatcher
     /**
      * Dispatches an event to all listeners by synchronous or asynchronous way
      *
-     * @param string     $eventName
-     * @param Event|null $event
-     * @param int        $mode
+     * @param string         $eventName
+     * @param BaseEvent|null $event
+     * @param string         $group Event who in same group will be ordered consuming
+     * @param int            $mode
      *
      * @return Event
+     *
+     * @throws Exception\FatalException
+     * @throws Exception\TimeoutException
      */
-    public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_BOTH)
+    public function dispatch($eventName, BaseEvent $event = null, $group = '', $mode = self::MODE_SYNC)
     {
         if ($event === null) {
             $event = new Event();
         }
 
         switch ($mode) {
+
             case self::MODE_SYNC:
                 parent::dispatch($eventName, $event);
                 break;
 
             case self::MODE_ASYNC:
-                $this->pipeline->push(new WrappedEvent($eventName, $event, $mode));
+                $this->pipeline->push(new WrappedEvent($eventName, $event, $group, $mode));
                 break;
 
-            case self::MODE_BOTH:
+            case self::MODE_SYNC_PLUS:
                 parent::dispatch($eventName, $event);
-                $this->pipeline->push(new WrappedEvent($eventName, $event, $mode));
+                $this->pipeline->push(new WrappedEvent($eventName, $event, $group, $mode));
                 break;
 
             default:
-                throw new FatalException('Unsupported dispatch type.');
+                throw new FatalException('Unsupported dispatch mode.');
+
         }
 
         return $event;

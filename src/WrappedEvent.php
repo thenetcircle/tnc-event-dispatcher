@@ -2,6 +2,8 @@
 
 namespace Tnc\Service\EventDispatcher;
 
+use Symfony\Component\EventDispatcher\Event as BaseEvent;
+
 /**
  * Class WrappedEvent
  *
@@ -10,15 +12,19 @@ namespace Tnc\Service\EventDispatcher;
 class WrappedEvent
 {
     /**
-     * @var string
-     */
-    protected $eventName;
-    /**
-     * @var \Tnc\Service\EventDispatcher\Event
+     * @var BaseEvent
      */
     protected $event;
     /**
-     * @var int Decides it's a sync event or async event
+     * @var string
+     */
+    protected $name;
+    /**
+     * @var string
+     */
+    protected $group;
+    /**
+     * @var string
      */
     protected $mode;
     /**
@@ -28,29 +34,21 @@ class WrappedEvent
     /**
      * @var int
      */
-    protected $timestamp;
+    protected $time;
 
 
     /**
-     * @param string $eventName
-     * @param Event  $event
-     * @param int    $mode
+     * @param string    $name
+     * @param BaseEvent $event
      */
-    public function __construct($eventName, Event $event, $mode)
+    public function __construct($name, BaseEvent $event, $group, $mode)
     {
-        $this->eventName = $eventName;
-        $this->event     = $event;
-        $this->mode      = $mode;
-        $this->class     = get_class($event);
-        $this->timestamp = time();
-    }
-
-    /**
-     * @return string
-     */
-    public function getEventName()
-    {
-        return $this->eventName;
+        $this->event = $event;
+        $this->name  = $name;
+        $this->group = $group;
+        $this->mode  = $mode;
+        $this->class = get_class($event);
+        $this->time  = time();
     }
 
     /**
@@ -62,7 +60,23 @@ class WrappedEvent
     }
 
     /**
-     * @return int
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @return string
      */
     public function getMode()
     {
@@ -80,8 +94,8 @@ class WrappedEvent
     /**
      * @return int
      */
-    public function getTimestamp()
+    public function getTime()
     {
-        return $this->timestamp;
+        return $this->time;
     }
 }

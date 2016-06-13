@@ -15,12 +15,12 @@ use Tnc\Service\EventDispatcher\Exception;
 interface Pipeline
 {
     /**
-     * @param WrappedEvent $event
+     * @param WrappedEvent $wrappedEvent
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push(WrappedEvent $event);
+    public function push(WrappedEvent $wrappedEvent);
 
     /**
      * @return WrappedEvent
@@ -32,7 +32,7 @@ interface Pipeline
     public function pop();
 
     /**
-     * @param WrappedEvent $message
+     * @param WrappedEvent $wrappedEvent
      */
-    public function ack(WrappedEvent $message);
+    public function ack(WrappedEvent $wrappedEvent);
 }
