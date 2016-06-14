@@ -170,6 +170,7 @@ class KafkaDriver implements Driver
                 'socket.keepalive.enable'            => 'false',
                 // 'max.in.flight.requests.per.connection' => 1,
                 // 'reconnect.backoff.jitter.ms' => 0,
+                'api.version.request'                => 'false',
             ],
             'producer' => [],
             'consumer' => [

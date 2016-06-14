@@ -21,6 +21,10 @@ class Dispatcher extends BaseEventDispatcher
     CONST MODE_ASYNC     = 'async';
 
     /**
+     * @var BaseEvent
+     */
+    private $defaultEvent;
+    /**
      * @var Pipeline
      */
     private $pipeline;
@@ -28,11 +32,13 @@ class Dispatcher extends BaseEventDispatcher
     /**
      * Dispatcher constructor.
      *
-     * @param Pipeline $pipeline
+     * @param Pipeline  $pipeline
+     * @param BaseEvent $defaultEvent
      */
-    public function __construct($pipeline)
+    public function __construct($pipeline, BaseEvent $defaultEvent = null)
     {
-        $this->pipeline = $pipeline;
+        $this->pipeline     = $pipeline;
+        $this->defaultEvent = $defaultEvent ?: new Event();
     }
 
     /**
@@ -52,10 +58,10 @@ class Dispatcher extends BaseEventDispatcher
     public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_SYNC, $group = null)
     {
         if ($event === null) {
-            $event = new Event();
+            $event = $this->defaultEvent;
         }
         if ($group === null) {
-            $group = '_' . mt_rand(); // random a group if it's null
+            // $group = 'r' . mt_rand(); // random a group if it's null
         }
 
         switch ($mode) {

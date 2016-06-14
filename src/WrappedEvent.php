@@ -116,6 +116,7 @@ class WrappedEvent implements Serializable
     public function serialize(Serializer $serializer)
     {
         $data         = get_object_vars($this);
+        unset($data['event']);
         $data['data'] = $serializer->serialize($this->event);
         return json_encode($data);
     }

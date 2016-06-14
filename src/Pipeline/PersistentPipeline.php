@@ -82,7 +82,7 @@ class PersistentPipeline implements Pipeline
             $channel = $name;
         }
 
-        $channel = 'event.' . $channel;
+        $channel = 'event-' . $channel;
         return $channel;
     }
 }
