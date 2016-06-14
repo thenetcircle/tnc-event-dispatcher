@@ -48,7 +48,7 @@ class PersistentPipeline implements Pipeline
             $this->getChannel($wrappedEvent),
             $this->serializer->serialize($wrappedEvent),
             $timeout,
-            $wrappedEvent->getMode()
+            $wrappedEvent->getGroup()
         );
     }
 
@@ -77,9 +77,12 @@ class PersistentPipeline implements Pipeline
     {
         $name = $wrappedEvent->getName();
         if (($pos = strpos($name, '.')) !== false) {
-            return substr($name, 0, $pos);
+            $channel = substr($name, 0, $pos);
         } else {
-            return $name;
+            $channel = $name;
         }
+
+        $channel = 'event.' . $channel;
+        return $channel;
     }
 }

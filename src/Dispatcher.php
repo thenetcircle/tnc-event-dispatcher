@@ -40,8 +40,8 @@ class Dispatcher extends BaseEventDispatcher
      *
      * @param string         $eventName
      * @param BaseEvent|null $event
-     * @param string         $group Event who in same group will be ordered consuming
      * @param int            $mode
+     * @param string         $group Event who in same group will be ordered consuming
      *
      * @return Event
      *
@@ -49,10 +49,13 @@ class Dispatcher extends BaseEventDispatcher
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function dispatch($eventName, BaseEvent $event = null, $group = '', $mode = self::MODE_SYNC)
+    public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_SYNC, $group = null)
     {
         if ($event === null) {
             $event = new Event();
+        }
+        if ($group === null) {
+            $group = '_' . mt_rand(); // random a group if it's null
         }
 
         switch ($mode) {
