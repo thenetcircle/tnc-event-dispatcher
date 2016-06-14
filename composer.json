@@ -1,5 +1,5 @@
 {
-  "name": "tnc/EventDispatcherService",
+  "name": "tnc/service-eventdispatcher",
   "description": "Dispatchs and listens to events, Which expends symfony/event-dispatcher to support asynchronous event dispatching and listening.",
   "keywords": ["event", "event dispatcher"],
   "type": "library",
