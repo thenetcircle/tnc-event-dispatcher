@@ -1,7 +1,7 @@
 <?php
 
 namespace Tnc\Service\EventDispatcher\Serializer;
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentsException;
+use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 
 /**
  * Serializable
@@ -29,7 +29,7 @@ interface Serializable
      *
      * @return Serializable
      *
-     * @throws InvalidArgumentsException
+     * @throws InvalidArgumentException
      */
     public function unserialize($string, Serializer $serializer);
 }

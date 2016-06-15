@@ -12,7 +12,7 @@ namespace Tnc\Service\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher as BaseEventDispatcher;
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentsException;
+use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 
 class Dispatcher extends BaseEventDispatcher
 {
@@ -51,11 +51,11 @@ class Dispatcher extends BaseEventDispatcher
      *
      * @return Event
      *
-     * @throws Exception\InvalidArgumentsException
+     * @throws Exception\InvalidArgumentException
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_SYNC, $group = null)
+    public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_SYNC_PLUS, $group = null)
     {
         if ($event === null) {
             $event = $this->defaultEvent;
@@ -80,7 +80,7 @@ class Dispatcher extends BaseEventDispatcher
                 break;
 
             default:
-                throw new InvalidArgumentsException('Unsupported dispatch mode.');
+                throw new InvalidArgumentException('Unsupported dispatch mode.');
 
         }
 

@@ -3,7 +3,7 @@
 namespace Tnc\Service\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentsException;
+use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 use Tnc\Service\EventDispatcher\Serializer\Serializable;
 use Tnc\Service\EventDispatcher\Serializer\Serializer;
 
@@ -44,12 +44,12 @@ class WrappedEvent implements Serializable
      * @param string    $name
      * @param BaseEvent $event
      *
-     * @throws InvalidArgumentsException
+     * @throws InvalidArgumentException
      */
     public function __construct($name, BaseEvent $event, $group, $mode)
     {
         if (!$event instanceof Serializable) {
-            throw new InvalidArgumentsException(
+            throw new InvalidArgumentException(
                 sprintf('{WrappedEvent} Event %s was not an instance of Serializable', get_class($event))
             );
         }
@@ -127,10 +127,10 @@ class WrappedEvent implements Serializable
     public function unserialize($string, Serializer $serializer)
     {
         if (null === ($data = json_decode($string, true, 2))) {
-            throw new InvalidArgumentsException(sprintf('{WrappedEvent} can not unserialize data %s', $string));
+            throw new InvalidArgumentException(sprintf('{WrappedEvent} can not unserialize data %s', $string));
         }
         if (!isset($data['class'], $data['data'])) {
-            throw new InvalidArgumentsException(sprintf('{WrappedEvent} some arguments missed in data %s', $string));
+            throw new InvalidArgumentException(sprintf('{WrappedEvent} some arguments missed in data %s', $string));
         }
 
         $this->event = $serializer->unserialize($data['class'], $data['data']);

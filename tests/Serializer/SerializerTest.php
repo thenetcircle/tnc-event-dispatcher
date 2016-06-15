@@ -41,7 +41,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertJson(
             '{
-              "data":"[]",
+              "data":[],
               "name":"testName",
               "group":"testGroup",
               "mode":"async",
@@ -86,7 +86,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertJson(
             '{
-              "data":"{\"name\":\"rich\",\"context\":{\"key1\":\"value1\",\"key2\":\"value2\"}}",
+              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},
               "name":"testName",
               "group":"testGroup",
               "mode":"async",
@@ -107,7 +107,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $newWrappedEvent = $this->serializer->unserialize(
             '\Tnc\Service\EventDispatcher\WrappedEvent',
             '{
-              "data":"{\"name\":\"rich\",\"context\":{\"key1\":\"value1\",\"key2\":\"value2\"}}",
+              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}}",
               "name":"testName",
               "group":"testGroup",
               "mode":"async",
