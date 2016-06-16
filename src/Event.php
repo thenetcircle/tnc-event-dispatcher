@@ -11,10 +11,27 @@
 namespace Tnc\Service\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
-use Tnc\Service\EventDispatcher\Serializer\JsonSerializable;
-use Tnc\Service\EventDispatcher\Serializer\Serializable;
 
 class Event extends BaseEvent implements Serializable
 {
-    use JsonSerializable;
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize(Serializer $serializer)
+    {
+        return json_encode(get_object_vars($this));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($string, Serializer $serializer)
+    {
+        if (null === ($data = json_decode($string, true))) {
+            throw new InvalidArgumentException(sprintf('{%s} can not unserialize data %s', get_called_class(), $string));
+        }
+        foreach ($data as $_key => $_value) {
+            $this->{$_key} = $_value;
+        }
+    }
 }

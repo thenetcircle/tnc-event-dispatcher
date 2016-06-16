@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Serializer;
+namespace Tnc\Service\EventDispatcher;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 
 /**
