@@ -1,35 +1,36 @@
 <?php
 
 namespace Tnc\Service\EventDispatcher;
+
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 
 /**
- * Serializable
+ * Normalizable
  *
  * @package    Tnc\Service\EventDispatcher
  *
  * @author     The NetCircle
  */
-interface Serializable
+interface Normalizable
 {
     /**
-     * Serialize instance to textual representation.
+     * Normalize instance to array representation.
      *
      * @param Serializer $serializer
      *
-     * @return string
+     * @return array
      */
-    public function serialize(Serializer $serializer);
+    public function normalize(Serializer $serializer);
 
     /**
-     * Unserialize textual representation back to this instance.
+     * Denormalize array representation back to this instance.
      *
-     * @param string     $string
+     * @param array      $data
      * @param Serializer $serializer
      *
-     * @return Serializable
+     * @return Normalizable
      *
      * @throws InvalidArgumentException
      */
-    public function unserialize($string, Serializer $serializer);
+    public function denormalize(array $data, Serializer $serializer);
 }

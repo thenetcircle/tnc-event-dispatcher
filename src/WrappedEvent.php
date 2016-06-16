@@ -4,15 +4,13 @@ namespace Tnc\Service\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Serializer\Serializable;
-use Tnc\Service\EventDispatcher\Serializer\Serializer;
 
 /**
  * Class WrappedEvent
  *
  * @package Tnc\Service\EventDispatcher
  */
-class WrappedEvent implements Serializable
+class WrappedEvent implements Normalizable
 {
     /**
      * @var BaseEvent
@@ -48,9 +46,9 @@ class WrappedEvent implements Serializable
      */
     public function __construct($name, BaseEvent $event, $group, $mode)
     {
-        if (!$event instanceof Serializable) {
+        if (!$event instanceof Normalizable) {
             throw new InvalidArgumentException(
-                sprintf('{WrappedEvent} Event %s was not an instance of Serializable', get_class($event))
+                sprintf('{WrappedEvent} Event %s was not an instance of Normalizable', get_class($event))
             );
         }
 
@@ -113,27 +111,24 @@ class WrappedEvent implements Serializable
     /**
      * {@inheritdoc}
      */
-    public function serialize(Serializer $serializer)
+    public function normalize(Serializer $serializer)
     {
         $data         = get_object_vars($this);
         unset($data['event']);
-        $data['data'] = $serializer->serialize($this->event);
-        return json_encode($data);
+        $data['data'] = $serializer->normalize($this->event);
+        return $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($string, Serializer $serializer)
+    public function denormalize(array $data, Serializer $serializer)
     {
-        if (null === ($data = json_decode($string, true, 2))) {
-            throw new InvalidArgumentException(sprintf('{WrappedEvent} can not unserialize data %s', $string));
-        }
         if (!isset($data['class'], $data['data'])) {
-            throw new InvalidArgumentException(sprintf('{WrappedEvent} some arguments missed in data %s', $string));
+            throw new InvalidArgumentException(sprintf('{WrappedEvent} some arguments missed in data %s', json_encode($data)));
         }
 
-        $this->event = $serializer->unserialize($data['class'], $data['data']);
+        $this->event = $serializer->denormalize($data['class'], $data['data']);
         unset($data['data']);
 
         foreach ($data as $_key => $_value) {

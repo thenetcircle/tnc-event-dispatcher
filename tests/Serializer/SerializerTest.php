@@ -3,7 +3,7 @@
 namespace Tnc\Service\EventDispatcher\Test;
 
 use Tnc\Service\EventDispatcher\Event;
-use Tnc\Service\EventDispatcher\Serializer\Serializer;
+use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\Util;
 use Tnc\Service\EventDispatcher\WrappedEvent;
 
@@ -16,7 +16,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->serializer = new Serializer();
+        $this->serializer = new Serializer\JsonSerializer();
     }
 
     public function testSerializeEvent()
@@ -107,7 +107,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $newWrappedEvent = $this->serializer->unserialize(
             '\Tnc\Service\EventDispatcher\WrappedEvent',
             '{
-              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}}",
+              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},
               "name":"testName",
               "group":"testGroup",
               "mode":"async",
