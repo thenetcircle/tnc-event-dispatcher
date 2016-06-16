@@ -2,7 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher\Pipeline;
 
-use Tnc\Service\EventDispatcher\Serializer\Serializer;
+use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\WrappedEvent;
 use Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Pipeline;
