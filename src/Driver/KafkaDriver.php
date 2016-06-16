@@ -46,12 +46,13 @@ class KafkaDriver implements Driver
     /**
      * KafkaPipeline constructor.
      *
-     * @param array $options
-     * @param bool  $debug
+     * @param string $brokers
+     * @param array  $options
+     * @param bool   $debug
      *
      * @throws Exception\FatalException
      */
-    public function __construct(array $options = [], $debug = false)
+    public function __construct($brokers, array $options = [], $debug = false)
     {
         if (!class_exists('\RdKafka')) {
             throw new Exception\FatalException(
@@ -60,6 +61,7 @@ class KafkaDriver implements Driver
         }
 
         $this->debug = $debug;
+        $options['broker']['metadata.broker.list'] = $brokers;
         $this->initOptions($options);
     }
 

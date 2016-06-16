@@ -10,11 +10,6 @@ use Tnc\Service\EventDispatcher\Pipeline;
 class PersistentPipeline implements Pipeline
 {
     /**
-     * @var string;
-     */
-    private $name;
-
-    /**
      * @var Driver;
      */
     private $driver;
@@ -27,14 +22,12 @@ class PersistentPipeline implements Pipeline
     /**
      * PersistentQueue constructor.
      *
-     * @param string     $name
      * @param Driver     $driver
      * @param Serializer $serializer
      * @param int        $timeout
      */
-    public function __construct($name, Driver $driver, Serializer $serializer)
+    public function __construct(Driver $driver, Serializer $serializer)
     {
-        $this->name       = $name;
         $this->driver     = $driver;
         $this->serializer = $serializer;
     }

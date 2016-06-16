@@ -21,22 +21,28 @@ class Dispatcher extends BaseEventDispatcher
     CONST MODE_ASYNC     = 'async';
 
     /**
-     * @var BaseEvent
+     * @var string
      */
-    private $defaultEvent;
+    private $domainId;
     /**
      * @var Pipeline
      */
     private $pipeline;
+    /**
+     * @var BaseEvent
+     */
+    private $defaultEvent;
 
     /**
      * Dispatcher constructor.
      *
+     * @param string    $domainId
      * @param Pipeline  $pipeline
      * @param BaseEvent $defaultEvent
      */
-    public function __construct($pipeline, BaseEvent $defaultEvent = null)
+    public function __construct($domainId, Pipeline $pipeline, BaseEvent $defaultEvent = null)
     {
+        $this->domainId     = $domainId;
         $this->pipeline     = $pipeline;
         $this->defaultEvent = $defaultEvent ?: new Event();
     }
@@ -71,12 +77,12 @@ class Dispatcher extends BaseEventDispatcher
                 break;
 
             case self::MODE_ASYNC:
-                $this->pipeline->push(new WrappedEvent($eventName, $event, $group, $mode));
+                $this->pipeline->push(new WrappedEvent($this->domainId, $eventName, $event, $group, $mode));
                 break;
 
             case self::MODE_SYNC_PLUS:
                 parent::dispatch($eventName, $event);
-                $this->pipeline->push(new WrappedEvent($eventName, $event, $group, $mode));
+                $this->pipeline->push(new WrappedEvent($this->domainId, $eventName, $event, $group, $mode));
                 break;
 
             default:

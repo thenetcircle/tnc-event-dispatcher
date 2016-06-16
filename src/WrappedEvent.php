@@ -13,6 +13,10 @@ use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 class WrappedEvent implements Normalizable
 {
     /**
+     * @var string
+     */
+    protected $domainId;
+    /**
      * @var BaseEvent
      */
     protected $event;
@@ -39,12 +43,15 @@ class WrappedEvent implements Normalizable
 
 
     /**
+     * @param string    $domainId
      * @param string    $name
      * @param BaseEvent $event
+     * @param string    $group
+     * @param string    $mode
      *
      * @throws InvalidArgumentException
      */
-    public function __construct($name, BaseEvent $event, $group, $mode)
+    public function __construct($domainId, $name, BaseEvent $event, $group, $mode)
     {
         if (!$event instanceof Normalizable) {
             throw new InvalidArgumentException(
@@ -52,12 +59,21 @@ class WrappedEvent implements Normalizable
             );
         }
 
-        $this->event = $event;
-        $this->name  = $name;
-        $this->group = $group;
-        $this->mode  = $mode;
-        $this->class = get_class($event);
-        $this->time  = time();
+        $this->domainId = $domainId;
+        $this->event    = $event;
+        $this->name     = $name;
+        $this->group    = $group;
+        $this->mode     = $mode;
+        $this->class    = get_class($event);
+        $this->time     = time();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDomainId()
+    {
+        return $this->domainId;
     }
 
     /**
@@ -113,7 +129,7 @@ class WrappedEvent implements Normalizable
      */
     public function normalize(Serializer $serializer)
     {
-        $data         = get_object_vars($this);
+        $data = get_object_vars($this);
         unset($data['event']);
         $data['data'] = $serializer->normalize($this->event);
         return $data;
