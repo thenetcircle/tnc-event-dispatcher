@@ -66,14 +66,16 @@ class KafkaDriver implements Driver
     }
 
     /**
-     * {@inheritdoc}
-     *
      * $channel supports regexp with prefix ^
+     *
+     * @param string|null $key
+     *
+     * {@inheritdoc}
      */
-    public function push($channel, $message, $timeout = 200, $group = null)
+    public function push($channel, $message, $timeout, $key = null)
     {
         $this->initProducer();
-        $this->getProducerTopic($channel, $timeout)->produce(\RD_KAFKA_PARTITION_UA, 0, $message, $group);
+        $this->getProducerTopic($channel, $timeout)->produce(\RD_KAFKA_PARTITION_UA, 0, $message, $key);
     }
 
     /**
@@ -81,7 +83,7 @@ class KafkaDriver implements Driver
      *
      * $channel supports regexp with prefix ^
      */
-    public function pop($channel, $timeout = 120000)
+    public function pop($channel, $timeout)
     {
         $this->initConsumer();
 
@@ -119,7 +121,6 @@ class KafkaDriver implements Driver
      */
     public function ack($receipt)
     {
-        // TODO: Implement ack() method.
     }
 
     /**

@@ -23,7 +23,7 @@ class Dispatcher extends BaseEventDispatcher
     /**
      * @var string
      */
-    private $domainId;
+    private $source;
     /**
      * @var Pipeline
      */
@@ -36,24 +36,22 @@ class Dispatcher extends BaseEventDispatcher
     /**
      * Dispatcher constructor.
      *
-     * @param string    $domainId
      * @param Pipeline  $pipeline
+     * @param string    $source
      * @param BaseEvent $defaultEvent
      */
-    public function __construct($domainId, Pipeline $pipeline, BaseEvent $defaultEvent = null)
+    public function __construct(Pipeline $pipeline, $source = 'default')
     {
-        $this->domainId     = $domainId;
-        $this->pipeline     = $pipeline;
-        $this->defaultEvent = $defaultEvent ?: new Event();
+        $this->source   = $source;
+        $this->pipeline = $pipeline;
     }
 
     /**
      * Dispatches an event to all listeners by synchronous or asynchronous way
      *
-     * @param string         $eventName
-     * @param BaseEvent|null $event
-     * @param int            $mode
-     * @param string         $group Event who in same group will be ordered consuming
+     * @param string     $eventName
+     * @param Event|null $event
+     * @param int        $mode
      *
      * @return Event
      *
@@ -61,14 +59,19 @@ class Dispatcher extends BaseEventDispatcher
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_SYNC_PLUS, $group = null)
+    public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_SYNC_PLUS)
     {
         if ($event === null) {
-            $event = $this->defaultEvent;
+            $event = $this->getDefaultEvent();
         }
-        if ($group === null) {
-            // $group = 'r' . mt_rand(); // random a group if it's null
+
+        if (!$event instanceof Event) {
+            throw new InvalidArgumentException(
+                '{Dispatcher} Event is not an instance of Tnc\Service\EventDispatcher\Event.'
+            );
         }
+
+        $event->setDispatchingInfo($this->source, $eventName, $mode, time());
 
         switch ($mode) {
 
@@ -77,19 +80,35 @@ class Dispatcher extends BaseEventDispatcher
                 break;
 
             case self::MODE_ASYNC:
-                $this->pipeline->push(new WrappedEvent($this->domainId, $eventName, $event, $group, $mode));
+                $this->pipeline->push(new EventWrapper($event));
                 break;
 
             case self::MODE_SYNC_PLUS:
                 parent::dispatch($eventName, $event);
-                $this->pipeline->push(new WrappedEvent($this->domainId, $eventName, $event, $group, $mode));
+                $this->pipeline->push(new EventWrapper($event));
                 break;
 
             default:
-                throw new InvalidArgumentException('Unsupported dispatch mode.');
+                throw new InvalidArgumentException('{Dispatcher} Unsupported dispatch mode.');
 
         }
 
         return $event;
+    }
+
+    /**
+     * @return BaseEvent
+     */
+    public function getDefaultEvent()
+    {
+        return $this->defaultEvent ?: new Event();
+    }
+
+    /**
+     * @param BaseEvent $event
+     */
+    public function setDefaultEvent($event)
+    {
+        $this->defaultEvent = $event;
     }
 }

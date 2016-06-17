@@ -5,131 +5,176 @@ namespace Tnc\Service\EventDispatcher\Test;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\Util;
-use Tnc\Service\EventDispatcher\WrappedEvent;
+use Tnc\Service\EventDispatcher\EventWrapper;
 
 class SerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var Event
+     */
+    private $event;
+    private $serializedEvent;
+
+    /**
+     * @var RichEvent
+     */
+    private $richEvent;
+    private $serializedRichEvent;
+    private $serializedWrappedRichEvent;
+
+    /**
      * @var Serializer
      */
     private $serializer;
+    /**
+     * @var int
+     */
+    private $time;
+
 
     public function setUp()
     {
+        $this->time = time();
+
+        $this->event = new Event();
+        $this->event->setContext(['sender' => 1, 'receiver' => 2]);
+        $this->serializedEvent = '{
+          "source": null,
+          "name": null,
+          "time": null,
+          "context": {"sender":1, "receiver":2},
+          "group":null,
+          "mode":null
+        }';
+
+        $this->richEvent = new RichEvent(
+            'default',
+            'message.send',
+            'async',
+            'group1',
+            ['sender' => 1, 'receiver' => 2],
+            ['extra1' => 1, 'extra2' => 2],
+            $this->time
+        );
+        $this->serializedRichEvent = '{
+          "source": "default",
+          "name": "message.send",
+          "group":"group1",
+          "mode":"async",
+          "context": {"sender":1, "receiver":2},
+          "extra":{"extra1":1, "extra2":2},
+          "field1":1,
+          "field2":2,
+          "time":'.$this->time.'
+        }';
+        $this->serializedWrappedRichEvent = '{
+          "source":"default",
+          "name":"message.send",
+          "time":'.$this->time.',
+          "context":{"sender":1, "receiver":2},
+          "extra":{"extra1":1, "extra2":2},
+          "field1":1,
+          "field2":2,
+          "_extra_":{"group":"group1","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent"}
+        }';
+
         $this->serializer = new Serializer\JsonSerializer();
     }
 
     public function testSerializeEvent()
     {
-        $event = new Event();
-        $this->assertJsonStringEqualsJsonString('[]', $this->serializer->serialize($event));
+        $this->assertJsonStringEqualsJsonString(
+            $this->serializedEvent,
+            $this->serializer->serialize($this->event)
+        );
     }
 
     public function testUnserializeEvent()
     {
-        $event =  new Event();
-        $newEvent = $this->serializer->unserialize('\Tnc\Service\EventDispatcher\Event', '[]');
-        $this->assertEquals($event, $newEvent);
+        $event = $this->serializer->unserialize(
+            '\Tnc\Service\EventDispatcher\Event',
+            $this->serializedEvent
+        );
+        $this->assertEquals($this->event, $event);
     }
 
     public function testSerializeRichEvent()
     {
-        $event =  new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], ['extra1' => 'value1']);
         $this->assertJsonStringEqualsJsonString(
-            '{
-              "name":"rich",
-              "context":{"key1":"value1","key2":"value2"}
-            }',
-            $this->serializer->serialize($event)
+            $this->serializedRichEvent,
+            $this->serializer->serialize($this->richEvent)
         );
     }
 
     public function testUnserializeRichEvent()
     {
-        $event =  new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], []);
-        $newEvent = $this->serializer->unserialize(
+        $event = $this->serializer->unserialize(
             '\Tnc\Service\EventDispatcher\Test\RichEvent',
-            '{
-              "name":"rich",
-              "context":{"key1":"value1", "key2":"value2"}
-            }'
+            $this->serializedRichEvent
         );
-        $this->assertEquals($event, $newEvent);
+        $this->assertEquals($this->richEvent, $event);
     }
 
     public function testSerializeWrappedEvent()
     {
-        $event = new Event();
-        $wrappedEvent = new WrappedEvent('DD', 'testName', $event, 'testGroup', 'async');
-        $time = time();
-        Util::setInvisiblePropertyValue($wrappedEvent, 'time', $time);
+        $eventWrapper = new EventWrapper($this->event);
 
         $this->assertJsonStringEqualsJsonString(
             '{
-              "domainId":"DD",
-              "name":"testName",
-              "time":'.$time.',
-              "data":[],
-              "extra":{"group":"testGroup","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Event"}
+              "source":null,
+              "name":null,
+              "time":null,
+              "context":{"sender":1, "receiver":2},
+              "_extra_":{"group":null,"mode":null,"class":"Tnc\\\Service\\\EventDispatcher\\\Event"}
             }',
-            $this->serializer->serialize($wrappedEvent)
+            $this->serializer->serialize($eventWrapper)
         );
     }
 
     public function testSerializeWrappedRichEvent()
     {
-        $time = time();
-        $event = new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], ['extra1' => 'value1']);
-        $wrappedEvent = new WrappedEvent('DD', 'testName', $event, 'testGroup', 'async');
-        Util::setInvisiblePropertyValue($wrappedEvent, 'time', $time);
+        $eventWrapper = new EventWrapper($this->richEvent);
 
         $this->assertJsonStringEqualsJsonString(
-            '{
-              "domainId":"DD",
-              "name":"testName",
-              "time":'.$time.',
-              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},
-              "extra":{"group":"testGroup","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent"}
-            }',
-            $this->serializer->serialize($wrappedEvent)
+            $this->serializedWrappedRichEvent,
+            $this->serializer->serialize($eventWrapper)
         );
     }
 
     public function testUnserializeWrappedRichEvent()
     {
-        $event =  new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], []);
-        $wrappedEvent = new WrappedEvent('DD', 'testName', $event, 'testGroup', 'async');
-        $time = time();
-        Util::setInvisiblePropertyValue($wrappedEvent, 'time', $time);
+        $eventWrapper = new EventWrapper($this->richEvent);
 
-        $newWrappedEvent = $this->serializer->unserialize(
-            '\Tnc\Service\EventDispatcher\WrappedEvent',
-            '{
-              "domainId":"DD",
-              "name":"testName",
-              "time":'.$time.',
-              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},
-              "extra":{"group":"testGroup","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent"}
-            }'
+        $newEventWrapper = $this->serializer->unserialize(
+            '\Tnc\Service\EventDispatcher\EventWrapper',
+            $this->serializedWrappedRichEvent
         );
 
-        $this->assertEquals($wrappedEvent, $newWrappedEvent);
-        $this->assertEquals($wrappedEvent->getEvent(), $newWrappedEvent->getEvent());
-        $this->assertEquals($event, $newWrappedEvent->getEvent());
+        $this->assertEquals($eventWrapper, $newEventWrapper);
+        $this->assertEquals($this->richEvent, $newEventWrapper->getEvent());
     }
 }
 
 
 class RichEvent extends Event
 {
-    public $name;
-    protected $context = array();
-    private $extra = array(); // for private property, you need implement your own serialize method
+    protected $extra = array();
+    protected $field1 = 1;
+    protected $field2 = 2;
 
-    public function __construct($name, array $context, array $extra)
+    public function __construct(
+        $source,
+        $name,
+        $mode,
+        $group,
+        array $context,
+        array $extra,
+        $time
+    )
     {
-        $this->name = $name;
-        $this->context = $context;
+        $this->appendExtraInfo($source, $name, $mode, $time);
+        $this->setGroup($group);
+        $this->setContext($context);
         $this->extra = $extra;
     }
 }

@@ -20,12 +20,11 @@ interface Driver
      * @param string      $channel
      * @param string      $message
      * @param int         $timeout millisecond
-     * @param string|null $group   the messages in same group will be ordered
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push($channel, $message, $timeout = 200, $group = null);
+    public function push($channel, $message, $timeout);
 
     /**
      * Pop a message to the specific channel of a pipeline
@@ -39,7 +38,7 @@ interface Driver
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($channel, $timeout = 120000);
+    public function pop($channel, $timeout);
 
     /**
      * Acknowledge a message after it's consumed successfully.

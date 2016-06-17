@@ -5,12 +5,12 @@ namespace Tnc\Service\EventDispatcher\Test;
 use Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\Pipeline;
-use Tnc\Service\EventDispatcher\Pipeline\PersistentPipeline;
+use Tnc\Service\EventDispatcher\Pipeline\KafkaPipeline;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\Util;
-use Tnc\Service\EventDispatcher\WrappedEvent;
+use Tnc\Service\EventDispatcher\EventWrapper;
 
-class PersistentPipelineTest extends \PHPUnit_Framework_TestCase
+class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
@@ -36,20 +36,20 @@ class PersistentPipelineTest extends \PHPUnit_Framework_TestCase
     {
         $this->driver   = $this->createMock(Driver::class);
         $serializer     = new Serializer\JsonSerializer();
-        $this->pipeline = new PersistentPipeline($this->driver, $serializer);
+        $this->pipeline = new KafkaPipeline($this->driver, $serializer);
         $this->time     = time();
     }
 
     public function testPush()
     {
-        $wrappedEvent = $this->getWrappedEvent('DD', 'message.send', 'group', 'async');
+        $wrappedEvent = $this->getEventWrapper('DD', 'message.send', 'group', 'async');
 
         $this->driver->expects($this->once())
                      ->method('push')
                      ->with(
                          $this->equalTo('event-message'),
                          $this->equalTo(
-                             '{"domainId":"DD","name":"message.send","time":' . $this->time . ',' .
+                             '{"source":"DD","name":"message.send","time":' . $this->time . ',' .
                              '"data":[],' .
                              '"extra":{"mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Event","group":"group"}}'
                          ),
@@ -63,7 +63,7 @@ class PersistentPipelineTest extends \PHPUnit_Framework_TestCase
     public function testPushRichEvent()
     {
         $event        = new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], []);
-        $wrappedEvent = $this->getWrappedEvent('DD', 'message.send', 'group', 'async', $event);
+        $wrappedEvent = $this->getEventWrapper('DD', 'message.send', 'group', 'async', $event);
         $data         = '{"domainId":"DD","name":"message.send","time":' . $this->time . ',' .
             '"data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},' .
             '"extra":{"mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent","group":"group"}}';
@@ -114,12 +114,16 @@ class PersistentPipelineTest extends \PHPUnit_Framework_TestCase
         $this->pipeline->ack($args['event']);
     }
 
-    private function getWrappedEvent($domainId, $eventName, $group, $mode, $event = null)
+    private function getEventWrapper($source, $eventName, $group, $mode, $event = null)
     {
         $event        = $event ?: new Event();
-        $wrappedEvent = new WrappedEvent($domainId, $eventName, $event, $group, $mode);
-        Util::setInvisiblePropertyValue($wrappedEvent, 'time', $this->time);
-        return $wrappedEvent;
+        Util::setInvisiblePropertyValue($event, 'source', $source);
+        Util::setInvisiblePropertyValue($event, 'name', $eventName);
+        Util::setInvisiblePropertyValue($event, 'group', $group);
+        Util::setInvisiblePropertyValue($event, 'mode', $mode);
+        Util::setInvisiblePropertyValue($event, 'time', $this->time);
+
+        return new EventWrapper($event);
     }
 }
 

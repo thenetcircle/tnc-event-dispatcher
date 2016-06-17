@@ -15,29 +15,27 @@ use Tnc\Service\EventDispatcher\Exception;
 interface Pipeline
 {
     /**
-     * @param string       $channel
-     * @param WrappedEvent $wrappedEvent
+     * @param EventWrapper $eventWrapper
      * @param int          $timeout
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push($channel, WrappedEvent $wrappedEvent, $timeout);
+    public function push(EventWrapper $eventWrapper, $timeout);
 
     /**
-     * @param string $channel
-     * @param int    $timeout
+     * @param int $timeout
      *
-     * @return array [WrappedEvent $event, mixed $receipt]
+     * @return EventWrapper $event
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($channel, $timeout);
+    public function pop($timeout);
 
     /**
-     * @param mixed $receipt
+     * @param EventWrapper $event
      */
-    public function ack($receipt);
+    public function ack(EventWrapper $event);
 }
