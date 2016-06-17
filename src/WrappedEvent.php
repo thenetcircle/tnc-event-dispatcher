@@ -130,8 +130,15 @@ class WrappedEvent implements Normalizable
     public function normalize(Serializer $serializer)
     {
         $data = get_object_vars($this);
-        unset($data['event']);
-        $data['data'] = $serializer->normalize($this->event);
+
+        $data['data']  = $serializer->normalize($this->event);
+        $data['extra'] = array(
+            'mode'  => $data['mode'],
+            'class' => $data['class'],
+            'group' => $data['group']
+        );
+        unset($data['event'], $data['mode'], $data['class'], $data['group']);
+
         return $data;
     }
 
@@ -140,12 +147,21 @@ class WrappedEvent implements Normalizable
      */
     public function denormalize(array $data, Serializer $serializer)
     {
-        if (!isset($data['class'], $data['data'])) {
+        $eventClass = $data['extra']['class'] ?: 'Tnc\Service\EventDispatcher\Event';
+
+        if (!isset($data['name'])) {
             throw new InvalidArgumentException(sprintf('{WrappedEvent} some arguments missed in data %s', json_encode($data)));
         }
 
-        $this->event = $serializer->denormalize($data['class'], $data['data']);
+        $this->event = $serializer->denormalize($eventClass, (array)$data['data']);
         unset($data['data']);
+
+        if(isset($data['extra'])) {
+            $data['mode'] = $data['extra']['mode'];
+            $data['group'] = $data['extra']['group'];
+            $data['class'] = $data['extra']['class'];
+            unset($data['extra']);
+        }
 
         foreach ($data as $_key => $_value) {
             $this->{$_key} = $_value;

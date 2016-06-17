@@ -22,7 +22,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     public function testSerializeEvent()
     {
         $event = new Event();
-        $this->assertEquals('[]', $this->serializer->serialize($event));
+        $this->assertJsonStringEqualsJsonString('[]', $this->serializer->serialize($event));
     }
 
     public function testUnserializeEvent()
@@ -32,30 +32,10 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($event, $newEvent);
     }
 
-    public function testSerializeWrappedEvent()
-    {
-        $event = new Event();
-        $wrappedEvent = new WrappedEvent('testName', $event, 'testGroup', 'async');
-        $time = time();
-        Util::setInvisiblePropertyValue($wrappedEvent, 'time', $time);
-
-        $this->assertJson(
-            '{
-              "data":[],
-              "name":"testName",
-              "group":"testGroup",
-              "mode":"async",
-              "class":"Tnc\\\Service\\\EventDispatcher\\\Event",
-              "time":'.$time.'
-            }',
-            $this->serializer->serialize($wrappedEvent)
-        );
-    }
-
     public function testSerializeRichEvent()
     {
         $event =  new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], ['extra1' => 'value1']);
-        $this->assertJson(
+        $this->assertJsonStringEqualsJsonString(
             '{
               "name":"rich",
               "context":{"key1":"value1","key2":"value2"}
@@ -77,21 +57,39 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($event, $newEvent);
     }
 
+    public function testSerializeWrappedEvent()
+    {
+        $event = new Event();
+        $wrappedEvent = new WrappedEvent('DD', 'testName', $event, 'testGroup', 'async');
+        $time = time();
+        Util::setInvisiblePropertyValue($wrappedEvent, 'time', $time);
+
+        $this->assertJsonStringEqualsJsonString(
+            '{
+              "domainId":"DD",
+              "name":"testName",
+              "time":'.$time.',
+              "data":[],
+              "extra":{"group":"testGroup","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Event"}
+            }',
+            $this->serializer->serialize($wrappedEvent)
+        );
+    }
+
     public function testSerializeWrappedRichEvent()
     {
         $time = time();
         $event = new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], ['extra1' => 'value1']);
-        $wrappedEvent = new WrappedEvent('testName', $event, 'testGroup', 'async');
+        $wrappedEvent = new WrappedEvent('DD', 'testName', $event, 'testGroup', 'async');
         Util::setInvisiblePropertyValue($wrappedEvent, 'time', $time);
 
-        $this->assertJson(
+        $this->assertJsonStringEqualsJsonString(
             '{
-              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},
+              "domainId":"DD",
               "name":"testName",
-              "group":"testGroup",
-              "mode":"async",
-              "class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent",
-              "time":'.$time.'
+              "time":'.$time.',
+              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},
+              "extra":{"group":"testGroup","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent"}
             }',
             $this->serializer->serialize($wrappedEvent)
         );
@@ -100,19 +98,18 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     public function testUnserializeWrappedRichEvent()
     {
         $event =  new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], []);
-        $wrappedEvent = new WrappedEvent('testName', $event, 'testGroup', 'async');
+        $wrappedEvent = new WrappedEvent('DD', 'testName', $event, 'testGroup', 'async');
         $time = time();
         Util::setInvisiblePropertyValue($wrappedEvent, 'time', $time);
 
         $newWrappedEvent = $this->serializer->unserialize(
             '\Tnc\Service\EventDispatcher\WrappedEvent',
             '{
-              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},
+              "domainId":"DD",
               "name":"testName",
-              "group":"testGroup",
-              "mode":"async",
-              "class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent",
-              "time":'.$time.'
+              "time":'.$time.',
+              "data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},
+              "extra":{"group":"testGroup","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent"}
             }'
         );
 
@@ -121,6 +118,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($event, $newWrappedEvent->getEvent());
     }
 }
+
 
 class RichEvent extends Event
 {

@@ -35,10 +35,10 @@ class PersistentPipeline implements Pipeline
     /**
      * {@inheritdoc}
      */
-    public function push(WrappedEvent $wrappedEvent, $timeout = 200)
+    public function push($channel, WrappedEvent $wrappedEvent, $timeout)
     {
         return $this->driver->push(
-            $this->getChannel($wrappedEvent),
+            $channel,
             $this->serializer->serialize($wrappedEvent),
             $timeout,
             $wrappedEvent->getGroup()
@@ -48,17 +48,32 @@ class PersistentPipeline implements Pipeline
     /**
      * {@inheritdoc}
      */
-    public function pop($timeout = 120000)
+    public function pop($channel, $timeout)
     {
-        // TODO: Implement pop() method.
+        list($message, $receipt) = $this->driver->pop($channel, $timeout);
+
+        $wrappedEvent = null;
+        if($message) {
+            $wrappedEvent = $this->serializer->unserialize(
+                WrappedEvent::class,
+                $message
+            );
+        }
+
+        return [$wrappedEvent, $receipt];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function ack(WrappedEvent $wrappedEvent)
+    public function ack($receipt)
     {
-        // TODO: Implement ack() method.
+        return $this->driver->ack($receipt);
+    }
+
+    private function getSubscribedChannel()
+    {
+        return '^event-.*';
     }
 
     /**
