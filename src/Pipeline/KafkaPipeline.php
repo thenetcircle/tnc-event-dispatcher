@@ -21,28 +21,36 @@ class KafkaPipeline implements Pipeline
     private $serializer;
 
     /**
+     * @var int
+     */
+    private $defaultTimeout;
+
+    /**
      * PersistentQueue constructor.
      *
      * @param Driver     $driver
      * @param Serializer $serializer
      * @param int        $timeout
      */
-    public function __construct(Driver $driver, Serializer $serializer)
+    public function __construct(Driver $driver, Serializer $serializer, $defaultTimeout = 200)
     {
         $this->driver     = $driver;
         $this->serializer = $serializer;
+        $this->defaultTimeout = $defaultTimeout;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function push(EventWrapper $eventWrapper, $timeout)
+    public function push(EventWrapper $eventWrapper, $timeout = null)
     {
         $key     = null;
         $channel = $this->getChannelPrefix() . 'default';
+        $timeout = $timeout === null ? $this->defaultTimeout : $timeout;
 
         if (null !== ($event = $eventWrapper->getEvent())) {
-            $key     = $event->getGroup();
+            // use actor type plus actor id as key, for partitions balance
+            $key     = $event->getActorType().'-'.$event->getActorId();
             $channel = $this->getChannelByEvent($event);
         }
         $message = $this->serializer->serialize($eventWrapper);
@@ -53,8 +61,9 @@ class KafkaPipeline implements Pipeline
     /**
      * {@inheritdoc}
      */
-    public function pop($timeout)
+    public function pop($timeout = null)
     {
+        $timeout = $timeout === null ? $this->defaultTimeout : $timeout;
         $channel = '^' . preg_quote($this->getChannelPrefix()) . '.*';
         list($message, $receipt) = $this->driver->pop($channel, $timeout);
 
@@ -70,7 +79,7 @@ class KafkaPipeline implements Pipeline
      */
     public function ack(EventWrapper $eventWrapper)
     {
-        $this->driver->ask(null);
+        $this->driver->ack(null);
     }
 
 

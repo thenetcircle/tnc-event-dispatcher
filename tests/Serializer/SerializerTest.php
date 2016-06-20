@@ -173,7 +173,7 @@ class RichEvent extends Event
     )
     {
         $this->appendExtraInfo($source, $name, $mode, $time);
-        $this->setGroup($group);
+        $this->setActor($group);
         $this->setContext($context);
         $this->extra = $extra;
     }

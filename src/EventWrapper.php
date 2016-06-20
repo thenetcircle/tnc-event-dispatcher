@@ -63,12 +63,8 @@ class EventWrapper implements Normalizable
     {
         $data                  = $serializer->normalize($this->event);
         $data[self::EXTRA_KEY] = [
-            'class' => $this->getClass(),
-            'mode'  => $data['mode'],
-            'group' => $data['group'],
+            'class' => $this->getClass()
         ];
-        unset($data['mode'], $data['group']);
-
         return $data;
     }
 
@@ -80,10 +76,7 @@ class EventWrapper implements Normalizable
         if (!isset($data[self::EXTRA_KEY]['class'])) {
             throw new InvalidArgumentException(sprintf('{EventWrapper} some arguments missed in data %s', json_encode($data)));
         }
-        $extraInfo     = $data[self::EXTRA_KEY];
-        $this->class   = $extraInfo['class'];
-        $data['mode']  = $extraInfo['mode'];
-        $data['group'] = $extraInfo['group'];
+        $this->class   = $data[self::EXTRA_KEY]['class'];
         unset($data[self::EXTRA_KEY]);
 
         $this->event = $serializer->denormalize($this->class, $data);

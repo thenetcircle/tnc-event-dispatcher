@@ -10,48 +10,48 @@
 
 namespace Tnc\Service\EventDispatcher;
 
-use Symfony\Component\EventDispatcher\Event as BaseEvent;
-use Symfony\Component\EventDispatcher\EventDispatcher as BaseEventDispatcher;
+use Tnc\Service\EventDispatcher\Event\ActivityEvent;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 
-class Dispatcher extends BaseEventDispatcher
+class Dispatcher
 {
     CONST MODE_SYNC      = 'sync';
     CONST MODE_SYNC_PLUS = 'sync_plus';
     CONST MODE_ASYNC     = 'async';
 
     /**
-     * @var string
+     * @var LocalDispatcher
      */
-    private $source;
+    private $localDispatcher;
     /**
      * @var Pipeline
      */
     private $pipeline;
     /**
-     * @var BaseEvent
+     * @var Event
      */
     private $defaultEvent;
 
     /**
      * Dispatcher constructor.
      *
-     * @param Pipeline  $pipeline
-     * @param string    $source
-     * @param BaseEvent $defaultEvent
+     * @param LocalDispatcher $localDispatcher
+     * @param Pipeline        $pipeline
+     * @param Event           $defaultEvent
      */
-    public function __construct(Pipeline $pipeline, $source = 'default')
+    public function __construct(LocalDispatcher $localDispatcher, Pipeline $pipeline, Event $defaultEvent = null)
     {
-        $this->source   = $source;
-        $this->pipeline = $pipeline;
+        $this->localDispatcher = $localDispatcher;
+        $this->pipeline        = $pipeline;
+        $this->defaultEvent    = $defaultEvent === null ? new ActivityEvent() : $defaultEvent;
     }
 
     /**
      * Dispatches an event to all listeners by synchronous or asynchronous way
      *
-     * @param string     $eventName
+     * @param string     $name
      * @param Event|null $event
-     * @param int        $mode
+     * @param string     $mode
      *
      * @return Event
      *
@@ -59,24 +59,16 @@ class Dispatcher extends BaseEventDispatcher
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function dispatch($eventName, BaseEvent $event = null, $mode = self::MODE_SYNC_PLUS)
+    public function dispatch($name, Event $event = null, $mode = self::MODE_SYNC_PLUS)
     {
         if ($event === null) {
-            $event = $this->getDefaultEvent();
+            $event = $this->defaultEvent;
         }
-
-        if (!$event instanceof Event) {
-            throw new InvalidArgumentException(
-                '{Dispatcher} Event is not an instance of Tnc\Service\EventDispatcher\Event.'
-            );
-        }
-
-        $event->setDispatchingInfo($this->source, $eventName, $mode, time());
 
         switch ($mode) {
 
             case self::MODE_SYNC:
-                parent::dispatch($eventName, $event);
+                $this->localDispatcher->dispatch($name, $event);
                 break;
 
             case self::MODE_ASYNC:
@@ -84,7 +76,7 @@ class Dispatcher extends BaseEventDispatcher
                 break;
 
             case self::MODE_SYNC_PLUS:
-                parent::dispatch($eventName, $event);
+                $this->localDispatcher->dispatch($name, $event);
                 $this->pipeline->push(new EventWrapper($event));
                 break;
 
@@ -94,21 +86,5 @@ class Dispatcher extends BaseEventDispatcher
         }
 
         return $event;
-    }
-
-    /**
-     * @return BaseEvent
-     */
-    public function getDefaultEvent()
-    {
-        return $this->defaultEvent ?: new Event();
-    }
-
-    /**
-     * @param BaseEvent $event
-     */
-    public function setDefaultEvent($event)
-    {
-        $this->defaultEvent = $event;
     }
 }

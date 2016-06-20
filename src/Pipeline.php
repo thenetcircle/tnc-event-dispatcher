@@ -16,15 +16,15 @@ interface Pipeline
 {
     /**
      * @param EventWrapper $eventWrapper
-     * @param int          $timeout
+     * @param int|null     $timeout null will use default timeout
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push(EventWrapper $eventWrapper, $timeout);
+    public function push(EventWrapper $eventWrapper, $timeout = null);
 
     /**
-     * @param int $timeout
+     * @param int|null $timeout null will use default timeout
      *
      * @return EventWrapper $event
      *
@@ -32,7 +32,7 @@ interface Pipeline
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($timeout);
+    public function pop($timeout = null);
 
     /**
      * @param EventWrapper $event
