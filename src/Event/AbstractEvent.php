@@ -21,7 +21,7 @@ abstract class AbstractEvent implements Event
     protected $name;
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -29,11 +29,13 @@ abstract class AbstractEvent implements Event
     }
 
     /**
-     * @param string $name
+     * {@inheritdoc}
      */
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
 

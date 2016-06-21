@@ -31,10 +31,72 @@ class ActivityEvent extends AbstractEvent
     /**
      * {@inheritdoc}
      */
+    public function getName()
+    {
+        $this->activity->getVerb();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function setName($name)
     {
-        parent::setName($name);
         $this->activity->setVerb($name);
+
+        return $this;
+    }
+
+    /**
+     * @param string $type
+     * @param string $id
+     *
+     * @return $this
+     */
+    public function setActor($type, $id)
+    {
+        $obj = (new \Tnc\Service\EventDispatcher\Event\Activity\Obj())
+            ->setObjectType($type)
+            ->setId($id);
+
+        $this->activity->setActor($obj);
+
+        return $this;
+    }
+
+    /**
+     * @param string $type
+     * @param string $id
+     * @param string $content
+     *
+     * @return $this
+     */
+    public function setObject($type, $id, $content)
+    {
+        $obj = (new \Tnc\Service\EventDispatcher\Event\Activity\Obj())
+            ->setObjectType($type)
+            ->setId($id)
+            ->setContent($content);
+
+        $this->activity->setObject($obj);
+
+        return $this;
+    }
+
+    /**
+     * @param string $type
+     * @param string $id
+     *
+     * @return $this
+     */
+    public function setTarget($type, $id)
+    {
+        $obj = (new \Tnc\Service\EventDispatcher\Event\Activity\Obj())
+            ->setObjectType($type)
+            ->setId($id);
+
+        $this->activity->setTarget($obj);
+
+        return $this;
     }
 
     /**
@@ -42,6 +104,8 @@ class ActivityEvent extends AbstractEvent
      */
     public function normalize(Serializer $serializer)
     {
+        $uuid =  uniqid($this->activity->getVerb() . '.', true);
+        $this->activity->setId($uuid);
         return $serializer->normalize($this->activity);
     }
 
@@ -51,6 +115,5 @@ class ActivityEvent extends AbstractEvent
     public function denormalize(array $data, Serializer $serializer)
     {
         $this->activity = $serializer->denormalize('\Tnc\Service\EventDispatcher\Event\Activity\Activity', $data);
-        $this->name = $this->activity->getVerb();
     }
 }
