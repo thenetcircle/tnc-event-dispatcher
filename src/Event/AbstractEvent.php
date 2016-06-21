@@ -21,12 +21,6 @@ abstract class AbstractEvent implements Event
     protected $name;
 
     /**
-     * @var string
-     */
-    protected $mode;
-
-
-    /**
      * @return string
      */
     public function getName()
@@ -40,22 +34,6 @@ abstract class AbstractEvent implements Event
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMode()
-    {
-        return $this->mode;
-    }
-
-    /**
-     * @param string $mode
-     */
-    public function setMode($mode)
-    {
-        $this->mode = $mode;
     }
 
 

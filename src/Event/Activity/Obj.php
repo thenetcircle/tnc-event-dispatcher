@@ -10,27 +10,40 @@
 
 namespace Tnc\Service\EventDispatcher\Event\Activity;
 
-class Obj
+use Tnc\Service\EventDispatcher\Normalizable;
+use Tnc\Service\EventDispatcher\Serializer;
+
+class Obj implements Normalizable
 {
     /**
      * @var string
      */
-    protected $id;
+    private $id;
 
     /**
      * @var string
      */
-    protected $objectType;
+    private $objectType;
 
     /**
      * @var string
      */
-    protected $displayName;
+    private $displayName;
 
     /**
      * @var string
      */
-    protected $content;
+    private $content;
+
+    /**
+     * @var string
+     */
+    private $published;
+
+    /**
+     * @var string
+     */
+    private $updated;
 
     /**
      * @return string
@@ -110,5 +123,63 @@ class Obj
         $this->content = $content;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublished()
+    {
+        return $this->published;
+    }
+
+    /**
+     * @param string $published
+     *
+     * @return $this
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
+     * @param string $updated
+     *
+     * @return $this
+     */
+    public function setUpdated($updated)
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function normalize(Serializer $serializer)
+    {
+        return get_object_vars($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function denormalize(array $data, Serializer $serializer)
+    {
+        foreach ($data as $_key => $_value) {
+            $this->{$_key} = $_value;
+        }
     }
 }

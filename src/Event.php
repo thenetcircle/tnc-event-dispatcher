@@ -20,12 +20,4 @@ interface Event extends Normalizable
      * @param string $name
      */
     public function setName($name);
-    /**
-     * @return string
-     */
-    public function getMode();
-    /**
-     * @param string $mode
-     */
-    public function setMode($mode);
 }

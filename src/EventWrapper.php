@@ -21,14 +21,19 @@ class EventWrapper implements Normalizable
      * @var string
      */
     protected $class;
+    /**
+     * @var string
+     */
+    protected $mode;
 
 
     /**
-     * @param Event $event
+     * @param Event  $event
+     * @param string $mode
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(Event $event)
+    public function __construct(Event $event, $mode)
     {
         if (!$event instanceof Normalizable) {
             throw new InvalidArgumentException(
@@ -38,6 +43,7 @@ class EventWrapper implements Normalizable
 
         $this->event = $event;
         $this->class = get_class($event);
+        $this->mode  = $mode;
     }
 
     /**
@@ -57,13 +63,22 @@ class EventWrapper implements Normalizable
     }
 
     /**
+     * @return string
+     */
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function normalize(Serializer $serializer)
     {
         $data                  = $serializer->normalize($this->event);
         $data[self::EXTRA_KEY] = [
-            'class' => $this->getClass()
+            'class' => $this->getClass(),
+            'mode'  => $this->getMode()
         ];
         return $data;
     }
@@ -76,7 +91,8 @@ class EventWrapper implements Normalizable
         if (!isset($data[self::EXTRA_KEY]['class'])) {
             throw new InvalidArgumentException(sprintf('{EventWrapper} some arguments missed in data %s', json_encode($data)));
         }
-        $this->class   = $data[self::EXTRA_KEY]['class'];
+        $this->class = $data[self::EXTRA_KEY]['class'];
+        $this->mode  = $data[self::EXTRA_KEY]['mode'];
         unset($data[self::EXTRA_KEY]);
 
         $this->event = $serializer->denormalize($this->class, $data);

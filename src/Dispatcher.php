@@ -10,6 +10,7 @@
 
 namespace Tnc\Service\EventDispatcher;
 
+use Tnc\Service\EventDispatcher\Event\Activity;
 use Tnc\Service\EventDispatcher\Event\ActivityEvent;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 
@@ -65,6 +66,8 @@ class Dispatcher
             $event = $this->defaultEvent;
         }
 
+        $event->setName($name);
+
         switch ($mode) {
 
             case self::MODE_SYNC:
@@ -72,12 +75,12 @@ class Dispatcher
                 break;
 
             case self::MODE_ASYNC:
-                $this->pipeline->push(new EventWrapper($event));
+                $this->pipeline->push(new EventWrapper($event, $mode));
                 break;
 
             case self::MODE_SYNC_PLUS:
                 $this->localDispatcher->dispatch($name, $event);
-                $this->pipeline->push(new EventWrapper($event));
+                $this->pipeline->push(new EventWrapper($event, $mode));
                 break;
 
             default:
