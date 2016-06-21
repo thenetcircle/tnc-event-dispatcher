@@ -170,7 +170,14 @@ class Obj implements Normalizable
      */
     public function normalize(Serializer $serializer)
     {
-        return get_object_vars($this);
+        $vars = get_object_vars($this);
+        $data = array();
+        foreach($vars as $_key => $_value) {
+            if ($_value !== null) {
+                $data[$_key] = $_value;
+            }
+        }
+        return $data;
     }
 
     /**

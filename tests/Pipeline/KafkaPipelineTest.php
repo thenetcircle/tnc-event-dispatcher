@@ -128,7 +128,7 @@ class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
 }
 
 
-class RichEvent extends Event
+class RichEvent
 {
     public    $name;
     protected $context = array();

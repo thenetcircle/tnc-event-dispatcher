@@ -156,7 +156,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
 }
 
 
-class RichEvent extends Event
+class RichEvent
 {
     protected $extra = array();
     protected $field1 = 1;

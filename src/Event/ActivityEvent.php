@@ -33,7 +33,7 @@ class ActivityEvent extends AbstractEvent
      */
     public function getName()
     {
-        $this->activity->getVerb();
+        return $this->activity->getVerb();
     }
 
     /**
