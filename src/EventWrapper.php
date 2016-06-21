@@ -12,7 +12,7 @@ use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 class EventWrapper implements Normalizable
 {
     CONST CHANNEL_PREFIX = 'event-';
-    CONST EXTRA_KEY = '_extra_';
+    CONST EXTRA_KEY      = '_extra_';
 
     /**
      * @var Event
@@ -74,25 +74,17 @@ class EventWrapper implements Normalizable
     /**
      * @return string
      */
-    public function getKey()
+    public function getMessageKey()
     {
-        // TODO
-        return null;
+        return $this->event->getMessageKey();
     }
 
     /**
      * @return string
      */
-    public function getChannel()
+    public function getMessageChannel()
     {
-        $name = $this->event->getName();
-        if (($pos = strpos($name, '.')) !== false) {
-            $channel = substr($name, 0, $pos);
-        } else {
-            $channel = $name;
-        }
-
-        return self::CHANNEL_PREFIX . $channel;
+        return $this->event->getMessageChannel();
     }
 
     /**

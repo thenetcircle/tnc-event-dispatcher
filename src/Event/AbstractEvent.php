@@ -10,10 +10,11 @@
 
 namespace Tnc\Service\EventDispatcher\Event;
 
+use \Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\Serializer;
 
-abstract class AbstractEvent implements Event
+abstract class AbstractEvent extends SymfonyEvent implements Event
 {
     /**
      * @var string
@@ -38,6 +39,28 @@ abstract class AbstractEvent implements Event
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getMessageChannel()
+    {
+        $name = $this->getName();
+        if (($pos = strpos($name, '.')) !== false) {
+            $channel = substr($name, 0, $pos);
+        } else {
+            $channel = $name;
+        }
+
+        return 'event-' . $channel;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMessageKey()
+    {
+        return null;
+    }
 
     /**
      * {@inheritdoc}

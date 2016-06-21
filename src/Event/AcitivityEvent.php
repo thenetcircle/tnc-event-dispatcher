@@ -47,6 +47,20 @@ class ActivityEvent extends AbstractEvent
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getMessageKey()
+    {
+        $actor = $this->activity->getActor();
+        if($actor) {
+            return $actor->getObjectType() . '_' . $actor->getId();
+        }
+        else {
+            return '';
+        }
+    }
+
+    /**
      * @param string $name
      *
      * @return $this

@@ -23,4 +23,14 @@ interface Event extends Normalizable
      * @return $this
      */
     public function setName($name);
+
+    /**
+     * @return string
+     */
+    public function getMessageChannel();
+
+    /**
+     * @return string|null
+     */
+    public function getMessageKey();
 }
