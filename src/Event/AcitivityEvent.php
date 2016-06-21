@@ -47,6 +47,20 @@ class ActivityEvent extends AbstractEvent
     }
 
     /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setProvider($name) {
+        $obj = (new \Tnc\Service\EventDispatcher\Event\Activity\Obj())
+            ->setId($name);
+
+        $this->activity->setProvider($obj);
+
+        return $this;
+    }
+
+    /**
      * @param string $type
      * @param string $id
      *

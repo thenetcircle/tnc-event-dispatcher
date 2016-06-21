@@ -5,7 +5,7 @@ namespace Tnc\Service\EventDispatcher\Test;
 use Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\Pipeline;
-use Tnc\Service\EventDispatcher\Pipeline\KafkaPipeline;
+use Tnc\Service\EventDispatcher\Pipeline\PersistentPipeline;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\Util;
 use Tnc\Service\EventDispatcher\EventWrapper;
@@ -36,7 +36,7 @@ class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
     {
         $this->driver   = $this->createMock(Driver::class);
         $serializer     = new Serializer\JsonSerializer();
-        $this->pipeline = new KafkaPipeline($this->driver, $serializer);
+        $this->pipeline = new PersistentPipeline($this->driver, $serializer);
         $this->time     = time();
     }
 

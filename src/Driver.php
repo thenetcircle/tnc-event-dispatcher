@@ -20,11 +20,12 @@ interface Driver
      * @param string      $channel
      * @param string      $message
      * @param int         $timeout millisecond
+     * @param string|null $key
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push($channel, $message, $timeout);
+    public function push($channel, $message, $timeout, $key = null);
 
     /**
      * Pop a message to the specific channel of a pipeline

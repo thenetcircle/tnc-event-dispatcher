@@ -24,6 +24,7 @@ interface Pipeline
     public function push(EventWrapper $eventWrapper, $timeout = null);
 
     /**
+     * @param string   $channel
      * @param int|null $timeout null will use default timeout
      *
      * @return EventWrapper $event
@@ -32,7 +33,7 @@ interface Pipeline
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($timeout = null);
+    public function pop($channel, $timeout = null);
 
     /**
      * @param EventWrapper $event
