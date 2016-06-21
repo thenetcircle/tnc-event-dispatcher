@@ -10,14 +10,14 @@
 
 namespace Tnc\Service\EventDispatcher\Event;
 
-use Tnc\Service\EventDispatcher\Event\Activity\Entity;
+use Tnc\Service\EventDispatcher\Event\Activity\Obj;
 use Tnc\Service\EventDispatcher\Normalizable;
 use Tnc\Service\EventDispatcher\Serializer;
 
 class ActivityEvent extends AbstractEvent
 {
     /**
-     * @var Object
+     * @var Obj
      */
     protected $actor;
     /**
@@ -25,11 +25,11 @@ class ActivityEvent extends AbstractEvent
      */
     protected $verb;
     /**
-     * @var Object
+     * @var Obj
      */
     protected $object;
     /**
-     * @var Object
+     * @var Obj
      */
     protected $target;
 
@@ -38,13 +38,13 @@ class ActivityEvent extends AbstractEvent
      */
     protected $id;
     /**
-     * @var Object
+     * @var Obj
      */
     protected $provider;
 
 
     /**
-     * @return Object
+     * @return Obj
      */
     public function getActor()
     {
@@ -52,9 +52,9 @@ class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param Object $actor
+     * @param Obj $actor
      */
-    public function setActor(Entity $actor)
+    public function setActor(Obj $actor)
     {
         $this->actor = $actor;
     }
@@ -76,23 +76,23 @@ class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @return Object
+     * @return Obj
      */
-    public function getActivityObject()
+    public function getObject()
     {
         return $this->object;
     }
 
     /**
-     * @param Object $object
+     * @param Obj $object
      */
-    public function setActivityObject(Entity $object)
+    public function setObject(Obj $object)
     {
         $this->object = $object;
     }
 
     /**
-     * @return Object
+     * @return Obj
      */
     public function getTarget()
     {
@@ -100,9 +100,9 @@ class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param Object $target
+     * @param Obj $target
      */
-    public function setTarget(Entity $target)
+    public function setTarget(Obj $target)
     {
         $this->target = $target;
     }
@@ -124,7 +124,7 @@ class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @return Object
+     * @return Obj
      */
     public function getProvider()
     {
@@ -132,9 +132,9 @@ class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param Object $provider
+     * @param Obj $provider
      */
-    public function setProvider(Entity $provider)
+    public function setProvider(Obj $provider)
     {
         $this->provider = $provider;
     }

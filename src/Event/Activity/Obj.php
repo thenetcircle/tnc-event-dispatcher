@@ -10,7 +10,7 @@
 
 namespace Tnc\Service\EventDispatcher\Event\Activity;
 
-class Entity
+class Obj
 {
     /**
      * @var string
