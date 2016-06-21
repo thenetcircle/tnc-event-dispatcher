@@ -10,6 +10,7 @@
 
 namespace Tnc\Service\EventDispatcher;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Tnc\Service\EventDispatcher\Event\Activity;
 use Tnc\Service\EventDispatcher\Event\ActivityEvent;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
@@ -21,7 +22,7 @@ class Dispatcher
     CONST MODE_ASYNC     = 'async';
 
     /**
-     * @var LocalDispatcher
+     * @var EventDispatcherInterface
      */
     private $localDispatcher;
     /**
@@ -36,11 +37,11 @@ class Dispatcher
     /**
      * Dispatcher constructor.
      *
-     * @param LocalDispatcher $localDispatcher
-     * @param Pipeline        $pipeline
-     * @param Event           $defaultEvent
+     * @param EventDispatcherInterface $localDispatcher
+     * @param Pipeline                 $pipeline
+     * @param Event                    $defaultEvent
      */
-    public function __construct(LocalDispatcher $localDispatcher, Pipeline $pipeline, Event $defaultEvent = null)
+    public function __construct(EventDispatcherInterface $localDispatcher, Pipeline $pipeline, Event $defaultEvent = null)
     {
         $this->localDispatcher = $localDispatcher;
         $this->pipeline        = $pipeline;
@@ -89,5 +90,13 @@ class Dispatcher
         }
 
         return $event;
+    }
+
+    /**
+     * @return EventDispatcherInterface
+     */
+    public function getLocalDispatcher()
+    {
+        return $this->localDispatcher;
     }
 }
