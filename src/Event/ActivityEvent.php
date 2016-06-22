@@ -118,7 +118,7 @@ abstract class ActivityEvent extends AbstractEvent
      */
     public function setProvider($name)
     {
-        $this->activity->setProvider(self::newActivityObject($name));
+        $this->activity->setProvider(self::obj($name));
 
         return $this;
     }
