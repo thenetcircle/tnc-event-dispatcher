@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Event\Activity;
+namespace Tnc\Service\EventDispatcher\ActivityStreams;
 
-use Tnc\Service\EventDispatcher\Normalizable;
-use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer;
+use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 
-class Obj implements Normalizable
+class Object implements Normalizable
 {
     /**
      * @var string
@@ -168,7 +168,7 @@ class Obj implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(Serializer $serializer)
+    public function normalize(Normalizer $normalizer)
     {
         $vars = get_object_vars($this);
         $data = array();
@@ -183,7 +183,7 @@ class Obj implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(array $data, Serializer $serializer)
+    public function denormalize(array $data, Normalizer $normalizer)
     {
         foreach ($data as $_key => $_value) {
             $this->{$_key} = $_value;

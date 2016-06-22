@@ -2,8 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher\Serializer;
 
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Normalizable;
+use Tnc\Service\EventDispatcher\Normalizer;
 use Tnc\Service\EventDispatcher\Serializer;
 
 /**
@@ -16,50 +15,51 @@ use Tnc\Service\EventDispatcher\Serializer;
 abstract class AbstractSerializer implements Serializer
 {
     /**
+     * @var Normalizer
+     */
+    protected $normalizer;
+
+    /**
+     * AbstractSerializer constructor.
+     *
+     * @param Normalizer $normalizer
+     */
+    public function __construct(Normalizer $normalizer = null)
+    {
+        $this->normalizer = $normalizer ?: new DefaultNormalizer();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function serialize(Normalizable $object)
     {
-        return $this->encode(
-            $this->normalize($object)
-        );
+        $data = $this->normalizer->normalize($object);
+
+        return $this->encode($data);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($class, $string)
+    public function unserialize($content, $class)
     {
-        return $this->denormalize(
-            $class, $this->decode($string)
-        );
+        $data = $this->decode($content);
+
+        return $this->normalizer->denormalize($data, $class);
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $data
+     *
+     * @return string
      */
-    public function normalize(Normalizable $object)
-    {
-        return $object->normalize($this);
-    }
+    abstract public function encode($data);
 
     /**
-     * {@inheritdoc}
+     * @param string $content
+     *
+     * @return array
      */
-    public function denormalize($class, $data)
-    {
-        if (!class_exists($class)) {
-            throw new InvalidArgumentException(sprintf('Class %s does not existed.', $class));
-        }
-
-        $reflectionClass = new \ReflectionClass($class);
-        if (!$reflectionClass->isSubclassOf('Tnc\Service\EventDispatcher\Normalizable')) {
-            throw new InvalidArgumentException(sprintf('Class %s not normalizable.', $class));
-        }
-
-        /** @var Normalizable $object */
-        $object = $reflectionClass->newInstanceWithoutConstructor();
-        $object->denormalize($data, $this);
-        return $object;
-    }
+    abstract public function decode($content);
 }

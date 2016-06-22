@@ -10,8 +10,7 @@
 
 namespace Tnc\Service\EventDispatcher;
 
-use Tnc\Service\EventDispatcher\Event\Activity;
-use Tnc\Service\EventDispatcher\Event\ActivityEvent;
+use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 
 class Dispatcher
@@ -44,7 +43,7 @@ class Dispatcher
     {
         $this->localDispatcher = $localDispatcher;
         $this->pipeline        = $pipeline;
-        $this->defaultEvent    = $defaultEvent === null ? new ActivityEvent() : $defaultEvent;
+        $this->defaultEvent    = $defaultEvent === null ? new DefaultEvent() : $defaultEvent;
     }
 
     /**

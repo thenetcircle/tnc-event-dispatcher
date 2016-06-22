@@ -8,15 +8,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Event\Activity;
+namespace Tnc\Service\EventDispatcher\ActivityStreams;
 
-use Tnc\Service\EventDispatcher\Normalizable;
-use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer;
+use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 
 class Activity implements Normalizable
 {
     /**
-     * @var Obj
+     * @var Object
      */
     private $actor;
     /**
@@ -24,19 +24,19 @@ class Activity implements Normalizable
      */
     private $verb;
     /**
-     * @var Obj
+     * @var Object
      */
     private $object;
     /**
-     * @var Obj
+     * @var Object
      */
     private $target;
     /**
-     * @var Obj
+     * @var Object
      */
     private $provider;
     /**
-     * @var Obj
+     * @var Object
      */
     private $generator;
 
@@ -64,7 +64,7 @@ class Activity implements Normalizable
 
 
     /**
-     * @return Obj
+     * @return Object
      */
     public function getActor()
     {
@@ -72,9 +72,9 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param Obj $actor
+     * @param Object $actor
      */
-    public function setActor(Obj $actor)
+    public function setActor(Object $actor)
     {
         $this->actor = $actor;
     }
@@ -96,7 +96,7 @@ class Activity implements Normalizable
     }
 
     /**
-     * @return Obj
+     * @return Object
      */
     public function getObject()
     {
@@ -104,15 +104,15 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param Obj $object
+     * @param Object $object
      */
-    public function setObject(Obj $object)
+    public function setObject(Object $object)
     {
         $this->object = $object;
     }
 
     /**
-     * @return Obj
+     * @return Object
      */
     public function getTarget()
     {
@@ -120,9 +120,9 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param Obj $target
+     * @param Object $target
      */
-    public function setTarget(Obj $target)
+    public function setTarget(Object $target)
     {
         $this->target = $target;
     }
@@ -144,7 +144,7 @@ class Activity implements Normalizable
     }
 
     /**
-     * @return Obj
+     * @return Object
      */
     public function getProvider()
     {
@@ -152,9 +152,9 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param Obj $provider
+     * @param Object $provider
      */
-    public function setProvider(Obj $provider)
+    public function setProvider(Object $provider)
     {
         $this->provider = $provider;
     }
@@ -192,7 +192,7 @@ class Activity implements Normalizable
     }
 
     /**
-     * @return Obj
+     * @return Object
      */
     public function getGenerator()
     {
@@ -200,7 +200,7 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param Obj $generator
+     * @param Object $generator
      */
     public function setGenerator($generator)
     {
@@ -243,7 +243,7 @@ class Activity implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(Serializer $serializer)
+    public function normalize(Normalizer $normalizer)
     {
         $data = get_object_vars($this);
 
@@ -254,7 +254,7 @@ class Activity implements Normalizable
             }
 
             if (is_object($_value) && $_value instanceof Normalizable) {
-                $data[$_key] = $serializer->normalize($_value);
+                $data[$_key] = $normalizer->normalize($_value);
             }
         }
 
@@ -264,11 +264,11 @@ class Activity implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(array $data, Serializer $serializer)
+    public function denormalize(array $data, Normalizer $normalizer)
     {
         foreach ($data as $_key => $_value) {
             if (in_array($_key, array('actor', 'verb', 'object', 'target', 'provider', 'generator'), true)) {
-                $this->{$_key} = $serializer->denormalize('\Tnc\Service\EventDispatcher\Event\Activity\Obj', $_value);
+                $this->{$_key} = $normalizer->denormalize(Object::class, $_value);
             }
             else {
                 $this->{$_key} = $_value;

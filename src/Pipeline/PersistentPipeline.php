@@ -72,7 +72,7 @@ class PersistentPipeline implements Pipeline
 
         $eventWrapper = null;
         if ($message) {
-            $eventWrapper = $this->serializer->unserialize(EventWrapper::class, $message);
+            $eventWrapper = $this->serializer->unserialize($message, EventWrapper::class);
             $this->receipts->attach($eventWrapper, $receipt);
         }
         return $eventWrapper;

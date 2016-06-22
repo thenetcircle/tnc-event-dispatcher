@@ -2,7 +2,9 @@
 
 namespace Tnc\Service\EventDispatcher;
 
+use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
+use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 
 /**
  * Class EventWrapper
@@ -48,14 +50,6 @@ class EventWrapper implements Normalizable
     }
 
     /**
-     * @return Event
-     */
-    public function getEvent()
-    {
-        return $this->event;
-    }
-
-    /**
      * @return string
      */
     public function getClass()
@@ -69,6 +63,14 @@ class EventWrapper implements Normalizable
     public function getMode()
     {
         return $this->mode;
+    }
+
+    /**
+     * @return Event
+     */
+    public function getEvent()
+    {
+        return $this->event;
     }
 
     /**
@@ -90,9 +92,9 @@ class EventWrapper implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(Serializer $serializer)
+    public function normalize(Normalizer $normalizer)
     {
-        $data                  = $serializer->normalize($this->event);
+        $data                  = $normalizer->normalize($this->event);
         $data[self::EXTRA_KEY] = [
             'class' => $this->getClass(),
             'mode'  => $this->getMode()
@@ -103,15 +105,18 @@ class EventWrapper implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(array $data, Serializer $serializer)
+    public function denormalize(array $data, Normalizer $normalizer)
     {
-        if (!isset($data[self::EXTRA_KEY]['class'])) {
-            throw new InvalidArgumentException(sprintf('{EventWrapper} some arguments missed in data %s', json_encode($data)));
-        }
-        $this->class = $data[self::EXTRA_KEY]['class'];
-        $this->mode  = $data[self::EXTRA_KEY]['mode'];
-        unset($data[self::EXTRA_KEY]);
+        $class = $mode = null;
 
-        $this->event = $serializer->denormalize($this->class, $data);
+        if (isset($data[self::EXTRA_KEY])) {
+            $class = $data[self::EXTRA_KEY]['class'];
+            $mode = $data[self::EXTRA_KEY]['mode'];
+            unset($data[self::EXTRA_KEY]);
+        }
+
+        $this->class = (!empty($class) && class_exists($class)) ? $class : DefaultEvent::class;
+        $this->mode  = $mode ?: Dispatcher::MODE_ASYNC;
+        $this->event = $normalizer->denormalize($data, $this->class);
     }
 }

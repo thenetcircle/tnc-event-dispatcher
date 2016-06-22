@@ -11,7 +11,6 @@
 namespace Tnc\Service\EventDispatcher\Event;
 
 use Tnc\Service\EventDispatcher\Event;
-use Tnc\Service\EventDispatcher\Serializer;
 
 abstract class AbstractEvent implements Event
 {
@@ -46,26 +45,6 @@ abstract class AbstractEvent implements Event
     /**
      * {@inheritdoc}
      */
-    public function isPropagationStopped()
-    {
-        return $this->propagationStopped;
-    }
-
-    /**
-     * Stops the propagation of the event to further event listeners.
-     *
-     * If multiple event listeners are connected to the same event, no
-     * further event listener will be triggered once any trigger calls
-     * stopPropagation().
-     */
-    public function stopPropagation()
-    {
-        $this->propagationStopped = true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getMessageChannel()
     {
         $name = $this->getName();
@@ -89,18 +68,20 @@ abstract class AbstractEvent implements Event
     /**
      * {@inheritdoc}
      */
-    public function normalize(Serializer $serializer)
+    public function isPropagationStopped()
     {
-        return get_object_vars($this);
+        return $this->propagationStopped;
     }
 
     /**
-     * {@inheritdoc}
+     * Stops the propagation of the event to further event listeners.
+     *
+     * If multiple event listeners are connected to the same event, no
+     * further event listener will be triggered once any trigger calls
+     * stopPropagation().
      */
-    public function denormalize(array $data, Serializer $serializer)
+    public function stopPropagation()
     {
-        foreach ($data as $_key => $_value) {
-            $this->{$_key} = $_value;
-        }
+        $this->propagationStopped = true;
     }
 }

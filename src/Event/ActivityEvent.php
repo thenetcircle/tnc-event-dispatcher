@@ -10,7 +10,9 @@
 
 namespace Tnc\Service\EventDispatcher\Event;
 
-use Tnc\Service\EventDispatcher\Event\Activity\Activity;
+use Tnc\Service\EventDispatcher\ActivityStreams\Activity;
+use Tnc\Service\EventDispatcher\ActivityStreams\Object;
+use Tnc\Service\EventDispatcher\Normalizer;
 use Tnc\Service\EventDispatcher\Serializer;
 
 class ActivityEvent extends AbstractEvent
@@ -52,10 +54,9 @@ class ActivityEvent extends AbstractEvent
     public function getMessageKey()
     {
         $actor = $this->activity->getActor();
-        if($actor) {
+        if ($actor) {
             return $actor->getObjectType() . '_' . $actor->getId();
-        }
-        else {
+        } else {
             return '';
         }
     }
@@ -65,11 +66,11 @@ class ActivityEvent extends AbstractEvent
      *
      * @return $this
      */
-    public function setProvider($name) {
-        $obj = (new \Tnc\Service\EventDispatcher\Event\Activity\Obj())
-            ->setId($name);
+    public function setProvider($name)
+    {
+        $object = (new Object())->setId($name);
 
-        $this->activity->setProvider($obj);
+        $this->activity->setProvider($object);
 
         return $this;
     }
@@ -82,11 +83,10 @@ class ActivityEvent extends AbstractEvent
      */
     public function setActor($type, $id)
     {
-        $obj = (new \Tnc\Service\EventDispatcher\Event\Activity\Obj())
-            ->setObjectType($type)
-            ->setId($id);
+        $object = (new Object())->setObjectType($type)
+                                ->setId($id);
 
-        $this->activity->setActor($obj);
+        $this->activity->setActor($object);
 
         return $this;
     }
@@ -100,12 +100,11 @@ class ActivityEvent extends AbstractEvent
      */
     public function setObject($type, $id, $content)
     {
-        $obj = (new \Tnc\Service\EventDispatcher\Event\Activity\Obj())
-            ->setObjectType($type)
-            ->setId($id)
-            ->setContent($content);
+        $object = (new Object())->setObjectType($type)
+                                ->setId($id)
+                                ->setContent($content);
 
-        $this->activity->setObject($obj);
+        $this->activity->setObject($object);
 
         return $this;
     }
@@ -118,11 +117,10 @@ class ActivityEvent extends AbstractEvent
      */
     public function setTarget($type, $id)
     {
-        $obj = (new \Tnc\Service\EventDispatcher\Event\Activity\Obj())
-            ->setObjectType($type)
-            ->setId($id);
+        $object = (new Object())->setObjectType($type)
+                                ->setId($id);
 
-        $this->activity->setTarget($obj);
+        $this->activity->setTarget($object);
 
         return $this;
     }
@@ -130,18 +128,18 @@ class ActivityEvent extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function normalize(Serializer $serializer)
+    public function normalize(Normalizer $normalizer)
     {
-        $uuid =  uniqid($this->activity->getVerb() . '.', true);
+        $uuid = uniqid($this->activity->getVerb() . '.', true);
         $this->activity->setId($uuid);
-        return $serializer->normalize($this->activity);
+        return $normalizer->normalize($this->activity);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function denormalize(array $data, Serializer $serializer)
+    public function denormalize(array $data, Normalizer $normalizer)
     {
-        $this->activity = $serializer->denormalize('\Tnc\Service\EventDispatcher\Event\Activity\Activity', $data);
+        $this->activity = $normalizer->denormalize(Activity::class, $data);
     }
 }

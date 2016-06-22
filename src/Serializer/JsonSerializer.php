@@ -1,7 +1,9 @@
 <?php
 
 namespace Tnc\Service\EventDispatcher\Serializer;
+
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
+use Tnc\Service\EventDispatcher\Serializer;
 
 /**
  * JsonSerializer
@@ -15,7 +17,7 @@ class JsonSerializer extends AbstractSerializer
     /**
      * {@inheritdoc}
      */
-    public function encode(array $data)
+    public function encode($data)
     {
         return json_encode($data);
     }
@@ -23,10 +25,10 @@ class JsonSerializer extends AbstractSerializer
     /**
      * {@inheritdoc}
      */
-    public function decode($string)
+    public function decode($content)
     {
-        if (null === ($data = json_decode($string, true))) {
-            throw new InvalidArgumentException(sprintf('String %s can not be decoded.', $string));
+        if (null === ($data = json_decode($content, true))) {
+            throw new InvalidArgumentException(sprintf('String %s can not be decoded.', $content));
         }
 
         return $data;

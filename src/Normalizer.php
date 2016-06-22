@@ -5,22 +5,22 @@ namespace Tnc\Service\EventDispatcher;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 
-interface Serializer
+interface Normalizer
 {
     /**
      * @param Normalizable $object
      *
-     * @return string
+     * @return array
      */
-    public function serialize(Normalizable $object);
+    public function normalize(Normalizable $object);
 
     /**
-     * @param string $content
+     * @param array  $data
      * @param string $class
      *
      * @return Normalizable
      *
      * @throws InvalidArgumentException
-     */
-    public function unserialize($content, $class);
+    */
+    public function denormalize($data, $class);
 }
