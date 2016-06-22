@@ -25,6 +25,15 @@ interface Event extends Normalizable
     public function setName($name);
 
     /**
+     * Returns whether further event listeners should be triggered.
+     *
+     * @see Symfony\Component\EventDispatcher\Event::stopPropagation()
+     *
+     * @return bool Whether propagation was already stopped for this event.
+     */
+    public function isPropagationStopped();
+
+    /**
      * @return string
      */
     public function getMessageChannel();
