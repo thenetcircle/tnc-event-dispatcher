@@ -68,7 +68,7 @@ class Activity implements Normalizable
      */
     public function getActor()
     {
-        return $this->actor;
+        return $this->getEmptyObjectIfNull($this->actor);
     }
 
     /**
@@ -100,7 +100,7 @@ class Activity implements Normalizable
      */
     public function getObject()
     {
-        return $this->object;
+        return $this->getEmptyObjectIfNull($this->object);
     }
 
     /**
@@ -116,7 +116,7 @@ class Activity implements Normalizable
      */
     public function getTarget()
     {
-        return $this->target;
+        return $this->getEmptyObjectIfNull($this->target);
     }
 
     /**
@@ -148,7 +148,7 @@ class Activity implements Normalizable
      */
     public function getProvider()
     {
-        return $this->provider;
+        return $this->getEmptyObjectIfNull($this->provider);
     }
 
     /**
@@ -196,7 +196,7 @@ class Activity implements Normalizable
      */
     public function getGenerator()
     {
-        return $this->generator;
+        return $this->getEmptyObjectIfNull($this->generator);
     }
 
     /**
@@ -237,6 +237,16 @@ class Activity implements Normalizable
     public function setUpdated($updated)
     {
         $this->updated = $updated;
+    }
+
+    /**
+     * @param Object $object
+     *
+     * @return Object
+     */
+    public function getEmptyObjectIfNull($object)
+    {
+        return $object === null ? new Object() : $object;
     }
 
 

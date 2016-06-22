@@ -13,14 +13,21 @@ namespace Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\ActivityStreams\Activity;
 use Tnc\Service\EventDispatcher\ActivityStreams\Object;
 use Tnc\Service\EventDispatcher\Normalizer;
-use Tnc\Service\EventDispatcher\Serializer;
 
-class ActivityEvent extends AbstractEvent
+abstract class ActivityEvent extends AbstractEvent
 {
     /**
      * @var Activity
      */
     protected $activity;
+
+    /**
+     * @return \Tnc\Service\EventDispatcher\ActivityStreams\Object
+     */
+    public static function newActivityObject($objectType = null, $id = null)
+    {
+        return (new Object())->setObjectType($objectType)->setId($id);
+    }
 
     /**
      * ActivityEvent constructor.
@@ -35,7 +42,7 @@ class ActivityEvent extends AbstractEvent
      */
     public function getName()
     {
-        return $this->activity->getVerb();
+        return $this->getVerb();
     }
 
     /**
@@ -43,9 +50,7 @@ class ActivityEvent extends AbstractEvent
      */
     public function setName($name)
     {
-        $this->activity->setVerb($name);
-
-        return $this;
+        return $this->setVerb($name);
     }
 
     /**
@@ -57,8 +62,36 @@ class ActivityEvent extends AbstractEvent
         if ($actor) {
             return $actor->getObjectType() . '_' . $actor->getId();
         } else {
-            return '';
+            return null;
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getVerb()
+    {
+        return $this->activity->getVerb();
+    }
+
+    /**
+     * @param string $verb
+     *
+     * @return $this
+     */
+    public function setVerb($verb)
+    {
+        $this->activity->setVerb($verb);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProvider()
+    {
+        return $this->activity->getProvider()->getId();
     }
 
     /**
@@ -76,50 +109,36 @@ class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param string $type
-     * @param string $id
+     * @param Object $type
      *
      * @return $this
      */
-    public function setActor($type, $id)
+    public function setActor(Object $object)
     {
-        $object = (new Object())->setObjectType($type)
-                                ->setId($id);
-
         $this->activity->setActor($object);
 
         return $this;
     }
 
     /**
-     * @param string $type
-     * @param string $id
-     * @param string $content
+     * @param Object $type
      *
      * @return $this
      */
-    public function setObject($type, $id, $content)
+    public function setObject(Object $object)
     {
-        $object = (new Object())->setObjectType($type)
-                                ->setId($id)
-                                ->setContent($content);
-
         $this->activity->setObject($object);
 
         return $this;
     }
 
     /**
-     * @param string $type
-     * @param string $id
+     * @param Object $type
      *
      * @return $this
      */
-    public function setTarget($type, $id)
+    public function setTarget(Object $object)
     {
-        $object = (new Object())->setObjectType($type)
-                                ->setId($id);
-
         $this->activity->setTarget($object);
 
         return $this;
