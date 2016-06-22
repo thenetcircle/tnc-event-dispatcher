@@ -11,7 +11,7 @@
 namespace Tnc\Service\EventDispatcher\Event;
 
 use Tnc\Service\EventDispatcher\ActivityStreams\Activity;
-use Tnc\Service\EventDispatcher\ActivityStreams\Object;
+use Tnc\Service\EventDispatcher\ActivityStreams\ActivityObject;
 use Tnc\Service\EventDispatcher\Normalizer;
 
 abstract class ActivityEvent extends AbstractEvent
@@ -22,11 +22,17 @@ abstract class ActivityEvent extends AbstractEvent
     protected $activity;
 
     /**
-     * @return \Tnc\Service\EventDispatcher\ActivityStreams\Object
+     * @param string|null $id
+     * @param string|null $objectType
+     * @param string|null $content
+     *
+     * @return \Tnc\Service\EventDispatcher\ActivityStreams\ActivityObject
      */
-    public static function newActivityObject($objectType = null, $id = null)
+    public static function newActivityObject($id = null, $objectType = null, $content = null)
     {
-        return (new Object())->setObjectType($objectType)->setId($id);
+        return (new ActivityObject())->setObjectType($objectType)
+                                     ->setId($id)
+                                     ->setContent($content);
     }
 
     /**
@@ -101,19 +107,25 @@ abstract class ActivityEvent extends AbstractEvent
      */
     public function setProvider($name)
     {
-        $object = (new Object())->setId($name);
-
-        $this->activity->setProvider($object);
+        $this->activity->setProvider(self::newActivityObject($name));
 
         return $this;
     }
 
     /**
-     * @param Object $type
+     * @return \Tnc\Service\EventDispatcher\ActivityStreams\ActivityObject
+     */
+    public function getActor()
+    {
+        return $this->activity->getActor();
+    }
+
+    /**
+     * @param \Tnc\Service\EventDispatcher\ActivityStreams\ActivityObject $type
      *
      * @return $this
      */
-    public function setActor(Object $object)
+    public function setActor(ActivityObject $object)
     {
         $this->activity->setActor($object);
 
@@ -121,11 +133,19 @@ abstract class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param Object $type
+     * @return \Tnc\Service\EventDispatcher\ActivityStreams\ActivityObject
+     */
+    public function getObject()
+    {
+        return $this->activity->getObject();
+    }
+
+    /**
+     * @param \Tnc\Service\EventDispatcher\ActivityStreams\ActivityObject $type
      *
      * @return $this
      */
-    public function setObject(Object $object)
+    public function setObject(ActivityObject $object)
     {
         $this->activity->setObject($object);
 
@@ -133,11 +153,19 @@ abstract class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param Object $type
+     * @return \Tnc\Service\EventDispatcher\ActivityStreams\ActivityObject
+     */
+    public function getTarget()
+    {
+        return $this->activity->getTarget();
+    }
+
+    /**
+     * @param \Tnc\Service\EventDispatcher\ActivityStreams\ActivityObject $type
      *
      * @return $this
      */
-    public function setTarget(Object $object)
+    public function setTarget(ActivityObject $object)
     {
         $this->activity->setTarget($object);
 
