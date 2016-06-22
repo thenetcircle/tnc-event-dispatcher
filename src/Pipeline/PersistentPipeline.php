@@ -54,10 +54,10 @@ class PersistentPipeline implements Pipeline
         $message = $this->serializer->serialize($eventWrapper);
 
         return $this->driver->push(
-            $eventWrapper->getMessageChannel(),
+            $eventWrapper->getChannel(),
             $message,
             $timeout,
-            $eventWrapper->getMessageKey()
+            $eventWrapper->getKey()
         );
     }
 

@@ -277,8 +277,8 @@ class Activity implements Normalizable
     public function denormalize(array $data, Normalizer $normalizer)
     {
         foreach ($data as $_key => $_value) {
-            if (in_array($_key, array('actor', 'verb', 'object', 'target', 'provider', 'generator'), true)) {
-                $this->{$_key} = $normalizer->denormalize(Obj::class, $_value);
+            if (in_array($_key, array('actor', 'object', 'target', 'provider', 'generator'), true)) {
+                $this->{$_key} = $normalizer->denormalize($_value, Obj::class);
             }
             else {
                 $this->{$_key} = $_value;

@@ -18,7 +18,15 @@ class DefaultEvent extends AbstractEvent implements ArrayAccess
     /**
      * @var array
      */
-    protected $all = array();
+    protected $data = array();
+
+    /**
+     * DefaultEvent constructor.
+     */
+    public function __construct($data = array())
+    {
+        $this->data = $data;
+    }
 
     /**
      * @param string $name
@@ -42,12 +50,12 @@ class DefaultEvent extends AbstractEvent implements ArrayAccess
 
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->all);
+        return array_key_exists($offset, $this->data);
     }
 
     public function offsetGet($offset)
     {
-        return $this->offsetExists($offset) ? $this->all[$offset] : null;
+        return $this->offsetExists($offset) ? $this->data[$offset] : null;
     }
 
     public function offsetSet($offset, $value)
@@ -75,7 +83,10 @@ class DefaultEvent extends AbstractEvent implements ArrayAccess
      */
     public function normalize(Normalizer $normalizer)
     {
-        return $this->all;
+        return [
+            'name' => $this->name,
+            'data' => $this->data
+        ];
     }
 
     /**
@@ -83,6 +94,7 @@ class DefaultEvent extends AbstractEvent implements ArrayAccess
      */
     public function denormalize(array $data, Normalizer $normalizer)
     {
-        $this->all = $data;
+        $this->name = $data['name'];
+        $this->data = $data['data'];
     }
 }

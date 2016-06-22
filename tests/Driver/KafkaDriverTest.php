@@ -13,14 +13,7 @@ class KafkaDriverTest extends \PHPUnit_Framework_TestCase
 
     protected function setup()
     {
-        $this->pipeline = new Driver\KafkaDriver(
-            [
-                'broker' => [
-                    'metadata.broker.list' => '172.17.0.3:9092'
-                ]
-            ],
-            true
-        );
+        $this->pipeline = new Driver\KafkaDriver('172.17.0.3:9092');
     }
 
     public function testPush()

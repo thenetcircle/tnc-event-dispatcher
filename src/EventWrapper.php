@@ -13,7 +13,6 @@ use Tnc\Service\EventDispatcher\Serializer\Normalizable;
  */
 class EventWrapper implements Normalizable
 {
-    CONST CHANNEL_PREFIX = 'event-';
     CONST EXTRA_KEY      = '_extra_';
 
     /**
@@ -76,17 +75,17 @@ class EventWrapper implements Normalizable
     /**
      * @return string
      */
-    public function getMessageKey()
+    public function getKey()
     {
-        return $this->event->getMessageKey();
+        return $this->event->getKey();
     }
 
     /**
      * @return string
      */
-    public function getMessageChannel()
+    public function getChannel()
     {
-        return $this->event->getMessageChannel();
+        return $this->event->getChannel();
     }
 
     /**

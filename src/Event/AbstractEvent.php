@@ -23,15 +23,6 @@ abstract class AbstractEvent implements Event
      */
     private $propagationStopped = false;
 
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -45,7 +36,7 @@ abstract class AbstractEvent implements Event
     /**
      * {@inheritdoc}
      */
-    public function getMessageChannel()
+    public function getChannel()
     {
         $name = $this->getName();
         if (($pos = strpos($name, '.')) !== false) {
@@ -54,13 +45,13 @@ abstract class AbstractEvent implements Event
             $channel = $name;
         }
 
-        return 'event-' . $channel;
+        return $this->getChannelPrefix() . $channel;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getMessageKey()
+    public function getKey()
     {
         return null;
     }
@@ -74,14 +65,30 @@ abstract class AbstractEvent implements Event
     }
 
     /**
-     * Stops the propagation of the event to further event listeners.
-     *
-     * If multiple event listeners are connected to the same event, no
-     * further event listener will be triggered once any trigger calls
-     * stopPropagation().
+     * {@inheritdoc}
      */
     public function stopPropagation()
     {
         $this->propagationStopped = true;
+    }
+
+    /**
+     * Returns the prefix string of channels
+     *
+     * @return string
+     */
+    public function getChannelPrefix()
+    {
+        return 'event-';
+    }
+
+    /**
+     * Gets the name of the event
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

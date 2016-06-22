@@ -7,7 +7,6 @@ use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\Pipeline;
 use Tnc\Service\EventDispatcher\Pipeline\PersistentPipeline;
 use Tnc\Service\EventDispatcher\Serializer;
-use Tnc\Service\EventDispatcher\Util;
 use Tnc\Service\EventDispatcher\EventWrapper;
 
 class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
@@ -28,67 +27,48 @@ class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
     private $timeout = 2000;
 
     /**
-     * @var int
+     * @var EventWrapper
      */
-    private $time;
+    private $eventWrapper;
+
 
     public function setUp()
     {
         $this->driver   = $this->createMock(Driver::class);
         $serializer     = new Serializer\JsonSerializer();
-        $this->pipeline = new PersistentPipeline($this->driver, $serializer);
-        $this->time     = time();
+        $this->pipeline = new PersistentPipeline($this->driver, $serializer, 200);
+
+        $event = new Event\DefaultEvent(['sender'=>'user1', 'receiver'=>'user2']);
+        $event->setName('message.send');
+        $this->eventWrapper = new EventWrapper($event, 'async');
     }
 
     public function testPush()
     {
-        $wrappedEvent = $this->getEventWrapper('DD', 'message.send', 'group', 'async');
+        $channel = 'event-message';
+        $data    = '{"name":"message.send","data":{"sender":"user1","receiver":"user2"},' .
+            '"_extra_":{"class":"Tnc\\\Service\\\EventDispatcher\\\Event\\\DefaultEvent","mode":"async"}}';
 
         $this->driver->expects($this->once())
                      ->method('push')
                      ->with(
                          $this->equalTo('event-message'),
-                         $this->equalTo(
-                             '{"source":"DD","name":"message.send","time":' . $this->time . ',' .
-                             '"data":[],' .
-                             '"extra":{"mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Event","group":"group"}}'
-                         ),
-                         $this->equalTo($this->timeout),
-                         $this->equalTo('group')
-                     );
-
-        $this->pipeline->push($wrappedEvent, $this->timeout);
-    }
-
-    public function testPushRichEvent()
-    {
-        $event        = new RichEvent('rich', ['key1' => 'value1', 'key2' => 'value2'], []);
-        $wrappedEvent = $this->getEventWrapper('DD', 'message.send', 'group', 'async', $event);
-        $data         = '{"domainId":"DD","name":"message.send","time":' . $this->time . ',' .
-            '"data":{"name":"rich","context":{"key1":"value1","key2":"value2"}},' .
-            '"extra":{"mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent","group":"group"}}';
-        $channel      = 'event-message';
-
-        $this->driver->expects($this->once())
-                     ->method('push')
-                     ->with(
-                         $this->equalTo($channel),
                          $this->equalTo($data),
                          $this->equalTo($this->timeout),
-                         $this->equalTo('group')
+                         $this->equalTo(null)
                      );
 
-        $this->pipeline->push($wrappedEvent, $this->timeout);
+        $this->pipeline->push($this->eventWrapper, $this->timeout);
 
         return array(
             'channel' => $channel,
-            'event'   => $wrappedEvent,
             'data'    => $data
         );
     }
 
+
     /**
-     * @depends testPushRichEvent
+     * @depends testPush
      */
     public function testPop(array $args)
     {
@@ -99,7 +79,9 @@ class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
                      ->with($this->equalTo($args['channel']), $this->equalTo($this->timeout))
                      ->will($this->returnValue(array($args['data'], $args['receipt'])));
 
-        $this->assertEquals($args['event'], $this->pipeline->pop($this->timeout));
+        $this->assertEquals($this->eventWrapper, $this->pipeline->pop($args['channel'], $this->timeout));
+
+        return $args;
     }
 
     /**
@@ -111,33 +93,6 @@ class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
                      ->method('ack')
                      ->with($this->equalTo($args['receipt']));
 
-        $this->pipeline->ack($args['event']);
-    }
-
-    private function getEventWrapper($source, $eventName, $group, $mode, $event = null)
-    {
-        $event        = $event ?: new Event();
-        Util::setInvisiblePropertyValue($event, 'source', $source);
-        Util::setInvisiblePropertyValue($event, 'name', $eventName);
-        Util::setInvisiblePropertyValue($event, 'group', $group);
-        Util::setInvisiblePropertyValue($event, 'mode', $mode);
-        Util::setInvisiblePropertyValue($event, 'time', $this->time);
-
-        return new EventWrapper($event);
-    }
-}
-
-
-class RichEvent
-{
-    public    $name;
-    protected $context = array();
-    private   $extra   = array(); // for private property, you need implement your own serialize method
-
-    public function __construct($name, array $context, array $extra)
-    {
-        $this->name    = $name;
-        $this->context = $context;
-        $this->extra   = $extra;
+        $this->pipeline->ack($this->eventWrapper);
     }
 }

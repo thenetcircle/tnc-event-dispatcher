@@ -2,83 +2,76 @@
 
 namespace Tnc\Service\EventDispatcher\Test;
 
-use Tnc\Service\EventDispatcher\Event;
+use Tnc\Service\EventDispatcher\Dispatcher;
+use Tnc\Service\EventDispatcher\Event\ActivityEvent;
+use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Serializer;
-use Tnc\Service\EventDispatcher\Util;
 use Tnc\Service\EventDispatcher\EventWrapper;
 
 class SerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Event
+     * @var DefaultEvent
      */
     private $event;
     private $serializedEvent;
+    private $serializedWrappedEvent;
 
     /**
-     * @var RichEvent
+     * @var MockActivityEvent
      */
-    private $richEvent;
-    private $serializedRichEvent;
-    private $serializedWrappedRichEvent;
+    private $activityEvent;
+    private $serializedActivityEvent;
+    private $serializedWrappedActivityEvent;
 
     /**
-     * @var Serializer
+     * @var Serializer\JsonSerializer
      */
     private $serializer;
-    /**
-     * @var int
-     */
-    private $time;
+    private $datetime;
+    private $mode;
 
 
     public function setUp()
     {
-        $this->time = time();
-
-        $this->event = new Event();
-        $this->event->setContext(['sender' => 1, 'receiver' => 2]);
-        $this->serializedEvent = '{
-          "source": null,
-          "name": null,
-          "time": null,
-          "context": {"sender":1, "receiver":2},
-          "group":null,
-          "mode":null
-        }';
-
-        $this->richEvent = new RichEvent(
-            'default',
-            'message.send',
-            'async',
-            'group1',
-            ['sender' => 1, 'receiver' => 2],
-            ['extra1' => 1, 'extra2' => 2],
-            $this->time
-        );
-        $this->serializedRichEvent = '{
-          "source": "default",
-          "name": "message.send",
-          "group":"group1",
-          "mode":"async",
-          "context": {"sender":1, "receiver":2},
-          "extra":{"extra1":1, "extra2":2},
-          "field1":1,
-          "field2":2,
-          "time":'.$this->time.'
-        }';
-        $this->serializedWrappedRichEvent = '{
-          "source":"default",
-          "name":"message.send",
-          "time":'.$this->time.',
-          "context":{"sender":1, "receiver":2},
-          "extra":{"extra1":1, "extra2":2},
-          "field1":1,
-          "field2":2,
-          "_extra_":{"group":"group1","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Test\\\RichEvent"}
-        }';
-
+        $this->datetime   = (new \DateTime())->format(\DateTime::RFC3339);
+        $this->mode       = Dispatcher::MODE_SYNC_PLUS;
         $this->serializer = new Serializer\JsonSerializer();
+
+
+        $this->event = new DefaultEvent(['sender' => 'user1', 'receiver' => 'user2']);
+        $this->event->setName('testEvent');
+        $this->serializedEvent = '{"name":"testEvent","data":{"sender":"user1", "receiver":"user2"}}';
+        $this->serializedWrappedEvent = preg_replace(
+            '/}$/',
+            ',"_extra_":{"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Event\\\\\DefaultEvent","mode":"' . $this->mode .
+            '"}}',
+            $this->serializedEvent
+        );
+
+
+        $this->activityEvent = MockActivityEvent::createInstance()->setName('message.send')
+                                                                  ->setProvider('DD')
+                                                                  ->setActor(MockActivityEvent::obj('171', 'user'))
+                                                                  ->setObject(MockActivityEvent::obj('2221', 'message'))
+                                                                  ->setTarget(MockActivityEvent::obj('2281', 'user'))
+                                                                  ->setPublished($this->datetime)
+                                                                  ->setId('TestId');
+        $this->serializedActivityEvent = '{
+          "verb": "message.send",
+          "provider":{"id":"DD"},
+          "actor": {"id":"171", "objectType":"user"},
+          "object": {"id":"2221", "objectType":"message"},
+          "target": {"id":"2281", "objectType":"user"},
+          "published":"' . $this->datetime . '",
+          "id":"TestId"}';
+        $this->serializedWrappedActivityEvent = preg_replace(
+            '/}$/',
+            ',
+            "_extra_":{"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\MockActivityEvent","mode":"' . $this->mode . '"}
+            }',
+            $this->serializedActivityEvent
+        );
     }
 
     public function testSerializeEvent()
@@ -92,89 +85,80 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     public function testUnserializeEvent()
     {
         $event = $this->serializer->unserialize(
-            '\Tnc\Service\EventDispatcher\Event',
-            $this->serializedEvent
+            $this->serializedEvent,
+            get_class($this->event)
         );
         $this->assertEquals($this->event, $event);
     }
 
-    public function testSerializeRichEvent()
-    {
-        $this->assertJsonStringEqualsJsonString(
-            $this->serializedRichEvent,
-            $this->serializer->serialize($this->richEvent)
-        );
-    }
-
-    public function testUnserializeRichEvent()
-    {
-        $event = $this->serializer->unserialize(
-            '\Tnc\Service\EventDispatcher\Test\RichEvent',
-            $this->serializedRichEvent
-        );
-        $this->assertEquals($this->richEvent, $event);
-    }
-
     public function testSerializeWrappedEvent()
     {
-        $eventWrapper = new EventWrapper($this->event);
+        $eventWrapper = new EventWrapper($this->event, $this->mode);
 
         $this->assertJsonStringEqualsJsonString(
-            '{
-              "source":null,
-              "name":null,
-              "time":null,
-              "context":{"sender":1, "receiver":2},
-              "_extra_":{"group":null,"mode":null,"class":"Tnc\\\Service\\\EventDispatcher\\\Event"}
-            }',
+            $this->serializedWrappedEvent,
             $this->serializer->serialize($eventWrapper)
         );
     }
 
-    public function testSerializeWrappedRichEvent()
+    public function testUnserializeWrappedEvent()
     {
-        $eventWrapper = new EventWrapper($this->richEvent);
+        $eventWrapper = new EventWrapper($this->event, $this->mode);
+
+        $newEventWrapper = $this->serializer->unserialize(
+            $this->serializedWrappedEvent,
+            get_class($eventWrapper)
+        );
+
+        $this->assertEquals($eventWrapper, $newEventWrapper);
+        $this->assertEquals($this->event, $newEventWrapper->getEvent());
+    }
+
+
+
+
+    public function testSerializeActivityEvent()
+    {
+        $this->assertJsonStringEqualsJsonString(
+            $this->serializedActivityEvent,
+            $this->serializer->serialize($this->activityEvent)
+        );
+    }
+
+    public function testUnserializeActivityEvent()
+    {
+        $event = $this->serializer->unserialize(
+            $this->serializedActivityEvent,
+            get_class($this->activityEvent)
+        );
+        $this->assertEquals($this->activityEvent, $event);
+    }
+
+    public function testSerializeWrappedActivityEvent()
+    {
+        $eventWrapper = new EventWrapper($this->activityEvent, $this->mode);
 
         $this->assertJsonStringEqualsJsonString(
-            $this->serializedWrappedRichEvent,
+            $this->serializedWrappedActivityEvent,
             $this->serializer->serialize($eventWrapper)
         );
     }
 
     public function testUnserializeWrappedRichEvent()
     {
-        $eventWrapper = new EventWrapper($this->richEvent);
+        $eventWrapper = new EventWrapper($this->activityEvent, $this->mode);
 
         $newEventWrapper = $this->serializer->unserialize(
-            '\Tnc\Service\EventDispatcher\EventWrapper',
-            $this->serializedWrappedRichEvent
+            $this->serializedWrappedActivityEvent,
+            get_class($eventWrapper)
         );
 
         $this->assertEquals($eventWrapper, $newEventWrapper);
-        $this->assertEquals($this->richEvent, $newEventWrapper->getEvent());
+        $this->assertEquals($this->activityEvent, $newEventWrapper->getEvent());
     }
 }
 
 
-class RichEvent
+class MockActivityEvent extends ActivityEvent
 {
-    protected $extra = array();
-    protected $field1 = 1;
-    protected $field2 = 2;
-
-    public function __construct(
-        $source,
-        $name,
-        $mode,
-        $group,
-        array $context,
-        array $extra,
-        $time
-    )
-    {
-        $this->appendExtraInfo($source, $name, $mode, $time);
-        $this->setActor($group);
-        $this->setContext($context);
-        $this->extra = $extra;
-    }
 }

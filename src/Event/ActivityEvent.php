@@ -52,6 +52,7 @@ abstract class ActivityEvent extends AbstractEvent
     public function __construct()
     {
         $this->activity = new Activity();
+        $this->setPublished((new \DateTime())->format(\DateTime::RFC3339));
     }
 
     /**
@@ -73,7 +74,7 @@ abstract class ActivityEvent extends AbstractEvent
     /**
      * {@inheritdoc}
      */
-    public function getMessageKey()
+    public function getKey()
     {
         $actor = $this->activity->getActor();
         if ($actor) {
@@ -81,6 +82,26 @@ abstract class ActivityEvent extends AbstractEvent
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->activity->getId();
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->activity->setId($id);
+
+        return $this;
     }
 
     /**
@@ -119,6 +140,26 @@ abstract class ActivityEvent extends AbstractEvent
     public function setProvider($name)
     {
         $this->activity->setProvider(self::obj($name));
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublished()
+    {
+        return $this->activity->getPublished();
+    }
+
+    /**
+     * @param string $datetime
+     *
+     * @return $this
+     */
+    public function setPublished($datetime)
+    {
+        $this->activity->setPublished($datetime);
 
         return $this;
     }
@@ -188,8 +229,6 @@ abstract class ActivityEvent extends AbstractEvent
      */
     public function normalize(Normalizer $normalizer)
     {
-        $uuid = uniqid($this->activity->getVerb() . '.', true);
-        $this->activity->setId($uuid);
         return $normalizer->normalize($this->activity);
     }
 
@@ -198,6 +237,6 @@ abstract class ActivityEvent extends AbstractEvent
      */
     public function denormalize(array $data, Normalizer $normalizer)
     {
-        $this->activity = $normalizer->denormalize(Activity::class, $data);
+        $this->activity = $normalizer->denormalize($data, Activity::class);
     }
 }

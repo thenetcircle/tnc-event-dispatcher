@@ -15,16 +15,25 @@ use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 interface Event extends Normalizable
 {
     /**
-     * @return string
-     */
-    public function getName();
-
-    /**
-     * @param string $name
+     * Sets the event name
      *
-     * @return $this
+     * @param string $name
      */
     public function setName($name);
+
+    /**
+     * Gets the channel name which the event will be delivery to
+     *
+     * @return string
+     */
+    public function getChannel();
+
+    /**
+     * Gets the key of the event
+     *
+     * @return string|null
+     */
+    public function getKey();
 
     /**
      * Returns whether further event listeners should be triggered.
@@ -36,12 +45,13 @@ interface Event extends Normalizable
     public function isPropagationStopped();
 
     /**
-     * @return string
+     * Stops the propagation of the event to further event listeners.
+     *
+     * If multiple event listeners are connected to the same event, no
+     * further event listener will be triggered once any trigger calls
+     * stopPropagation().
+     *
+     * @see Symfony\Component\EventDispatcher\Event::stopPropagation()
      */
-    public function getMessageChannel();
-
-    /**
-     * @return string|null
-     */
-    public function getMessageKey();
+    public function stopPropagation();
 }
