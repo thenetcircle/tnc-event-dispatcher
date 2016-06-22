@@ -16,7 +16,7 @@ use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 class Activity implements Normalizable
 {
     /**
-     * @var ActivityObject
+     * @var Obj
      */
     private $actor;
     /**
@@ -24,19 +24,19 @@ class Activity implements Normalizable
      */
     private $verb;
     /**
-     * @var ActivityObject
+     * @var Obj
      */
     private $object;
     /**
-     * @var ActivityObject
+     * @var Obj
      */
     private $target;
     /**
-     * @var ActivityObject
+     * @var Obj
      */
     private $provider;
     /**
-     * @var ActivityObject
+     * @var Obj
      */
     private $generator;
 
@@ -64,7 +64,7 @@ class Activity implements Normalizable
 
 
     /**
-     * @return ActivityObject
+     * @return Obj
      */
     public function getActor()
     {
@@ -72,9 +72,9 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param ActivityObject $actor
+     * @param Obj $actor
      */
-    public function setActor(ActivityObject $actor)
+    public function setActor(Obj $actor)
     {
         $this->actor = $actor;
     }
@@ -96,7 +96,7 @@ class Activity implements Normalizable
     }
 
     /**
-     * @return ActivityObject
+     * @return Obj
      */
     public function getObject()
     {
@@ -104,15 +104,15 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param ActivityObject $object
+     * @param Obj $object
      */
-    public function setObject(ActivityObject $object)
+    public function setObject(Obj $object)
     {
         $this->object = $object;
     }
 
     /**
-     * @return ActivityObject
+     * @return Obj
      */
     public function getTarget()
     {
@@ -120,9 +120,9 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param ActivityObject $target
+     * @param Obj $target
      */
-    public function setTarget(ActivityObject $target)
+    public function setTarget(Obj $target)
     {
         $this->target = $target;
     }
@@ -144,7 +144,7 @@ class Activity implements Normalizable
     }
 
     /**
-     * @return ActivityObject
+     * @return Obj
      */
     public function getProvider()
     {
@@ -152,9 +152,9 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param ActivityObject $provider
+     * @param Obj $provider
      */
-    public function setProvider(ActivityObject $provider)
+    public function setProvider(Obj $provider)
     {
         $this->provider = $provider;
     }
@@ -192,7 +192,7 @@ class Activity implements Normalizable
     }
 
     /**
-     * @return ActivityObject
+     * @return Obj
      */
     public function getGenerator()
     {
@@ -200,7 +200,7 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param ActivityObject $generator
+     * @param Obj $generator
      */
     public function setGenerator($generator)
     {
@@ -240,13 +240,13 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param ActivityObject $object
+     * @param Obj $object
      *
-     * @return ActivityObject
+     * @return Obj
      */
     public function getEmptyObjectIfNull($object)
     {
-        return $object === null ? new ActivityObject() : $object;
+        return $object === null ? new Obj() : $object;
     }
 
 
@@ -278,7 +278,7 @@ class Activity implements Normalizable
     {
         foreach ($data as $_key => $_value) {
             if (in_array($_key, array('actor', 'verb', 'object', 'target', 'provider', 'generator'), true)) {
-                $this->{$_key} = $normalizer->denormalize(ActivityObject::class, $_value);
+                $this->{$_key} = $normalizer->denormalize(Obj::class, $_value);
             }
             else {
                 $this->{$_key} = $_value;

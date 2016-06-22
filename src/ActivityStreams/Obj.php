@@ -13,7 +13,7 @@ namespace Tnc\Service\EventDispatcher\ActivityStreams;
 use Tnc\Service\EventDispatcher\Normalizer;
 use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 
-class ActivityObject implements Normalizable
+class Obj implements Normalizable
 {
     /**
      * @var string
