@@ -41,7 +41,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
 
         $this->event = new DefaultEvent(['sender' => 'user1', 'receiver' => 'user2']);
         $this->event->setName('testEvent');
-        $this->serializedEvent = '{"name":"testEvent","data":{"sender":"user1", "receiver":"user2"}}';
+        $this->serializedEvent = '{"name":"testEvent", "sender":"user1", "receiver":"user2"}';
         $this->serializedWrappedEvent = preg_replace(
             '/}$/',
             ',"_extra_":{"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Event\\\\\DefaultEvent","mode":"' . $this->mode .

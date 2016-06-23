@@ -22,10 +22,32 @@ class DefaultEvent extends AbstractEvent implements ArrayAccess
 
     /**
      * DefaultEvent constructor.
+     *
+     * @param array $data
      */
     public function __construct($data = array())
     {
         $this->data = $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->offsetGet('name');
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->offsetSet('name', $name);
+
+        return $this;
     }
 
     /**
@@ -60,10 +82,12 @@ class DefaultEvent extends AbstractEvent implements ArrayAccess
 
     public function offsetSet($offset, $value)
     {
+        $this->data[$offset] = $value;
     }
 
     public function offsetUnset($offset)
     {
+        unset($this->data[$offset]);
     }
 
     public function __get($property)
@@ -83,10 +107,7 @@ class DefaultEvent extends AbstractEvent implements ArrayAccess
      */
     public function normalize(Normalizer $normalizer)
     {
-        return [
-            'name' => $this->name,
-            'data' => $this->data
-        ];
+        return $this->data;
     }
 
     /**
@@ -94,7 +115,6 @@ class DefaultEvent extends AbstractEvent implements ArrayAccess
      */
     public function denormalize(array $data, Normalizer $normalizer)
     {
-        $this->name = $data['name'];
-        $this->data = $data['data'];
+        $this->data = $data;
     }
 }
