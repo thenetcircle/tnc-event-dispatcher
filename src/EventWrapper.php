@@ -32,17 +32,9 @@ class EventWrapper implements Normalizable
     /**
      * @param Event  $event
      * @param string $mode
-     *
-     * @throws InvalidArgumentException
      */
     public function __construct(Event $event, $mode)
     {
-        if (!$event instanceof Normalizable) {
-            throw new InvalidArgumentException(
-                sprintf('{EventWrapper} Event %s was not an instance of Normalizable', get_class($event))
-            );
-        }
-
         $this->event = $event;
         $this->class = get_class($event);
         $this->mode  = $mode;
@@ -116,6 +108,12 @@ class EventWrapper implements Normalizable
 
         $this->class = (!empty($class) && class_exists($class)) ? $class : DefaultEvent::class;
         $this->mode  = $mode ?: Dispatcher::MODE_ASYNC;
-        $this->event = $normalizer->denormalize($data, $this->class);
+
+        try {
+            $this->event = $normalizer->denormalize($data, $this->class);
+        }
+        catch(\Exception $e) {
+            $this->event = $normalizer->denormalize($data, DefaultEvent::class);
+        }
     }
 }

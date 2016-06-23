@@ -30,6 +30,7 @@ class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
      * @var EventWrapper
      */
     private $eventWrapper;
+    private $serializedEventWrapper;
 
 
     public function setUp()
@@ -41,58 +42,45 @@ class KafkaPipelineTest extends \PHPUnit_Framework_TestCase
         $event = new Event\DefaultEvent(['sender'=>'user1', 'receiver'=>'user2']);
         $event->setName('message.send');
         $this->eventWrapper = new EventWrapper($event, 'async');
+        $this->serializedEventWrapper = '{"sender":"user1","receiver":"user2","name":"message.send",' .
+            '"_extra_":{"class":"Tnc\\\Service\\\EventDispatcher\\\Event\\\DefaultEvent","mode":"async"}}';
     }
 
     public function testPush()
     {
-        $channel = 'event-message';
-        $data    = '{"name":"message.send","data":{"sender":"user1","receiver":"user2"},' .
-            '"_extra_":{"class":"Tnc\\\Service\\\EventDispatcher\\\Event\\\DefaultEvent","mode":"async"}}';
-
         $this->driver->expects($this->once())
                      ->method('push')
                      ->with(
                          $this->equalTo('event-message'),
-                         $this->equalTo($data),
+                         $this->equalTo($this->serializedEventWrapper),
                          $this->equalTo($this->timeout),
                          $this->equalTo(null)
                      );
 
         $this->pipeline->push($this->eventWrapper, $this->timeout);
-
-        return array(
-            'channel' => $channel,
-            'data'    => $data
-        );
     }
 
-
-    /**
-     * @depends testPush
-     */
-    public function testPop(array $args)
+    public function testPopAndAck()
     {
-        $args['receipt'] = 'receipt';
+        $channel = 'event-message';
+        $data    = $this->serializedEventWrapper;
+        $receipt = 'receipt';
 
+        // Pop
         $this->driver->expects($this->once())
                      ->method('pop')
-                     ->with($this->equalTo($args['channel']), $this->equalTo($this->timeout))
-                     ->will($this->returnValue(array($args['data'], $args['receipt'])));
+                     ->with($this->equalTo($channel), $this->equalTo($this->timeout))
+                     ->will($this->returnValue(array($data, $receipt)));
 
-        $this->assertEquals($this->eventWrapper, $this->pipeline->pop($args['channel'], $this->timeout));
+        $result = $this->pipeline->pop($channel, $this->timeout);
+        $this->assertEquals($this->eventWrapper, $result);
 
-        return $args;
-    }
 
-    /**
-     * @depends testPop
-     */
-    public function testAck(array $args)
-    {
+        // Ack
         $this->driver->expects($this->once())
                      ->method('ack')
-                     ->with($this->equalTo($args['receipt']));
+                     ->with($this->equalTo($receipt));
 
-        $this->pipeline->ack($this->eventWrapper);
+        $this->pipeline->ack($result);
     }
 }
