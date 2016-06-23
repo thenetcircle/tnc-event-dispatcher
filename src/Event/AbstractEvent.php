@@ -11,6 +11,7 @@
 namespace Tnc\Service\EventDispatcher\Event;
 
 use Tnc\Service\EventDispatcher\Event;
+use Tnc\Service\EventDispatcher\Normalizer;
 
 abstract class AbstractEvent implements Event
 {
@@ -90,5 +91,23 @@ abstract class AbstractEvent implements Event
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function normalize(Normalizer $normalizer)
+    {
+        return get_object_vars($this);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function denormalize(array $data, Normalizer $normalizer)
+    {
+        foreach ($data as $_key => $_value) {
+            $this->{$_key} = $_value;
+        }
     }
 }

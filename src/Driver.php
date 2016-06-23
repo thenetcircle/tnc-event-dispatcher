@@ -11,8 +11,9 @@
 namespace Tnc\Service\EventDispatcher;
 
 use Tnc\Service\EventDispatcher\Exception;
+use Tnc\Service\EventDispatcher\Internal\InternalEventProducer;
 
-interface Driver
+interface Driver extends InternalEventProducer
 {
     /**
      * Push a message to the specific channel of a pipeline

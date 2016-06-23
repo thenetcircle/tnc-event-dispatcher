@@ -12,6 +12,7 @@ namespace Tnc\Service\EventDispatcher;
 
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
+use Tnc\Service\EventDispatcher\Internal\InternalEventProducer;
 
 class Dispatcher
 {
@@ -42,8 +43,11 @@ class Dispatcher
     public function __construct(LocalDispatcher $localDispatcher, Pipeline $pipeline, Event $defaultEvent = null)
     {
         $this->localDispatcher = $localDispatcher;
-        $this->pipeline        = $pipeline;
-        $this->defaultEvent    = $defaultEvent === null ? new DefaultEvent() : $defaultEvent;
+
+        $this->pipeline = $pipeline;
+        $this->pipeline->setEventDispatcher($this);
+
+        $this->defaultEvent = $defaultEvent === null ? new DefaultEvent() : $defaultEvent;
     }
 
     /**

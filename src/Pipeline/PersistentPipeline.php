@@ -2,6 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher\Pipeline;
 
+use Tnc\Service\EventDispatcher\Dispatcher;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
@@ -87,5 +88,13 @@ class PersistentPipeline implements Pipeline
             $this->driver->ack($this->receipts[$eventWrapper]);
             $this->receipts->detach($eventWrapper);
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setEventDispatcher(Dispatcher $dispatcher)
+    {
+        $this->driver->setEventDispatcher($dispatcher);
     }
 }
