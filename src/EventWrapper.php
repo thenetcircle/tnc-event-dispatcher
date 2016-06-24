@@ -13,7 +13,7 @@ use Tnc\Service\EventDispatcher\Serializer\Normalizable;
  */
 class EventWrapper implements Normalizable
 {
-    CONST EXTRA_KEY      = '_extra_';
+    CONST EXTRA_KEY      = '_php_';
 
     /**
      * @var Event
