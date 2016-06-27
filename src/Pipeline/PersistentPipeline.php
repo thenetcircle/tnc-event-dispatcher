@@ -38,7 +38,7 @@ class PersistentPipeline implements Pipeline
      * @param Serializer $serializer
      * @param int        $defaultTimeout
      */
-    public function __construct(Driver $driver, Serializer $serializer, $defaultTimeout = 200)
+    public function __construct(Driver $driver, Serializer $serializer, $defaultTimeout = 500)
     {
         $this->driver         = $driver;
         $this->serializer     = $serializer;
