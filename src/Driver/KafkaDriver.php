@@ -13,7 +13,8 @@ namespace Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Exception;
 use Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Internal\AbstractInternalEventProducer;
-use Tnc\Service\EventDispatcher\Internal\Event\DeliveryFailedEvent;
+use Tnc\Service\EventDispatcher\Internal\Event\ErrorEvent;
+use Tnc\Service\EventDispatcher\Internal\Event\MessageEvent;
 
 class KafkaDriver extends AbstractInternalEventProducer implements Driver
 {
@@ -132,6 +133,10 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
      */
     public function kafkaErrorCallback($kafka, $err, $reason)
     {
+        $this->dispatch(ErrorEvent::NAME, new ErrorEvent(
+            $err, sprintf('error: %s, reason: %s', rd_kafka_err2str($err), $reason)
+        ));
+
         if ($this->debug) {
             printf("{kafkaErrorCallback} [%s]%s (reason: %s)\n", $err, rd_kafka_err2str($err), $reason);
         }
@@ -145,7 +150,7 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
     {
         if ($message->err !== 0) {
 
-            $this->dispatch(DeliveryFailedEvent::NAME, new DeliveryFailedEvent(
+            $this->dispatch(MessageEvent::DELIVERY_FAILED, new MessageEvent(
                 $message->topic_name, $message->payload, $message->key
             ));
 

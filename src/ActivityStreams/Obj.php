@@ -172,9 +172,9 @@ class Obj implements Normalizable
     {
         $vars = get_object_vars($this);
         $data = array();
-        foreach($vars as $_key => $_value) {
+        foreach ($vars as $_key => $_value) {
             if ($_value !== null) {
-                $data[$_key] = $_value;
+                $data[$_key] = (string)$_value;
             }
         }
         return $data;

@@ -263,8 +263,13 @@ class Activity implements Normalizable
                 continue;
             }
 
-            if (is_object($_value) && $_value instanceof Normalizable) {
-                $data[$_key] = $normalizer->normalize($_value);
+            if (is_object($_value)) {
+                if($_value instanceof Normalizable) {
+                    $data[$_key] = $normalizer->normalize($_value);
+                }
+            }
+            else {
+                $data[$_key] = (string)$_value;
             }
         }
 

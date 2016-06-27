@@ -12,9 +12,9 @@ namespace Tnc\Service\EventDispatcher\Internal\Event;
 
 use Tnc\Service\EventDispatcher\Event\AbstractEvent;
 
-class DeliveryFailedEvent extends AbstractEvent
+class MessageEvent extends AbstractEvent
 {
-    const NAME = 'service.event-dispatcher.delivery.failed';
+    const DELIVERY_FAILED = 'service.event-dispatcher.delivery.failed';
 
     /**
      * @var string
@@ -34,7 +34,9 @@ class DeliveryFailedEvent extends AbstractEvent
     /**
      * DefaultEvent constructor.
      *
-     * @param array $data
+     * @param string $channel
+     * @param string $message
+     * @param string $key
      */
     public function __construct($channel, $message, $key = null)
     {

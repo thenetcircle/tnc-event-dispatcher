@@ -125,21 +125,21 @@ abstract class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @return string
+     * @return \Tnc\Service\EventDispatcher\ActivityStreams\Obj
      */
     public function getProvider()
     {
-        return $this->activity->getProvider()->getId();
+        return $this->activity->getProvider();
     }
 
     /**
-     * @param string $name
+     * @param \Tnc\Service\EventDispatcher\ActivityStreams\Obj $object
      *
      * @return $this
      */
-    public function setProvider($name)
+    public function setProvider(Obj $object)
     {
-        $this->activity->setProvider(self::obj($name));
+        $this->activity->setProvider($object);
 
         return $this;
     }
@@ -173,7 +173,7 @@ abstract class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param \Tnc\Service\EventDispatcher\ActivityStreams\Obj $type
+     * @param \Tnc\Service\EventDispatcher\ActivityStreams\Obj $object
      *
      * @return $this
      */
@@ -193,7 +193,7 @@ abstract class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param \Tnc\Service\EventDispatcher\ActivityStreams\Obj $type
+     * @param \Tnc\Service\EventDispatcher\ActivityStreams\Obj $object
      *
      * @return $this
      */
@@ -213,7 +213,7 @@ abstract class ActivityEvent extends AbstractEvent
     }
 
     /**
-     * @param \Tnc\Service\EventDispatcher\ActivityStreams\Obj $type
+     * @param \Tnc\Service\EventDispatcher\ActivityStreams\Obj $object
      *
      * @return $this
      */
