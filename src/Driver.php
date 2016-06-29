@@ -20,19 +20,18 @@ interface Driver extends InternalEventProducer
      *
      * @param string      $channel
      * @param string      $message
-     * @param int         $timeout millisecond
      * @param string|null $key
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push($channel, $message, $timeout, $key = null);
+    public function push($channel, $message, $key = null);
 
     /**
      * Pop a message to the specific channel of a pipeline
      *
      * @param string $channel
-     * @param int    $timeout millisecond
+     * @param int    $duration Sets up waiting for how many seconds
      *
      * @return array [$message, $receipt]
      *
@@ -40,7 +39,7 @@ interface Driver extends InternalEventProducer
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($channel, $timeout);
+    public function pop($channel, $duration = 5);
 
     /**
      * Acknowledge a message after it's consumed successfully.

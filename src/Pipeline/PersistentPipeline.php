@@ -2,8 +2,8 @@
 
 namespace Tnc\Service\EventDispatcher\Pipeline;
 
-use Tnc\Service\EventDispatcher\Dispatcher;
 use Tnc\Service\EventDispatcher\Event;
+use Tnc\Service\EventDispatcher\LocalDispatcher;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
 use Tnc\Service\EventDispatcher\Driver;
@@ -22,11 +22,6 @@ class PersistentPipeline implements Pipeline
     private $serializer;
 
     /**
-     * @var int
-     */
-    private $defaultTimeout;
-
-    /**
      * @var \SplObjectStorage
      */
     private $receipts;
@@ -36,28 +31,24 @@ class PersistentPipeline implements Pipeline
      *
      * @param Driver     $driver
      * @param Serializer $serializer
-     * @param int        $defaultTimeout
      */
-    public function __construct(Driver $driver, Serializer $serializer, $defaultTimeout = 500)
+    public function __construct(Driver $driver, Serializer $serializer)
     {
         $this->driver         = $driver;
         $this->serializer     = $serializer;
-        $this->defaultTimeout = $defaultTimeout;
         $this->receipts       = new \SplObjectStorage();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function push(EventWrapper $eventWrapper, $timeout = null)
+    public function push(EventWrapper $eventWrapper)
     {
-        $timeout = $timeout === null ? $this->defaultTimeout : $timeout;
         $message = $this->serializer->serialize($eventWrapper);
 
         return $this->driver->push(
             $eventWrapper->getChannel(),
             $message,
-            $timeout,
             $eventWrapper->getKey()
         );
     }
@@ -65,11 +56,9 @@ class PersistentPipeline implements Pipeline
     /**
      * {@inheritdoc}
      */
-    public function pop($channel, $timeout = null)
+    public function pop($channel)
     {
-        $timeout = $timeout === null ? $this->defaultTimeout : $timeout;
-
-        list($message, $receipt) = $this->driver->pop($channel, $timeout);
+        list($message, $receipt) = $this->driver->pop($channel);
 
         $eventWrapper = null;
         if ($message) {
@@ -93,8 +82,8 @@ class PersistentPipeline implements Pipeline
     /**
      * {@inheritdoc}
      */
-    public function setEventDispatcher(Dispatcher $dispatcher)
+    public function setInternalEventDispatcher(LocalDispatcher $dispatcher)
     {
-        $this->driver->setEventDispatcher($dispatcher);
+        $this->driver->setInternalEventDispatcher($dispatcher);
     }
 }

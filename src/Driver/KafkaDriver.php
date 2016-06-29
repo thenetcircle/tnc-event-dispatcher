@@ -63,7 +63,7 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
             );
         }
 
-        $this->debug = $debug;
+        $this->debug                               = $debug;
         $options['broker']['metadata.broker.list'] = $brokers;
         $this->initOptions($options);
     }
@@ -75,10 +75,11 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
      *
      * {@inheritdoc}
      */
-    public function push($channel, $message, $timeout, $key = null)
+    public function push($channel, $message, $key = null)
     {
-        $this->initProducer();
-        $this->getProducerTopic($channel, $timeout)->produce(\RD_KAFKA_PARTITION_UA, 0, $message, $key);
+        $this->getProducerTopic($channel)->produce(
+            \RD_KAFKA_PARTITION_UA, 0, $message, $key
+        );
     }
 
     /**
@@ -86,9 +87,10 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
      *
      * $channel supports regexp with prefix ^
      */
-    public function pop($channel, $timeout)
+    public function pop($channel, $duration = 5)
     {
         $this->initConsumer();
+        $duration = (is_int($duration) && $duration > 0) ? ($duration * 1000) : 5000;
 
         try {
             if ($channel != $this->subscribingTopic) {
@@ -96,7 +98,7 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
                 $this->subscribingTopic = $channel;
             }
 
-            $message = $this->consumer->consume($timeout);
+            $message = $this->consumer->consume($duration);
         }
         catch (\Exception $e) {
             throw new Exception\FatalException('Consuming failed.', $e->getCode(), $e);
@@ -167,60 +169,25 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
     }
 
     /**
-     * @param array $options
+     * @param string $topicName
      */
-    private function initOptions(array $options)
+    private function getProducerTopic($topicName)
     {
-        $defaultOptions = [
-            'broker'   => [
-                'metadata.broker.list'               => '', // brokers list
-                'topic.metadata.refresh.sparse'      => 'true',
-                'topic.metadata.refresh.interval.ms' => -1,
-                'log.connection.close'               => 'false',
-                'message.send.max.retries'           => 0,
-                'delivery.report.only.error'         => 'true',
-                // 'socket.timeout.ms'                  => 10,
-                'socket.blocking.max.ms'             => 10,
-                'socket.keepalive.enable'            => 'false',
-                // 'max.in.flight.requests.per.connection' => 1,
-                // 'reconnect.backoff.jitter.ms' => 0,
-                'api.version.request'                => 'false',
-            ],
-            'producer' => [],
-            'consumer' => [
-                'group.id'  => 'tncEventDispatcher',
-                'client.id' => __CLASS__,
-            ]
-        ];
+        $this->initProducer();
 
-        if ($this->debug) {
-            $defaultOptions['broker']['debug'] = 'all';
-        }
-        $this->options = array_replace_recursive($defaultOptions, $options);
+        if (!isset($this->producerTopics[$topicName])) {
 
-        if (empty($this->options['broker']['metadata.broker.list'])) {
-            throw new Exception\FatalException('brokers list does not set.');
-        }
-    }
+            $topicConf = new \RdKafka\TopicConf();
+            foreach ($this->options['topic'] as $_key => $_value) {
+                $topicConf->set($_key, $_value);
+            }
+            $topicConf->setPartitioner(\RD_KAFKA_MSG_PARTITIONER_CONSISTENT);
 
-    /**
-     * @return \RdKafka\Conf
-     */
-    private function getDefaultConf()
-    {
-        // setting up producer $conf
-        $conf = new \RdKafka\Conf();
-        if (function_exists('pcntl_sigprocmask')) {
-            pcntl_sigprocmask(SIG_BLOCK, array(SIGIO)); // once
-            $conf->set('internal.termination.signal', SIGIO); // anytime
-        }
-        $conf->setErrorCb(array($this, 'kafkaErrorCallback'));
+            $this->producerTopics[$topicName] = $this->producer->newTopic($topicName, $topicConf);
 
-        foreach ($this->options['broker'] as $_key => $_value) {
-            $conf->set($_key, $_value);
         }
 
-        return $conf;
+        return $this->producerTopics[$topicName];
     }
 
     /**
@@ -261,23 +228,64 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
     }
 
     /**
-     * @param string $topicName
-     * @param int    $timeout
+     * @param array $options
      */
-    private function getProducerTopic($topicName, $timeout)
+    private function initOptions(array $options)
     {
-        if (!isset($this->producerTopics[$topicName])) {
+        $defaultOptions = [
+            'broker'   => [
+                'metadata.broker.list'               => '', // brokers list
+                'topic.metadata.refresh.sparse'      => 'true',
+                'topic.metadata.refresh.interval.ms' => -1,
+                'log.connection.close'               => 'false',
+                'message.send.max.retries'           => 2,
+                'delivery.report.only.error'         => 'true',
+                // 'socket.timeout.ms'                  => 10,
+                // 'socket.blocking.max.ms'             => 10,
+                'socket.keepalive.enable'            => 'false',
+                // 'max.in.flight.requests.per.connection' => 1,
+                // 'reconnect.backoff.jitter.ms' => 0,
+                'api.version.request'                => 'false',
+            ],
+            'producer' => [],
+            'consumer' => [
+                'group.id'  => 'tncEventDispatcher',
+                'client.id' => __CLASS__,
+            ],
+            'topic' => [
+                'request.required.acks' => 0,
+                // 'request.timeout.ms' => 1000,
+                'message.timeout.ms' => 500
+            ]
+        ];
 
-            $topicConf = new \RdKafka\TopicConf();
-            $topicConf->set('request.required.acks', 1);
-            $topicConf->set('request.timeout.ms', $timeout);
-            $topicConf->set('message.timeout.ms', $timeout);
-            $topicConf->setPartitioner(\RD_KAFKA_MSG_PARTITIONER_CONSISTENT);
+        if ($this->debug) {
+            $defaultOptions['broker']['debug'] = 'all';
+        }
+        $this->options = array_replace_recursive($defaultOptions, $options);
 
-            $this->producerTopics[$topicName] = $this->producer->newTopic($topicName, $topicConf);
+        if (empty($this->options['broker']['metadata.broker.list'])) {
+            throw new Exception\FatalException('brokers list does not set.');
+        }
+    }
 
+    /**
+     * @return \RdKafka\Conf
+     */
+    private function getDefaultConf()
+    {
+        // setting up producer $conf
+        $conf = new \RdKafka\Conf();
+        if (function_exists('pcntl_sigprocmask')) {
+            pcntl_sigprocmask(SIG_BLOCK, array(SIGIO)); // once
+            $conf->set('internal.termination.signal', SIGIO); // anytime
+        }
+        $conf->setErrorCb(array($this, 'kafkaErrorCallback'));
+
+        foreach ($this->options['broker'] as $_key => $_value) {
+            $conf->set($_key, $_value);
         }
 
-        return $this->producerTopics[$topicName];
+        return $conf;
     }
 }

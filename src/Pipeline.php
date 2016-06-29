@@ -17,16 +17,14 @@ interface Pipeline extends InternalEventProducer
 {
     /**
      * @param EventWrapper $eventWrapper
-     * @param int|null     $timeout null will use default timeout
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push(EventWrapper $eventWrapper, $timeout = null);
+    public function push(EventWrapper $eventWrapper);
 
     /**
      * @param string   $channel
-     * @param int|null $timeout null will use default timeout
      *
      * @return EventWrapper $event
      *
@@ -34,7 +32,7 @@ interface Pipeline extends InternalEventProducer
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($channel, $timeout = null);
+    public function pop($channel);
 
     /**
      * @param EventWrapper $event

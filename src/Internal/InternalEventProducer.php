@@ -10,15 +10,15 @@
 
 namespace Tnc\Service\EventDispatcher\Internal;
 
-use Tnc\Service\EventDispatcher\Dispatcher;
 use Tnc\Service\EventDispatcher\Exception;
+use Tnc\Service\EventDispatcher\LocalDispatcher;
 
 interface InternalEventProducer
 {
     /**
      * Sets the dispatcher which will trigger internal events
      *
-     * @param Dispatcher $dispatcher
+     * @param LocalDispatcher $dispatcher
      */
-    public function setEventDispatcher(Dispatcher $dispatcher);
+    public function setInternalEventDispatcher(LocalDispatcher $dispatcher);
 }
