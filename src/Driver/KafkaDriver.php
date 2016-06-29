@@ -136,7 +136,9 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
     public function kafkaErrorCallback($kafka, $err, $reason)
     {
         $this->dispatch(ErrorEvent::NAME, new ErrorEvent(
-            $err, sprintf('error: %s, reason: %s', rd_kafka_err2str($err), $reason)
+            $err,
+            sprintf('error: %s, reason: %s', rd_kafka_err2str($err), $reason),
+            '{KafkaDriver::kafkaErrorCallback}'
         ));
 
         if ($this->debug) {

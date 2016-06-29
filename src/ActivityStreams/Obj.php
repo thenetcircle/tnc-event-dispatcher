@@ -46,6 +46,11 @@ class Obj implements Normalizable
     private $updated;
 
     /**
+     * @var array
+     */
+    private $context;
+
+    /**
      * @return string
      */
     public function getId()
@@ -166,6 +171,26 @@ class Obj implements Normalizable
     }
 
     /**
+     * @return array
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @param array $context
+     *
+     * @return $this
+     */
+    public function setContext(array $context)
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function normalize(Normalizer $normalizer)
@@ -174,7 +199,11 @@ class Obj implements Normalizable
         $data = array();
         foreach ($vars as $_key => $_value) {
             if ($_value !== null) {
-                $data[$_key] = (string)$_value;
+                if (is_array($_value)) {
+                    $data[$_key] = $_value;
+                } else {
+                    $data[$_key] = (string)$_value;
+                }
             }
         }
         return $data;

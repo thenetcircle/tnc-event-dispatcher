@@ -229,6 +229,7 @@ abstract class ActivityEvent extends AbstractEvent
      */
     public function normalize(Normalizer $normalizer)
     {
+        $this->setId($this->getUuid());
         return $normalizer->normalize($this->activity);
     }
 
@@ -238,5 +239,22 @@ abstract class ActivityEvent extends AbstractEvent
     public function denormalize(array $data, Normalizer $normalizer)
     {
         $this->activity = $normalizer->denormalize($data, Activity::class);
+    }
+
+    /**
+     * Gets the uuid for the activity
+     *
+     * @return string
+     */
+    protected function getUuid()
+    {
+        $uuidArr = [$this->getProvider()->getId()];
+        if ($this->getActor()->getId() !== null) {
+            $uuidArr[] = $this->getActor()->getObjectType();
+            $uuidArr[] = $this->getActor()->getId();
+        }
+        $uuidArr[] = time();
+        $uuidArr[] = sprintf('%03d', mt_rand(0, 999));
+        return implode('-', $uuidArr);
     }
 }

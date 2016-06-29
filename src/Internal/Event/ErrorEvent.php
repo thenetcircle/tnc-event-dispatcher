@@ -24,18 +24,24 @@ class ErrorEvent extends AbstractEvent
     /**
      * @var string
      */
-    protected $errStr;
+    protected $errString;
+
+    /**
+     * @var string
+     */
+    protected $source;
 
     /**
      * DefaultEvent constructor.
      *
-     * @param int $errCode
-     * @param string $errStr
+     * @param int    $errCode
+     * @param string $errString
      */
-    public function __construct($errCode, $errStr)
+    public function __construct($errCode, $errString, $source = '')
     {
-        $this->errCode = $errCode;
-        $this->errStr = $errStr;
+        $this->errCode   = $errCode;
+        $this->errString = $errString;
+        $this->source    = $source;
     }
 
     /**
@@ -49,8 +55,16 @@ class ErrorEvent extends AbstractEvent
     /**
      * @return string
      */
-    public function getErrStr()
+    public function getErrString()
     {
-        return $this->errStr;
+        return $this->errString;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->source;
     }
 }

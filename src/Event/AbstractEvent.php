@@ -25,6 +25,17 @@ abstract class AbstractEvent implements Event
     private $propagationStopped = false;
 
     /**
+     * Returns the prefix string of channels
+     *
+     * @return string
+     */
+    public static function getChannelPrefix()
+    {
+        return 'event-';
+    }
+
+
+    /**
      * {@inheritdoc}
      */
     public function setName($name)
@@ -46,7 +57,7 @@ abstract class AbstractEvent implements Event
             $channel = $name;
         }
 
-        return $this->getChannelPrefix() . $channel;
+        return self::getChannelPrefix() . $channel;
     }
 
     /**
@@ -71,16 +82,6 @@ abstract class AbstractEvent implements Event
     public function stopPropagation()
     {
         $this->propagationStopped = true;
-    }
-
-    /**
-     * Returns the prefix string of channels
-     *
-     * @return string
-     */
-    public function getChannelPrefix()
-    {
-        return 'event-';
     }
 
     /**
