@@ -1,10 +1,12 @@
 {
   "name": "tnc/service-eventdispatcher",
   "description": "Dispatchs and listens to events, Which expends symfony/event-dispatcher to support asynchronous event dispatching and listening.",
-  "keywords": ["event", "event dispatcher"],
+  "keywords": [
+    "event",
+    "event dispatcher"
+  ],
   "type": "library",
   "license": "proprietary",
-
   "require": {
     "php": ">=5.5"
   },
@@ -13,11 +15,14 @@
     "kwn/php-rdkafka-stubs": "~0.0.4",
     "symfony/event-dispatcher": "~2.3 || ~3.0"
   },
-
-  "autoload" : {
-    "psr-4" : { "Tnc\\Service\\EventDispatcher\\" : "src/" }
+  "autoload": {
+    "psr-4": {
+      "Tnc\\Service\\EventDispatcher\\": "src/"
+    }
   },
-  "autoload-dev" : {
-    "psr-4" : { "Tnc\\Service\\EventDispatcher\\Tests\\" : "tests/" }
+  "autoload-dev": {
+    "psr-4": {
+      "Tnc\\Service\\EventDispatcher\\Tests\\": "tests/"
+    }
   }
 }
