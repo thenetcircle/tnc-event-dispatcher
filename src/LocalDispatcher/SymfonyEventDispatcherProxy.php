@@ -3,10 +3,11 @@
 namespace Tnc\Service\EventDispatcher\LocalDispatcher;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\LocalDispatcher;
 
-class SymfonyLocalDispatcherProxy implements LocalDispatcher
+class SymfonyEventDispatcherProxy implements LocalDispatcher
 {
     /**
      * @var EventDispatcherInterface
@@ -41,6 +42,54 @@ class SymfonyLocalDispatcherProxy implements LocalDispatcher
     public function getListeners($eventName = null)
     {
         return $this->dispatcher->getListeners($eventName);
+    }
+
+    /**
+     * @see EventDispatcherInterface::getListenerPriority
+     */
+    public function getListenerPriority($eventName, $listener)
+    {
+        return $this->dispatcher->getListenerPriority($eventName, $listener);
+    }
+
+    /**
+     * @see EventDispatcherInterface::hasListeners
+     */
+    public function hasListeners($eventName = null)
+    {
+        return $this->dispatcher->hasListeners($eventName);
+    }
+
+    /**
+     * @see EventDispatcherInterface::addListener
+     */
+    public function addListener($eventName, $listener, $priority = 0)
+    {
+        return $this->dispatcher->addListener($eventName, $listener, $priority);
+    }
+
+    /**
+     * @see EventDispatcherInterface::removeListener
+     */
+    public function removeListener($eventName, $listener)
+    {
+        return $this->dispatcher->removeListener($eventName, $listener);
+    }
+
+    /**
+     * @see EventDispatcherInterface::addSubscriber
+     */
+    public function addSubscriber(EventSubscriberInterface $subscriber)
+    {
+        return $this->dispatcher->addSubscriber($subscriber);
+    }
+
+    /**
+     * @see EventDispatcherInterface::removeSubscriber
+     */
+    public function removeSubscriber(EventSubscriberInterface $subscriber)
+    {
+        return $this->dispatcher->removeSubscriber($subscriber);
     }
 
     /**
