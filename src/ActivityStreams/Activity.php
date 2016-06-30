@@ -61,6 +61,10 @@ class Activity implements Normalizable
      * @var string
      */
     private $updated;
+    /**
+     * @var string
+     */
+    private $version = '1.0';
 
 
     /**
@@ -237,6 +241,14 @@ class Activity implements Normalizable
     public function setUpdated($updated)
     {
         $this->updated = $updated;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
     }
 
     /**
