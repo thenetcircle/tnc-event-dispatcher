@@ -238,14 +238,15 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
             'broker'   => [
                 'metadata.broker.list'               => '', // brokers list
                 'topic.metadata.refresh.sparse'      => 'true',
-                'topic.metadata.refresh.interval.ms' => -1,
+                'topic.metadata.refresh.interval.ms' => 600000,
+                'socket.blocking.max.ms'             => 50,
                 'log.connection.close'               => 'false',
                 'message.send.max.retries'           => 2,
                 'delivery.report.only.error'         => 'true',
                 // 'socket.timeout.ms'                  => 10,
                 // 'socket.blocking.max.ms'             => 10,
                 'socket.keepalive.enable'            => 'false',
-                // 'max.in.flight.requests.per.connection' => 1,
+                'max.in.flight.requests.per.connection' => 1000,
                 // 'reconnect.backoff.jitter.ms' => 0,
                 'api.version.request'                => 'false',
             ],
@@ -253,6 +254,7 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
             'consumer' => [
                 'group.id'  => 'tncEventDispatcher',
                 'client.id' => __CLASS__,
+                'queued.max.messages.kbytes' => 100000,
             ],
             'topic' => [
                 'request.required.acks' => 0,
