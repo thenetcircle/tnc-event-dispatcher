@@ -32,9 +32,9 @@ abstract class AbstractSerializer implements Serializer
     /**
      * {@inheritdoc}
      */
-    public function serialize(Normalizable $object)
+    public function serialize(Normalizable $event)
     {
-        $data = $this->normalizer->normalize($object);
+        $data = $this->normalizer->normalize($event);
 
         return $this->encode($data);
     }
