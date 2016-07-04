@@ -1,9 +1,8 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Serializer;
-
+namespace Tnc\Service\EventDispatcher\Serializer\Encoder;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Serializer\Encoder;
 
 /**
  * JsonSerializer
@@ -12,7 +11,7 @@ use Tnc\Service\EventDispatcher\Serializer;
  *
  * @author     The NetCircle
  */
-class JsonSerializer extends AbstractSerializer
+class JsonEncoder implements Encoder
 {
     /**
      * {@inheritdoc}

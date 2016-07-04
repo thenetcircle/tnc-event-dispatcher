@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Serializer;
+namespace Tnc\Service\EventDispatcher\Serializer\Normalizer;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -8,29 +8,28 @@ use Doctrine\Common\Annotations\Reader;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 use Tnc\Service\EventDispatcher\Serializer\Annotation;
+use Tnc\Service\EventDispatcher\Serializer\Normalizer;
 use Tnc\Service\EventDispatcher\Serializer\Normalizer\ActivityStreamsNormalizer;
 
-class AnnotationSerializer
+class AnnotationNormalizer implements Normalizer
 {
     /**
      * @var Reader
      */
     private $reader;
 
-    /**
-     * @var JsonEncoder
-     */
-    private $encoder;
-
-    public function __construct()
+    public function __construct(Reader $reader = null)
     {
-        $this->reader = new AnnotationReader();
+        $this->reader = $reader ?: new AnnotationReader();
         AnnotationRegistry::registerLoader('class_exists');
-        $this->encoder = new JsonEncoder();
-
     }
 
-    public function serialize(Event $event)
+    /**
+     * @param Event $event
+     *
+     * @return array
+     */
+    public function normalize(Event $event)
     {
         $reflectionEvent = new \ReflectionClass($event);
 
@@ -60,7 +59,14 @@ class AnnotationSerializer
         return $this->encoder->encode($data);
     }
 
-    public function unserialize($content)
+    /**
+     * @param array $data
+     *
+     * @return Event
+     *
+     * @throws InvalidArgumentException
+     */
+    public function denormalize($data)
     {
         $data = $this->encoder->decode($content);
 

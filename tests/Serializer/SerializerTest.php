@@ -3,19 +3,47 @@
 namespace Tnc\Service\EventDispatcher\Test;
 
 use Tnc\Service\EventDispatcher\Event\AbstractEvent;
-use Tnc\Service\EventDispatcher\Serializer\Annotation\Accessor;
-use Tnc\Service\EventDispatcher\Serializer\Annotation\Normalizer;
-use Tnc\Service\EventDispatcher\Serializer\AnnotationSerializer;
 use Tnc\Service\EventDispatcher\Serializer\Annotation\ActivityStreams\Actor;
+use Tnc\Service\EventDispatcher\Serializer\DefaultSerializer;
+use Tnc\Service\EventDispatcher\Serializer\Encoder;
+use Tnc\Service\EventDispatcher\Serializer\Encoder\JsonEncoder;
+use Tnc\Service\EventDispatcher\Serializer\Normalizer;
+use Tnc\Service\EventDispatcher\Serializer\Normalizer\AnnotationNormalizer;
 
 
 class SerializerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testSerializeEvent()
+    /**
+     * @var Normalizer
+     */
+    private $normalizer;
+
+    /**
+     * @var Encoder
+     */
+    private $encoder;
+
+    /**
+     * @var DefaultSerializer
+     */
+    private $serializer;
+
+    public function setUp()
+    {
+        $this->normalizer = new AnnotationNormalizer();
+        $this->encoder = new JsonEncoder();
+
+        $this->serializer = new DefaultSerializer(
+            $this->normalizer,
+            $this->encoder
+        );
+    }
+
+    public function testNormalizeEvent()
     {
         $event = new MockActivityEvent();
-        $serializer = new AnnotationSerializer();
-        $serializer->serialize($event);
+
+        $this->normalizer->normalize($event);
     }
 }
 
