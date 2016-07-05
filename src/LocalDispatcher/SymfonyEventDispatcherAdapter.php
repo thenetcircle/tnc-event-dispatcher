@@ -7,7 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\LocalDispatcher;
 
-class SymfonyEventDispatcherProxy implements LocalDispatcher
+class SymfonyEventDispatcherAdapter implements LocalDispatcher
 {
     /**
      * @var EventDispatcherInterface

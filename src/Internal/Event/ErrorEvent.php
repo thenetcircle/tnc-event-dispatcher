@@ -36,6 +36,7 @@ class ErrorEvent extends AbstractEvent
      *
      * @param int    $errCode
      * @param string $errString
+     * @param string $source
      */
     public function __construct($errCode, $errString, $source = '')
     {
