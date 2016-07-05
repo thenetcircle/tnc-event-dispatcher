@@ -17,9 +17,4 @@ final class Actor
      * @var string
      */
     public $objectType;
-
-    /**
-     * @var array
-     */
-    public $context;
 }

@@ -57,12 +57,23 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
 class MockActivityEvent extends AbstractEvent
 {
     /**
+     * Id
+     */
+    private $id;
+
+    /**
      * @Actor("user")
      */
     private $sender;
 
+    /**
+     * Actor("user")
+     */
     private $receiver;
 
+    /**
+     * Actor("message")
+     */
     private $message;
 
     public function __construct()

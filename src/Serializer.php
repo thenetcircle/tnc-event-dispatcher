@@ -2,6 +2,8 @@
 
 namespace Tnc\Service\EventDispatcher;
 
+use Tnc\Service\EventDispatcher\Event\DefaultEvent;
+
 interface Serializer
 {
     /**
@@ -12,9 +14,10 @@ interface Serializer
     public function serialize(Event $event);
 
     /**
-     * @param string $content
+     * @param mixed  $data
+     * @param string $type The class to which the data should be denormalized
      *
      * @return Event
      */
-    public function unserialize($content);
+    public function deserialize($data, $type = DefaultEvent::class);
 }
