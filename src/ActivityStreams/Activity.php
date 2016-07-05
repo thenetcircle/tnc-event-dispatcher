@@ -61,6 +61,12 @@ class Activity implements Normalizable
      * @var string
      */
     private $updated;
+
+    // Custom Fileds
+    /**
+     * @var array
+     */
+    private $context;
     /**
      * @var string
      */
@@ -244,6 +250,26 @@ class Activity implements Normalizable
     }
 
     /**
+     * @return array
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @param array $context
+     *
+     * @return $this
+     */
+    public function setContext(array $context)
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getVersion()
@@ -279,6 +305,9 @@ class Activity implements Normalizable
                 if($_value instanceof Normalizable) {
                     $data[$_key] = $normalizer->normalize($_value);
                 }
+            }
+            elseif (is_array($_value)) {
+                $data[$_key] = $_value;
             }
             else {
                 $data[$_key] = (string)$_value;

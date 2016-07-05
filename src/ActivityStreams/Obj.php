@@ -46,11 +46,6 @@ class Obj implements Normalizable
     private $updated;
 
     /**
-     * @var array
-     */
-    private $context;
-
-    /**
      * @return string
      */
     public function getId()
@@ -166,26 +161,6 @@ class Obj implements Normalizable
     public function setUpdated($updated)
     {
         $this->updated = $updated;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    /**
-     * @param array $context
-     *
-     * @return $this
-     */
-    public function setContext(array $context)
-    {
-        $this->context = $context;
 
         return $this;
     }
