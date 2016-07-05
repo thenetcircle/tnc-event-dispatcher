@@ -3,47 +3,32 @@
 namespace Tnc\Service\EventDispatcher\Test;
 
 use Tnc\Service\EventDispatcher\Event\AbstractEvent;
+use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\Serializer\Annotation\ActivityStreams\Actor;
-use Tnc\Service\EventDispatcher\Serializer\DefaultSerializer;
-use Tnc\Service\EventDispatcher\Serializer\Encoder;
-use Tnc\Service\EventDispatcher\Serializer\Encoder\JsonEncoder;
-use Tnc\Service\EventDispatcher\Serializer\Normalizer;
-use Tnc\Service\EventDispatcher\Serializer\Normalizer\AnnotationNormalizer;
 
 
 class SerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Normalizer
-     */
-    private $normalizer;
-
-    /**
-     * @var Encoder
-     */
-    private $encoder;
-
-    /**
-     * @var DefaultSerializer
+     * @var Serializer
      */
     private $serializer;
 
     public function setUp()
     {
-        $this->normalizer = new AnnotationNormalizer();
-        $this->encoder = new JsonEncoder();
-
-        $this->serializer = new DefaultSerializer(
-            $this->normalizer,
-            $this->encoder
+        $normalizers = array(
+            new Serializer\Normalizer\EventNormalizer()
         );
+        $encoder = new Serializer\Encoder\ActivityStreamsEncoder();
+
+        $this->serializer = new Serializer\SymfonySerializerAdapter($normalizers, $encoder);
     }
 
     public function testNormalizeEvent()
     {
         $event = new MockActivityEvent();
 
-        $this->normalizer->normalize($event);
+        var_dump($this->serializer->serialize($event));
     }
 }
 
