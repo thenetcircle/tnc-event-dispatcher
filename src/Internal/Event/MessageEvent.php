@@ -32,17 +32,24 @@ class MessageEvent extends AbstractEvent
     protected $key;
 
     /**
+     * @var int
+     */
+    protected $errCode;
+
+    /**
      * DefaultEvent constructor.
      *
      * @param string $channel
      * @param string $message
      * @param string $key
+     * @param int    $errCode
      */
-    public function __construct($channel, $message, $key = null)
+    public function __construct($channel, $message, $key, $errCode)
     {
         $this->channel = $channel;
         $this->message = $message;
         $this->key     = $key;
+        $this->errCode = $errCode;
     }
 
     /**
@@ -67,5 +74,13 @@ class MessageEvent extends AbstractEvent
     public function getKey()
     {
         return $this->key;
+    }
+
+    /**
+     * @return int
+     */
+    public function getErrCode()
+    {
+        return $this->errCode;
     }
 }

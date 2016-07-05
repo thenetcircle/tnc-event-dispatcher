@@ -152,21 +152,18 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
      */
     public function deliveryMessageCallback(\RdKafka\Producer $producer, \RdKafka\Message $message)
     {
-        if ($message->err !== 0) {
+        $this->dispatch(MessageEvent::DELIVERY_FAILED, new MessageEvent(
+            $message->topic_name, $message->payload, $message->key, $message->err
+        ));
 
-            $this->dispatch(MessageEvent::DELIVERY_FAILED, new MessageEvent(
-                $message->topic_name, $message->payload, $message->key
-            ));
-
-            if ($this->debug) {
-                printf(
-                    "{deliveryMessageCallback} Failed, TopicName: %s, Key: %s, Payload: %s",
-                    $message->topic_name,
-                    $message->key,
-                    $message->payload
-                );
-            }
-
+        if ($this->debug) {
+            printf(
+                "{deliveryMessageCallback} Failed, TopicName: %s, Key: %s, Payload: %s, ErrorCode: %s",
+                $message->topic_name,
+                $message->key,
+                $message->payload,
+                $message->err
+            );
         }
     }
 
@@ -202,6 +199,12 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
         }
 
         $conf = $this->getDefaultConf();
+
+        if (function_exists('pcntl_sigprocmask')) {
+            pcntl_sigprocmask(SIG_BLOCK, array(SIGIO)); // once
+            $conf->set('internal.termination.signal', SIGIO); // anytime
+        }
+
         $conf->setDrMsgCb(array($this, 'deliveryMessageCallback'));
         foreach ($this->options['producer'] as $_key => $_value) {
             $conf->set($_key, $_value);
@@ -237,29 +240,32 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
         $defaultOptions = [
             'broker'   => [
                 'metadata.broker.list'               => '', // brokers list
+                'log.connection.close'               => 'false',
+                'delivery.report.only.error'         => 'true',
                 'topic.metadata.refresh.sparse'      => 'true',
                 'topic.metadata.refresh.interval.ms' => 600000,
-                'socket.blocking.max.ms'             => 50,
-                'log.connection.close'               => 'false',
-                'message.send.max.retries'           => 2,
-                'delivery.report.only.error'         => 'true',
                 // 'socket.timeout.ms'                  => 10,
                 // 'socket.blocking.max.ms'             => 10,
-                'socket.keepalive.enable'            => 'false',
-                'max.in.flight.requests.per.connection' => 1000,
                 // 'reconnect.backoff.jitter.ms' => 0,
                 'api.version.request'                => 'false',
             ],
-            'producer' => [],
-            'consumer' => [
-                'group.id'  => 'tncEventDispatcher',
-                'client.id' => __CLASS__,
-                'queued.max.messages.kbytes' => 100000,
+            'producer' => [
+                'socket.blocking.max.ms'                => 50,
+                'message.send.max.retries'              => 0,
+                'socket.keepalive.enable'               => 'false',
+                'compression.codec'                     => 'gzip',
+                'max.in.flight.requests.per.connection' => 1000,
             ],
-            'topic' => [
-                'request.required.acks' => 0,
+            'topic'    => [ // this only using for producer
+                'request.required.acks' => 1,
                 // 'request.timeout.ms' => 1000,
-                'message.timeout.ms' => 500
+                'message.timeout.ms'    => 1000
+            ],
+            'consumer' => [
+                'group.id'                   => 'EventDispatcherService',
+                'client.id'                  => __CLASS__,
+                'queued.max.messages.kbytes' => 100000,
+                'socket.keepalive.enable'    => 'true',
             ]
         ];
 
@@ -278,14 +284,8 @@ class KafkaDriver extends AbstractInternalEventProducer implements Driver
      */
     private function getDefaultConf()
     {
-        // setting up producer $conf
         $conf = new \RdKafka\Conf();
-        if (function_exists('pcntl_sigprocmask')) {
-            pcntl_sigprocmask(SIG_BLOCK, array(SIGIO)); // once
-            $conf->set('internal.termination.signal', SIGIO); // anytime
-        }
         $conf->setErrorCb(array($this, 'kafkaErrorCallback'));
-
         foreach ($this->options['broker'] as $_key => $_value) {
             $conf->set($_key, $_value);
         }
