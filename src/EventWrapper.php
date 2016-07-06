@@ -29,6 +29,17 @@ class EventWrapper implements Normalizable
 
 
     /**
+     * Returns the prefix string of channels
+     *
+     * @return string
+     */
+    public static function getChannelPrefix()
+    {
+        return 'event-';
+    }
+
+
+    /**
      * @param Event  $event
      * @param string $mode
      */
@@ -68,7 +79,14 @@ class EventWrapper implements Normalizable
      */
     public function getChannel()
     {
-        return $this->event->getChannel();
+        $name = $this->event->getName();
+        if (($pos = strpos($name, '.')) !== false) {
+            $channel = substr($name, 0, $pos);
+        } else {
+            $channel = $name;
+        }
+
+        return self::getChannelPrefix() . $channel;
     }
 
     /**

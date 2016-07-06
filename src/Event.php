@@ -13,13 +13,6 @@ namespace Tnc\Service\EventDispatcher;
 interface Event
 {
     /**
-     * Gets the channel name which the event will be delivery to
-     *
-     * @return string
-     */
-    public function getChannel();
-
-    /**
      * Gets the group of the event
      *
      * @return string|null

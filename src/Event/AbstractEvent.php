@@ -26,32 +26,6 @@ abstract class AbstractEvent implements Event
 
 
     /**
-     * Returns the prefix string of channels
-     *
-     * @return string
-     */
-    public static function getChannelPrefix()
-    {
-        return 'event-';
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getChannel()
-    {
-        $name = $this->getName();
-        if (($pos = strpos($name, '.')) !== false) {
-            $channel = substr($name, 0, $pos);
-        } else {
-            $channel = $name;
-        }
-
-        return self::getChannelPrefix() . $channel;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getGroup()
