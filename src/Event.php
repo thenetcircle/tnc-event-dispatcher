@@ -12,15 +12,8 @@ namespace Tnc\Service\EventDispatcher;
 
 use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 
-interface Event extends Normalizable
+interface Event
 {
-    /**
-     * Sets the event name
-     *
-     * @param string $name
-     */
-    public function setName($name);
-
     /**
      * Gets the channel name which the event will be delivery to
      *
@@ -29,11 +22,25 @@ interface Event extends Normalizable
     public function getChannel();
 
     /**
-     * Gets the key of the event
+     * Gets the group of the event
      *
      * @return string|null
      */
-    public function getKey();
+    public function getGroup();
+
+    /**
+     * Gets the event name
+     *
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * Sets the event name
+     *
+     * @param string $name
+     */
+    public function setName($name);
 
     /**
      * Returns whether further event listeners should be triggered.

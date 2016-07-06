@@ -11,7 +11,6 @@
 namespace Tnc\Service\EventDispatcher\Event;
 
 use Tnc\Service\EventDispatcher\Event;
-use Tnc\Service\EventDispatcher\Normalizer;
 
 abstract class AbstractEvent implements Event
 {
@@ -19,10 +18,12 @@ abstract class AbstractEvent implements Event
      * @var string
      */
     protected $name;
+
     /**
      * @var bool Whether no further event listeners should be triggered
      */
     private $propagationStopped = false;
+
 
     /**
      * Returns the prefix string of channels
@@ -34,16 +35,6 @@ abstract class AbstractEvent implements Event
         return 'event-';
     }
 
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
 
     /**
      * {@inheritdoc}
@@ -63,9 +54,27 @@ abstract class AbstractEvent implements Event
     /**
      * {@inheritdoc}
      */
-    public function getKey()
+    public function getGroup()
     {
         return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -82,33 +91,5 @@ abstract class AbstractEvent implements Event
     public function stopPropagation()
     {
         $this->propagationStopped = true;
-    }
-
-    /**
-     * Gets the name of the event
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function normalize(Normalizer $normalizer)
-    {
-        return get_object_vars($this);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function denormalize(array $data, Normalizer $normalizer)
-    {
-        foreach ($data as $_key => $_value) {
-            $this->{$_key} = $_value;
-        }
     }
 }

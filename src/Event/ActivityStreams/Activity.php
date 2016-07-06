@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\ActivityStreams;
+namespace Tnc\Service\EventDispatcher\Event\ActivityStreams;
 
 use Tnc\Service\EventDispatcher\Normalizer;
 use Tnc\Service\EventDispatcher\Serializer\Normalizable;
@@ -16,77 +16,74 @@ use Tnc\Service\EventDispatcher\Serializer\Normalizable;
 class Activity implements Normalizable
 {
     /**
-     * @var Obj
-     */
-    private $actor;
-    /**
      * @var string
      */
-    private $verb;
-    /**
-     * @var Obj
-     */
-    private $object;
-    /**
-     * @var Obj
-     */
-    private $target;
-    /**
-     * @var Obj
-     */
-    private $provider;
-    /**
-     * @var Obj
-     */
-    private $generator;
+    private $id;
 
     /**
      * @var string
      */
-    private $id;
+    private $verb;
+
     /**
-     * @var string
+     * @var Obj
      */
-    private $title;
+    private $provider;
+
     /**
-     * @var string
+     * @var Obj
      */
-    private $content;
+    private $actor;
+
+    /**
+     * @var Obj
+     */
+    private $object;
+
+    /**
+     * @var Obj
+     */
+    private $target;
 
     /**
      * @var string
      */
     private $published;
+
     /**
      * @var string
      */
     private $updated;
 
+
     // Custom Fileds
+
     /**
      * @var array
      */
     private $context;
+
     /**
      * @var string
      */
     private $version = '1.0';
 
 
+
     /**
-     * @return Obj
+     * @return string
      */
-    public function getActor()
+    public function getId()
     {
-        return $this->getEmptyObjectIfNull($this->actor);
+        return $this->id;
     }
 
     /**
-     * @param Obj $actor
+     * @param string $id
      */
-    public function setActor(Obj $actor)
+    public function setId($id)
     {
-        $this->actor = $actor;
+        $this->id = $id;
     }
 
     /**
@@ -103,6 +100,38 @@ class Activity implements Normalizable
     public function setVerb($verb)
     {
         $this->verb = $verb;
+    }
+
+    /**
+     * @return Obj
+     */
+    public function getProvider()
+    {
+        return $this->getEmptyObjectIfNull($this->provider);
+    }
+
+    /**
+     * @param Obj $provider
+     */
+    public function setProvider(Obj $provider)
+    {
+        $this->provider = $provider;
+    }
+
+    /**
+     * @return Obj
+     */
+    public function getActor()
+    {
+        return $this->getEmptyObjectIfNull($this->actor);
+    }
+
+    /**
+     * @param Obj $actor
+     */
+    public function setActor(Obj $actor)
+    {
+        $this->actor = $actor;
     }
 
     /**
@@ -135,86 +164,6 @@ class Activity implements Normalizable
     public function setTarget(Obj $target)
     {
         $this->target = $target;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param string $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    /**
-     * @return Obj
-     */
-    public function getProvider()
-    {
-        return $this->getEmptyObjectIfNull($this->provider);
-    }
-
-    /**
-     * @param Obj $provider
-     */
-    public function setProvider(Obj $provider)
-    {
-        $this->provider = $provider;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
-
-    /**
-     * @param string $content
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
-    }
-
-    /**
-     * @return Obj
-     */
-    public function getGenerator()
-    {
-        return $this->getEmptyObjectIfNull($this->generator);
-    }
-
-    /**
-     * @param Obj $generator
-     */
-    public function setGenerator($generator)
-    {
-        $this->generator = $generator;
     }
 
     /**
@@ -301,10 +250,8 @@ class Activity implements Normalizable
                 continue;
             }
 
-            if (is_object($_value)) {
-                if($_value instanceof Normalizable) {
-                    $data[$_key] = $normalizer->normalize($_value);
-                }
+            if (is_object($_value) && ($_value instanceof Normalizable)) {
+                $data[$_key] = $normalizer->normalize($_value);
             }
             elseif (is_array($_value)) {
                 $data[$_key] = $_value;

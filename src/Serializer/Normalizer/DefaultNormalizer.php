@@ -32,7 +32,7 @@ class DefaultNormalizer implements Normalizer
         }
 
         $reflectionClass = new \ReflectionClass($class);
-        if (!$reflectionClass->isSubclassOf('\Tnc\Service\EventDispatcher\Serializer\Normalizable')) {
+        if (!$reflectionClass->isSubclassOf('Tnc\Service\EventDispatcher\Serializer\Normalizable')) {
             throw new InvalidArgumentException(sprintf('Class %s not normalizable.', $class));
         }
 

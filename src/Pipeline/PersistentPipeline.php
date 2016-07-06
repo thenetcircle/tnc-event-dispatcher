@@ -49,7 +49,7 @@ class PersistentPipeline implements Pipeline
         return $this->driver->push(
             $eventWrapper->getChannel(),
             $message,
-            $eventWrapper->getKey()
+            $eventWrapper->getGroup()
         );
     }
 
