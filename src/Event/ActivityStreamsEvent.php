@@ -16,6 +16,44 @@ use Tnc\Service\EventDispatcher\Exception\FatalException;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
 
+/**
+ * ActivityStreamsEvent
+ *
+ * an activity consists of an actor, a verb, an an object, and a target.
+ * It tells the story of a person performing an action on or with an object --
+ * "Geraldine posted a photo to her album" or "John shared a video".
+ * In most cases these components will be explicit, but they may also be implied.
+ *
+ * @see     http://activitystrea.ms/specs/json/1.0/
+ *
+ * @package Tnc\Service\EventDispatcher\Event
+ *
+ * @author  Service Team
+ *
+ * @method string getId()
+ * @method $this setId(string $id)
+ *
+ * @method string getVerb()
+ * @method $this setVerb(string $verb)
+ *
+ * @method \Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj getActor()
+ * @method $this setActor(\Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj $obj)
+ *
+ * @method \Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj getObject()
+ * @method $this setObject(\Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj $obj)
+ *
+ * @method \Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj getTarget()
+ * @method $this setTarget(\Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj $obj)
+ *
+ * @method \Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj getProvider()
+ * @method $this setProvider(\Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj $obj)
+ *
+ * @method array getContext()
+ * @method $this setContext(array $context)
+ *
+ * @method string getPublished()
+ * @method $this setPublished(string $datetime)
+ */
 abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizable
 {
     /**
@@ -40,8 +78,8 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
 
     public function __construct()
     {
-        $this->activity  = new Activity();
-        $this->activity->setPublished( (new \DateTime())->format(\DateTime::RFC3339) );
+        $this->activity = new Activity();
+        $this->activity->setPublished((new \DateTime())->format(\DateTime::RFC3339));
     }
 
 
@@ -87,8 +125,8 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
         ) {
             if (method_exists($this->activity, $name)) {
 
-                call_user_func_array(array($this->activity, $name), $arguments);
-                return $this;
+                $result = call_user_func_array(array($this->activity, $name), $arguments);
+                return $isGetter ? $result : $this;
 
             } else {
 
@@ -121,7 +159,8 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
                             }
 
                             call_user_func_array(array($obj, 'set' . $attributeName), $arguments);
-                            return $reflMethod->invoke($this->activity, $obj);
+                            $reflMethod->invoke($this->activity, $obj);
+                            return $this;
 
                         }
 
