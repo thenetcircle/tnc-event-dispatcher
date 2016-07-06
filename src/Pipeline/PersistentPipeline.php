@@ -2,19 +2,19 @@
 
 namespace Tnc\Service\EventDispatcher\Pipeline;
 
-use Tnc\Service\EventDispatcher\Event;
+use Tnc\Service\EventDispatcher\Backend;
+use Tnc\Service\EventDispatcher\Internal\InternalEventProducer;
 use Tnc\Service\EventDispatcher\LocalDispatcher;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
-use Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Pipeline;
 
-class PersistentPipeline implements Pipeline
+class PersistentPipeline implements Pipeline, InternalEventProducer
 {
     /**
-     * @var Driver;
+     * @var Backend;
      */
-    private $driver;
+    private $backend;
 
     /**
      * @var Serializer
@@ -29,14 +29,14 @@ class PersistentPipeline implements Pipeline
     /**
      * PersistentQueue constructor.
      *
-     * @param Driver     $driver
+     * @param Backend     $backend
      * @param Serializer $serializer
      */
-    public function __construct(Driver $driver, Serializer $serializer)
+    public function __construct(Backend $backend, Serializer $serializer)
     {
-        $this->driver         = $driver;
-        $this->serializer     = $serializer;
-        $this->receipts       = new \SplObjectStorage();
+        $this->backend    = $backend;
+        $this->serializer = $serializer;
+        $this->receipts   = new \SplObjectStorage();
     }
 
     /**
@@ -46,7 +46,7 @@ class PersistentPipeline implements Pipeline
     {
         $message = $this->serializer->serialize($eventWrapper);
 
-        return $this->driver->push(
+        return $this->backend->push(
             $eventWrapper->getChannel(),
             $message,
             $eventWrapper->getGroup()
@@ -58,7 +58,7 @@ class PersistentPipeline implements Pipeline
      */
     public function pop($channel)
     {
-        list($message, $receipt) = $this->driver->pop($channel);
+        list($message, $receipt) = $this->backend->pop($channel);
 
         $eventWrapper = null;
         if ($message) {
@@ -74,7 +74,7 @@ class PersistentPipeline implements Pipeline
     public function ack(EventWrapper $eventWrapper)
     {
         if ($this->receipts->contains($eventWrapper)) {
-            $this->driver->ack($this->receipts[$eventWrapper]);
+            $this->backend->ack($this->receipts[$eventWrapper]);
             $this->receipts->detach($eventWrapper);
         }
     }
@@ -84,6 +84,8 @@ class PersistentPipeline implements Pipeline
      */
     public function setInternalEventDispatcher(LocalDispatcher $dispatcher)
     {
-        $this->driver->setInternalEventDispatcher($dispatcher);
+        if($this->backend instanceof InternalEventProducer) {
+            $this->backend->setInternalEventDispatcher($dispatcher);
+        }
     }
 }

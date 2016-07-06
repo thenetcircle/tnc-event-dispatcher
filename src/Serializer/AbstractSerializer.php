@@ -2,8 +2,9 @@
 
 namespace Tnc\Service\EventDispatcher\Serializer;
 
-use Tnc\Service\EventDispatcher\Normalizer;
+use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer;
 
 /**
  * AbstractSerializer
@@ -15,26 +16,26 @@ use Tnc\Service\EventDispatcher\Serializer;
 abstract class AbstractSerializer implements Serializer
 {
     /**
-     * @var Normalizer
+     * @var Normalizer[]
      */
-    protected $normalizer;
+    protected $normalizers = array();
 
     /**
      * AbstractSerializer constructor.
      *
-     * @param Normalizer $normalizer
+     * @param Normalizer[] $normalizers
      */
-    public function __construct(Normalizer $normalizer = null)
+    public function __construct(array $normalizers = null)
     {
-        $this->normalizer = $normalizer ?: new DefaultNormalizer();
+        $this->normalizers = $normalizers ?: array( new Normalizer\CustomNormalizer() );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function serialize(Normalizable $object)
+    public function serialize($object)
     {
-        $data = $this->normalizer->normalize($object);
+        $data = $this->normalize($object);
 
         return $this->encode($data);
     }
@@ -46,20 +47,69 @@ abstract class AbstractSerializer implements Serializer
     {
         $data = $this->decode($content);
 
-        return $this->normalizer->denormalize($data, $class);
+        return $this->denormalize($data, $class);
     }
 
     /**
-     * @param array $data
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    abstract public function encode($data);
+    public function normalize($object)
+    {
+        if(null === ($normalizer = $this->getNormalizer($object))) {
+            throw new InvalidArgumentException(
+                sprintf('Could not normalize object of class %s, No normalizer found!', get_class($object))
+            );
+        }
+
+        return $normalizer->normalize($object);
+    }
 
     /**
-     * @param string $content
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    abstract public function decode($content);
+    public function denormalize($data, $class)
+    {
+        if(null === ($normalizer = $this->getDenormalizer($data, $class))) {
+            throw new InvalidArgumentException(
+                sprintf('Could not denormalize object of class %s, No normalizer found!', $class)
+            );
+        }
+
+        return $normalizer->denormalize($data, $class);
+    }
+
+
+    /**
+     * @return Normalizer|null
+     */
+    protected function getNormalizer($object)
+    {
+        foreach ($this->normalizers as $normalizer) {
+            if (
+                $normalizer instanceof Normalizer
+                && $normalizer->supportsNormalization($object)
+            ) {
+                return $normalizer;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Normalizer|null
+     */
+    protected function getDenormalizer($data, $class)
+    {
+        foreach ($this->normalizers as $normalizer) {
+            if (
+                $normalizer instanceof Normalizer
+                && $normalizer->supportsDenormalization($data, $class)
+            ) {
+                return $normalizer;
+            }
+        }
+
+        return null;
+    }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Serializer;
+namespace Tnc\Service\EventDispatcher\Normalizer;
 
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Normalizer;
+use Tnc\Service\EventDispatcher\Serializer;
 
 /**
  * Normalizable
@@ -17,17 +17,21 @@ interface Normalizable
     /**
      * Normalize instance to array representation.
      *
-     * @param Normalizer $normalizer
+     * @param Serializer $serializer
      *
      * @return array
+     *
+     * @throws InvalidArgumentException
      */
-    public function normalize(Normalizer $normalizer);
+    public function normalize(Serializer $serializer);
 
     /**
      * Denormalize array representation back to this instance.
      *
+     * @param Serializer $serializer
      * @param array      $data
-     * @param Normalizer $normalizer
+     *
+     * @throws InvalidArgumentException
      */
-    public function denormalize(array $data, Normalizer $normalizer);
+    public function denormalize(Serializer $serializer, array $data);
 }

@@ -3,8 +3,7 @@
 namespace Tnc\Service\EventDispatcher;
 
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Serializer\Normalizable;
+use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
 
 /**
  * Class EventWrapper
@@ -83,9 +82,9 @@ class EventWrapper implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(Normalizer $normalizer)
+    public function normalize(Serializer $serializer)
     {
-        $data                  = $normalizer->normalize($this->event);
+        $data                  = $serializer->normalize($this->event);
         $data[self::EXTRA_KEY] = [
             'class' => $this->getClass(),
             'mode'  => $this->getMode()
@@ -96,7 +95,7 @@ class EventWrapper implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(array $data, Normalizer $normalizer)
+    public function denormalize(Serializer $serializer, array $data)
     {
         $class = $mode = null;
 
@@ -110,10 +109,10 @@ class EventWrapper implements Normalizable
         $this->mode  = $mode ?: Dispatcher::MODE_ASYNC;
 
         try {
-            $this->event = $normalizer->denormalize($data, $this->class);
+            $this->event = $serializer->denormalize($data, $this->class);
         }
         catch(\Exception $e) {
-            $this->event = $normalizer->denormalize($data, DefaultEvent::class);
+            $this->event = $serializer->denormalize($data, DefaultEvent::class);
         }
     }
 }

@@ -11,9 +11,8 @@
 namespace Tnc\Service\EventDispatcher;
 
 use Tnc\Service\EventDispatcher\Exception;
-use Tnc\Service\EventDispatcher\Internal\InternalEventProducer;
 
-interface Pipeline extends InternalEventProducer
+interface Pipeline
 {
     /**
      * @param EventWrapper $eventWrapper

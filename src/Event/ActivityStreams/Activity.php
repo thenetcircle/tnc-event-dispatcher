@@ -10,8 +10,8 @@
 
 namespace Tnc\Service\EventDispatcher\Event\ActivityStreams;
 
-use Tnc\Service\EventDispatcher\Normalizer;
-use Tnc\Service\EventDispatcher\Serializer\Normalizable;
+use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
 
 class Activity implements Normalizable
 {
@@ -227,20 +227,9 @@ class Activity implements Normalizable
     }
 
     /**
-     * @param Obj $object
-     *
-     * @return Obj
-     */
-    public function getEmptyObjectIfNull($object)
-    {
-        return $object === null ? new Obj() : $object;
-    }
-
-
-    /**
      * {@inheritdoc}
      */
-    public function normalize(Normalizer $normalizer)
+    public function normalize(Serializer $serializer)
     {
         $data = get_object_vars($this);
 
@@ -251,7 +240,7 @@ class Activity implements Normalizable
             }
 
             if (is_object($_value) && ($_value instanceof Normalizable)) {
-                $data[$_key] = $normalizer->normalize($_value);
+                $data[$_key] = $serializer->normalize($_value);
             }
             elseif (is_array($_value)) {
                 $data[$_key] = $_value;
@@ -267,15 +256,25 @@ class Activity implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(array $data, Normalizer $normalizer)
+    public function denormalize(Serializer $serializer, array $data)
     {
         foreach ($data as $_key => $_value) {
             if (in_array($_key, array('actor', 'object', 'target', 'provider', 'generator'), true)) {
-                $this->{$_key} = $normalizer->denormalize($_value, Obj::class);
+                $this->{$_key} = $serializer->denormalize($_value, Obj::class);
             }
             else {
                 $this->{$_key} = $_value;
             }
         }
+    }
+
+    /**
+     * @param Obj $object
+     *
+     * @return Obj
+     */
+    protected function getEmptyObjectIfNull($object)
+    {
+        return $object === null ? new Obj() : $object;
     }
 }

@@ -10,11 +10,10 @@
 
 namespace Tnc\Service\EventDispatcher\Event;
 
-use ArrayAccess;
-use Tnc\Service\EventDispatcher\Normalizer;
-use Tnc\Service\EventDispatcher\Serializer\Normalizable;
+use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
 
-class DefaultEvent extends AbstractEvent implements Normalizable, ArrayAccess
+class DefaultEvent extends AbstractEvent implements Normalizable, \ArrayAccess
 {
     /**
      * @var array
@@ -106,7 +105,7 @@ class DefaultEvent extends AbstractEvent implements Normalizable, ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function normalize(Normalizer $normalizer)
+    public function normalize(Serializer $serializer)
     {
         return $this->data;
     }
@@ -114,7 +113,7 @@ class DefaultEvent extends AbstractEvent implements Normalizable, ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function denormalize(array $data, Normalizer $normalizer)
+    public function denormalize(Serializer $serializer, array $data)
     {
         $this->data = $data;
     }

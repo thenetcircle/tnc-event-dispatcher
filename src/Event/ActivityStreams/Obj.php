@@ -10,8 +10,8 @@
 
 namespace Tnc\Service\EventDispatcher\Event\ActivityStreams;
 
-use Tnc\Service\EventDispatcher\Normalizer;
-use Tnc\Service\EventDispatcher\Serializer\Normalizable;
+use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
 
 class Obj implements Normalizable
 {
@@ -168,7 +168,7 @@ class Obj implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(Normalizer $normalizer)
+    public function normalize(Serializer $serializer)
     {
         $vars = get_object_vars($this);
         $data = array();
@@ -187,7 +187,7 @@ class Obj implements Normalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(array $data, Normalizer $normalizer)
+    public function denormalize(Serializer $serializer, array $data)
     {
         foreach ($data as $_key => $_value) {
             $this->{$_key} = $_value;

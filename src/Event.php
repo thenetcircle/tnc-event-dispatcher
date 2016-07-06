@@ -10,8 +10,6 @@
 
 namespace Tnc\Service\EventDispatcher;
 
-use Tnc\Service\EventDispatcher\Serializer\Normalizable;
-
 interface Event
 {
     /**

@@ -45,7 +45,9 @@ class Dispatcher
         $this->localDispatcher = $localDispatcher;
 
         $this->pipeline = $pipeline;
-        $this->pipeline->setInternalEventDispatcher($localDispatcher);
+        if($this->pipeline instanceof InternalEventProducer) {
+            $this->pipeline->setInternalEventDispatcher($localDispatcher);
+        }
 
         $this->defaultEvent = $defaultEvent === null ? new DefaultEvent() : $defaultEvent;
     }

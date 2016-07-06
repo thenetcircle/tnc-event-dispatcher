@@ -10,9 +10,13 @@
 
 namespace Tnc\Service\EventDispatcher\Event;
 
-use Tnc\Service\EventDispatcher\ActivityStreams\Obj;
+use Tnc\Service\EventDispatcher\Event\ActivityStreams\Activity;
+use Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj;
+use Tnc\Service\EventDispatcher\Exception\FatalException;
+use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
 
-abstract class ActivityEvent extends AbstractEvent implements Normalizable
+abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizable
 {
     /**
      * @var Activity
@@ -25,7 +29,7 @@ abstract class ActivityEvent extends AbstractEvent implements Normalizable
      * @param string $id
      * @param string $objectType
      *
-     * @return \Tnc\Service\EventDispatcher\ActivityStreams\Obj
+     * @return \Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj
      */
     public static function createObj($objectType = null, $id = null)
     {
@@ -36,16 +40,19 @@ abstract class ActivityEvent extends AbstractEvent implements Normalizable
 
     public function __construct()
     {
+        $this->activity  = new Activity();
         $this->published = (new \DateTime())->format(\DateTime::RFC3339);
     }
 
+
+    // Override
     /**
      * {@inheritdoc}
      */
     public function getGroup()
     {
         $actor = $this->activity->getActor();
-        if($actor) {
+        if ($actor) {
             return $actor->getObjectType() . '_' . $actor->getId();
         } else {
             return null;
@@ -53,71 +60,109 @@ abstract class ActivityEvent extends AbstractEvent implements Normalizable
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getVerb()
+    public function getName()
     {
-        return $this->getName();
+        return $this->getVerb();
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getId()
+    public function setName($name)
     {
-        $uuidArr = [$this->getProvider()->getId()];
-        if($this->getActor()->getId() !== null) {
-            $uuidArr[] = $this->getActor()->getObjectType();
-            $uuidArr[] = $this->getActor()->getId();
-        }
-        $uuidArr[] = time();
-        $uuidArr[] = sprintf('%03d', mt_rand(0, 999));
-        return implode('-', $uuidArr);
-    }
-
-    /**
-     * @return string
-     */
-    public function getPublished()
-    {
-        return $this->published;
-    }
-
-    /**
-     * @return array
-     */
-    public function getContext()
-    {
-        return $this->context;
-    }
-
-    /**
-     * @param array $context
-     *
-     * @return $this
-     */
-    public function setContext($context)
-    {
-        $this->context = $context;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getVersion()
-    {
-        return $this->version;
+        return $this->setVerb($name);
     }
 
     //Magic methods
 
     public function __call($name, $arguments)
     {
-        if (0 === strpos($name, 'get') || 0 === strpos($name, 'set')) {
-            // getters and setters
-            $attributeName = lcfirst(substr($name, 3));
+        if (
+            true === ($isGetter = (0 === strpos($name, 'get')))
+            || 0 === strpos($name, 'set')
+        ) {
+            if (method_exists($this->activity, $name)) {
+                return call_user_func_array(array($this->activity, $name), $arguments);
+            } else {
+
+                $reflClass = new \ReflectionClass($this->activity);
+                foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $reflMethod) {
+
+                    if (0 === strpos($name, $reflMethod->name) && strlen($name) > strlen($reflMethod->name)) {
+
+                        $attributeName = substr($name, strlen($reflMethod->name));
+
+                        if ($isGetter) {
+
+                            $obj = $reflMethod->invoke($this->activity);
+                            if (!$obj instanceof Obj) {
+                                return null;
+                            } else {
+                                return call_user_func_array(array($obj, 'get' . $attributeName), $arguments);
+                            }
+
+                        } else {
+
+                            $obj          = null;
+                            $getterMethod = 'get' . substr($reflMethod->name, 3);
+                            if ($reflClass->hasMethod($getterMethod)) {
+                                $obj = call_user_func(array($this->activity, $getterMethod));
+                            }
+
+                            if (null === $obj || !$obj instanceof Obj) {
+                                return null;
+                            }
+
+                            call_user_func_array(array($obj, 'set' . $attributeName), $arguments);
+                            return $reflMethod->invoke($this->activity, $obj);
+
+                        }
+
+                    }
+
+                }
+
+            }
         }
+
+        throw new FatalException(
+            sprintf('Method %s does not exists in %s.', $name, __CLASS__)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function normalize(Serializer $serializer)
+    {
+        if (null === $this->getId()) {
+            $this->generateId();
+        }
+
+        return $serializer->normalize($this->activity);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function denormalize(Serializer $serializer, array $data)
+    {
+        $this->activity = $serializer->denormalize($data, Activity::class);
+    }
+
+    protected function generateId()
+    {
+        $uuidArr = [$this->getProvider()->getId()];
+        if ($this->getActor()->getId() !== null) {
+            $uuidArr[] = $this->getActor()->getObjectType();
+            $uuidArr[] = $this->getActor()->getId();
+        }
+        $uuidArr[] = time();
+        $uuidArr[] = sprintf('%03d', mt_rand(0, 999));
+        $uuid      = implode('-', $uuidArr);
+
+        $this->setId($uuid);
     }
 }

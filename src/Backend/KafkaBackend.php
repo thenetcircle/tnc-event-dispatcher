@@ -8,15 +8,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Driver;
+namespace Tnc\Service\EventDispatcher\Backend;
 
+use Tnc\Service\EventDispatcher\Backend;
 use Tnc\Service\EventDispatcher\Exception;
-use Tnc\Service\EventDispatcher\Driver;
 use Tnc\Service\EventDispatcher\Internal\AbstractInternalEventProducer;
 use Tnc\Service\EventDispatcher\Internal\Event\ErrorEvent;
 use Tnc\Service\EventDispatcher\Internal\Event\MessageEvent;
 
-class KafkaDriver extends AbstractInternalEventProducer implements Driver
+class KafkaBackend extends AbstractInternalEventProducer implements Backend
 {
     /**
      * @var \RdKafka\Producer
