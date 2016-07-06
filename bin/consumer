@@ -36,7 +36,7 @@ if (!defined('COMPOSER_AUTOLOAD_FILE')) {
 
 require COMPOSER_AUTOLOAD_FILE;
 
-$driver = new \Tnc\Service\EventDispatcher\Driver\KafkaDriver(
+$backend = new \Tnc\Service\EventDispatcher\Backend\KafkaBackend(
     '10.20.2.103:19092,10.20.2.103:29092,10.20.2.103:39092',
     [],
     false
@@ -44,12 +44,12 @@ $driver = new \Tnc\Service\EventDispatcher\Driver\KafkaDriver(
 
 $serializer = new \Tnc\Service\EventDispatcher\Serializer\JsonSerializer();
 
-$pipeline = new \Tnc\Service\EventDispatcher\Pipeline\PersistentPipeline($driver, $serializer);
+$pipeline = new \Tnc\Service\EventDispatcher\Pipeline\PersistentPipeline($backend, $serializer);
 
 $i = 0;
 while(true)
 {
-    $topic = '^' . \Tnc\Service\EventDispatcher\Event\AbstractEvent::getChannelPrefix() . '*';
+    $topic = '^' . \Tnc\Service\EventDispatcher\EventWrapper::getChannelPrefix() . '*';
     echo PHP_EOL;
     echo '-------------------- ' . $i . PHP_EOL;
     echo 'will listen topic: ' . $topic . PHP_EOL;
