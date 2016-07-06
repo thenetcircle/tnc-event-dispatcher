@@ -27,7 +27,10 @@ abstract class AbstractSerializer implements Serializer
      */
     public function __construct(array $normalizers = null)
     {
-        $this->normalizers = $normalizers ?: array( new Normalizer\CustomNormalizer() );
+        $this->normalizers = $normalizers ?: array(new Normalizer\CustomNormalizer());
+        foreach ($this->normalizers as $normalizer) {
+            $normalizer->setSerializer($this);
+        }
     }
 
     /**
@@ -55,7 +58,7 @@ abstract class AbstractSerializer implements Serializer
      */
     public function normalize($object)
     {
-        if(null === ($normalizer = $this->getNormalizer($object))) {
+        if (null === ($normalizer = $this->getNormalizer($object))) {
             throw new InvalidArgumentException(
                 sprintf('Could not normalize object of class %s, No normalizer found!', get_class($object))
             );
@@ -69,7 +72,7 @@ abstract class AbstractSerializer implements Serializer
      */
     public function denormalize($data, $class)
     {
-        if(null === ($normalizer = $this->getDenormalizer($data, $class))) {
+        if (null === ($normalizer = $this->getDenormalizer($data, $class))) {
             throw new InvalidArgumentException(
                 sprintf('Could not denormalize object of class %s, No normalizer found!', $class)
             );

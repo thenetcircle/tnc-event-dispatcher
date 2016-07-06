@@ -49,16 +49,16 @@ class PersistentPipeline implements Pipeline, InternalEventProducer
         return $this->backend->push(
             $eventWrapper->getChannel(),
             $message,
-            $eventWrapper->getGroup()
+            $eventWrapper->getKey()
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pop($channel)
+    public function pop($channel, $timeout = 5000)
     {
-        list($message, $receipt) = $this->backend->pop($channel);
+        list($message, $receipt) = $this->backend->pop($channel, $timeout);
 
         $eventWrapper = null;
         if ($message) {

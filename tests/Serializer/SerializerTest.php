@@ -3,7 +3,7 @@
 namespace Tnc\Service\EventDispatcher\Test;
 
 use Tnc\Service\EventDispatcher\Dispatcher;
-use Tnc\Service\EventDispatcher\Event\ActivityEvent;
+use Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
@@ -44,31 +44,33 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         $this->serializedEvent = '{"name":"testEvent", "sender":"user1", "receiver":"user2"}';
         $this->serializedWrappedEvent = preg_replace(
             '/}$/',
-            ',"_extra_":{"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Event\\\\\DefaultEvent","mode":"' . $this->mode .
+            ',"_php_":{"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Event\\\\\DefaultEvent","mode":"' .
+            $this->mode .
             '"}}',
             $this->serializedEvent
         );
 
 
-        $this->activityEvent = MockActivityEvent::createInstance()->setName('message.send')
-                                                                  ->setProvider('DD')
-                                                                  ->setActor(MockActivityEvent::obj('171', 'user'))
-                                                                  ->setObject(MockActivityEvent::obj('2221', 'message'))
-                                                                  ->setTarget(MockActivityEvent::obj('2281', 'user'))
+        $this->activityEvent = (new MockActivityEvent())->setName('message.send')
+                                                                  ->setProvider(MockActivityEvent::createObj('community', 'DD'))
+                                                                  ->setActor(MockActivityEvent::createObj('user', '171'))
+                                                                  ->setObject(MockActivityEvent::createObj('message', '2221'))
+                                                                  ->setTarget(MockActivityEvent::createObj('user', '2281'))
                                                                   ->setPublished($this->datetime)
                                                                   ->setId('TestId');
         $this->serializedActivityEvent = '{
           "verb": "message.send",
-          "provider":{"id":"DD"},
+          "provider":{"id":"DD", "objectType":"community"},
           "actor": {"id":"171", "objectType":"user"},
           "object": {"id":"2221", "objectType":"message"},
           "target": {"id":"2281", "objectType":"user"},
           "published":"' . $this->datetime . '",
-          "id":"TestId"}';
+          "id":"TestId",
+          "version":"1.0"}';
         $this->serializedWrappedActivityEvent = preg_replace(
             '/}$/',
             ',
-            "_extra_":{"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\MockActivityEvent","mode":"' . $this->mode . '"}
+            "_php_":{"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\MockActivityEvent","mode":"' . $this->mode . '"}
             }',
             $this->serializedActivityEvent
         );
@@ -159,6 +161,6 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
 }
 
 
-class MockActivityEvent extends ActivityEvent
+class MockActivityEvent extends ActivityStreamsEvent
 {
 }

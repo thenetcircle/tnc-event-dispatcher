@@ -66,17 +66,17 @@ class EventWrapper implements Normalizable
     /**
      * @return string
      */
-    public function getGroup()
+    public function getChannel()
     {
-        return $this->event->getGroup();
+        return $this->event->getChannel();
     }
 
     /**
      * @return string
      */
-    public function getChannel()
+    public function getKey()
     {
-        return $this->event->getChannel();
+        return $this->event->getGroup();
     }
 
     /**

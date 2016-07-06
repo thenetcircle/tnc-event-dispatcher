@@ -41,7 +41,7 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
     public function __construct()
     {
         $this->activity  = new Activity();
-        $this->published = (new \DateTime())->format(\DateTime::RFC3339);
+        $this->activity->setPublished( (new \DateTime())->format(\DateTime::RFC3339) );
     }
 
 
@@ -72,7 +72,9 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
      */
     public function setName($name)
     {
-        return $this->setVerb($name);
+        $this->setVerb($name);
+
+        return $this;
     }
 
     //Magic methods
@@ -84,7 +86,10 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
             || 0 === strpos($name, 'set')
         ) {
             if (method_exists($this->activity, $name)) {
-                return call_user_func_array(array($this->activity, $name), $arguments);
+
+                call_user_func_array(array($this->activity, $name), $arguments);
+                return $this;
+
             } else {
 
                 $reflClass = new \ReflectionClass($this->activity);

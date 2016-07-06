@@ -23,7 +23,8 @@ interface Pipeline
     public function push(EventWrapper $eventWrapper);
 
     /**
-     * @param string   $channel
+     * @param string $channel
+     * @param int    $timeout milliseconds
      *
      * @return EventWrapper $event
      *
@@ -31,7 +32,7 @@ interface Pipeline
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($channel);
+    public function pop($channel, $timeout = 5000);
 
     /**
      * @param EventWrapper $event

@@ -30,7 +30,7 @@ interface Backend
      * Pop a message to the specific channel of a pipeline
      *
      * @param string $channel
-     * @param int    $duration Sets up waiting for how many seconds
+     * @param int    $timeout milliseconds
      *
      * @return array [$message, $receipt]
      *
@@ -38,7 +38,7 @@ interface Backend
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($channel, $duration = 5);
+    public function pop($channel, $timeout);
 
     /**
      * Acknowledge a message after it's consumed successfully.

@@ -87,10 +87,9 @@ class KafkaBackend extends AbstractInternalEventProducer implements Backend
      *
      * $channel supports regexp with prefix ^
      */
-    public function pop($channel, $duration = 5)
+    public function pop($channel, $timeout)
     {
         $this->initConsumer();
-        $duration = (is_int($duration) && $duration > 0) ? ($duration * 1000) : 5000;
 
         try {
             if ($channel != $this->subscribingTopic) {
@@ -98,7 +97,7 @@ class KafkaBackend extends AbstractInternalEventProducer implements Backend
                 $this->subscribingTopic = $channel;
             }
 
-            $message = $this->consumer->consume($duration);
+            $message = $this->consumer->consume($timeout);
         }
         catch (\Exception $e) {
             throw new Exception\FatalException('Consuming failed.', $e->getCode(), $e);
