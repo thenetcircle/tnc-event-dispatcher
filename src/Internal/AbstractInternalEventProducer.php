@@ -32,7 +32,7 @@ class AbstractInternalEventProducer implements InternalEventProducer
     /**
      * @see LocalDispatcher::dispatch
      */
-    public function dispatch($name, Event $event = null)
+    protected function dispatch($name, Event $event = null)
     {
         if ($this->dispatcher) {
             return $this->dispatcher->dispatch($name, $event);

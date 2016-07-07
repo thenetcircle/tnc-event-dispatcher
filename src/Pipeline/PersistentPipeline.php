@@ -3,13 +3,15 @@
 namespace Tnc\Service\EventDispatcher\Pipeline;
 
 use Tnc\Service\EventDispatcher\Backend;
+use Tnc\Service\EventDispatcher\Internal\AbstractInternalEventProducer;
+use Tnc\Service\EventDispatcher\Internal\Event\ErrorEvent;
 use Tnc\Service\EventDispatcher\Internal\InternalEventProducer;
 use Tnc\Service\EventDispatcher\LocalDispatcher;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
 use Tnc\Service\EventDispatcher\Pipeline;
 
-class PersistentPipeline implements Pipeline, InternalEventProducer
+class PersistentPipeline extends AbstractInternalEventProducer implements Pipeline
 {
     /**
      * @var Backend;
@@ -29,7 +31,7 @@ class PersistentPipeline implements Pipeline, InternalEventProducer
     /**
      * PersistentQueue constructor.
      *
-     * @param Backend     $backend
+     * @param Backend    $backend
      * @param Serializer $serializer
      */
     public function __construct(Backend $backend, Serializer $serializer)
@@ -44,13 +46,21 @@ class PersistentPipeline implements Pipeline, InternalEventProducer
      */
     public function push(EventWrapper $eventWrapper)
     {
-        $message = $this->serializer->serialize($eventWrapper);
+        try {
+            $message = $this->serializer->serialize($eventWrapper);
 
-        return $this->backend->push(
-            $eventWrapper->getChannel(),
-            $message,
-            $eventWrapper->getKey()
-        );
+            $this->backend->push(
+                $eventWrapper->getChannel(),
+                $message,
+                $eventWrapper->getKey()
+            );
+        }
+        catch (\Exception $e) {
+            $this->dispatch(
+                ErrorEvent::NAME,
+                new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::push}')
+            );
+        }
     }
 
     /**
@@ -84,7 +94,9 @@ class PersistentPipeline implements Pipeline, InternalEventProducer
      */
     public function setInternalEventDispatcher(LocalDispatcher $dispatcher)
     {
-        if($this->backend instanceof InternalEventProducer) {
+        parent::setInternalEventDispatcher($dispatcher);
+
+        if ($this->backend instanceof InternalEventProducer) {
             $this->backend->setInternalEventDispatcher($dispatcher);
         }
     }
