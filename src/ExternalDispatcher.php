@@ -10,7 +10,7 @@
 
 namespace Tnc\Service\EventDispatcher;
 
-interface LocalDispatcher
+interface ExternalDispatcher
 {
     /**
      * Dispatches an event to all listeners

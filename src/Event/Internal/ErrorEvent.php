@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Internal\Event;
+namespace Tnc\Service\EventDispatcher\Event\Internal;
 
 use Tnc\Service\EventDispatcher\Event\AbstractEvent;
 

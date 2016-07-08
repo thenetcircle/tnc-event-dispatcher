@@ -36,7 +36,7 @@ if (!defined('COMPOSER_AUTOLOAD_FILE')) {
 
 require COMPOSER_AUTOLOAD_FILE;
 
-$backend = new \Tnc\Service\EventDispatcher\Backend\KafkaBackend(
+$backend = new \Tnc\Service\EventDispatcher\Backend\KafkaPipeline(
     '10.20.2.103:19092,10.20.2.103:29092,10.20.2.103:39092',
     [],
     false
@@ -44,7 +44,7 @@ $backend = new \Tnc\Service\EventDispatcher\Backend\KafkaBackend(
 
 $serializer = new \Tnc\Service\EventDispatcher\Serializer\JsonSerializer();
 
-$pipeline = new \Tnc\Service\EventDispatcher\Pipeline\PersistentPipeline($backend, $serializer);
+$pipeline = new \Tnc\Service\EventDispatcher\Backend\PersistentPipeline($backend, $serializer);
 
 $i = 0;
 while(true)

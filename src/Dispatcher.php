@@ -12,7 +12,6 @@ namespace Tnc\Service\EventDispatcher;
 
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Internal\InternalEventProducer;
 
 class Dispatcher
 {
@@ -21,9 +20,9 @@ class Dispatcher
     CONST MODE_ASYNC     = 'async';
 
     /**
-     * @var LocalDispatcher
+     * @var ExternalDispatcher
      */
-    private $localDispatcher;
+    private $externalDispatcher;
     /**
      * @var Pipeline
      */
@@ -36,20 +35,15 @@ class Dispatcher
     /**
      * Dispatcher constructor.
      *
-     * @param LocalDispatcher $localDispatcher
-     * @param Pipeline        $pipeline
-     * @param Event           $defaultEvent
+     * @param ExternalDispatcher $externalDispatcher
+     * @param Pipeline           $pipeline
+     * @param Event              $defaultEvent
      */
-    public function __construct(LocalDispatcher $localDispatcher, Pipeline $pipeline, Event $defaultEvent = null)
+    public function __construct(ExternalDispatcher $externalDispatcher, Pipeline $pipeline, Event $defaultEvent = null)
     {
-        $this->localDispatcher = $localDispatcher;
-
-        $this->pipeline = $pipeline;
-        if($this->pipeline instanceof InternalEventProducer) {
-            $this->pipeline->setInternalEventDispatcher($localDispatcher);
-        }
-
-        $this->defaultEvent = $defaultEvent === null ? new DefaultEvent() : $defaultEvent;
+        $this->externalDispatcher = $externalDispatcher;
+        $this->pipeline           = $pipeline;
+        $this->defaultEvent       = $defaultEvent === null ? new DefaultEvent() : $defaultEvent;
     }
 
     /**
@@ -76,7 +70,7 @@ class Dispatcher
         switch ($mode) {
 
             case self::MODE_SYNC:
-                $this->localDispatcher->dispatch($name, $event);
+                $this->externalDispatcher->dispatch($name, $event);
                 break;
 
             case self::MODE_ASYNC:
@@ -84,7 +78,7 @@ class Dispatcher
                 break;
 
             case self::MODE_SYNC_PLUS:
-                $this->localDispatcher->dispatch($name, $event);
+                $this->externalDispatcher->dispatch($name, $event);
                 $this->pipeline->push(new EventWrapper($event, $mode));
                 break;
 
@@ -97,10 +91,10 @@ class Dispatcher
     }
 
     /**
-     * @return LocalDispatcher
+     * @return ExternalDispatcher
      */
-    public function getLocalDispatcher()
+    public function getExternalDispatcher()
     {
-        return $this->localDispatcher;
+        return $this->externalDispatcher;
     }
 }

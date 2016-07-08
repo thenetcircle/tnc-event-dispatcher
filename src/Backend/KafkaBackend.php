@@ -12,11 +12,10 @@ namespace Tnc\Service\EventDispatcher\Backend;
 
 use Tnc\Service\EventDispatcher\Backend;
 use Tnc\Service\EventDispatcher\Exception;
-use Tnc\Service\EventDispatcher\Internal\AbstractInternalEventProducer;
-use Tnc\Service\EventDispatcher\Internal\Event\ErrorEvent;
-use Tnc\Service\EventDispatcher\Internal\Event\MessageEvent;
+use Tnc\Service\EventDispatcher\Event\Internal\ErrorEvent;
+use Tnc\Service\EventDispatcher\Event\Internal\MessageEvent;
 
-class KafkaBackend extends AbstractInternalEventProducer implements Backend
+class KafkaPipeline extends AbstractBackend
 {
     /**
      * @var \RdKafka\Producer
@@ -134,7 +133,7 @@ class KafkaBackend extends AbstractInternalEventProducer implements Backend
      */
     public function kafkaErrorCallback($kafka, $err, $reason)
     {
-        $this->dispatch(ErrorEvent::NAME, new ErrorEvent(
+        $this->eventDispatcher->dispatch(ErrorEvent::NAME, new ErrorEvent(
             $err,
             sprintf('error: %s, reason: %s', rd_kafka_err2str($err), $reason),
             '{KafkaDriver::kafkaErrorCallback}'
@@ -151,7 +150,7 @@ class KafkaBackend extends AbstractInternalEventProducer implements Backend
      */
     public function deliveryMessageCallback(\RdKafka\Producer $producer, \RdKafka\Message $message)
     {
-        $this->dispatch(MessageEvent::DELIVERY_FAILED, new MessageEvent(
+        $this->eventDispatcher->dispatch(MessageEvent::DELIVERY_FAILED, new MessageEvent(
             $message->topic_name, $message->payload, $message->key, $message->err
         ));
 

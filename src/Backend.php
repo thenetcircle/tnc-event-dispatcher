@@ -46,4 +46,11 @@ interface Backend
      * @param mixed $receipt
      */
     public function ack($receipt);
+
+    /**
+     * Sets the dispatcher which can do dispatch internal events
+     *
+     * @param ExternalDispatcher $externalDispatcher
+     */
+    public function setEventDispatcher(ExternalDispatcher $externalDispatcher);
 }

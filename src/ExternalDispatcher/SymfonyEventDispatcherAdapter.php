@@ -1,13 +1,13 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\LocalDispatcher;
+namespace Tnc\Service\EventDispatcher\ExternalDispatcher;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Tnc\Service\EventDispatcher\Event;
-use Tnc\Service\EventDispatcher\LocalDispatcher;
+use Tnc\Service\EventDispatcher\ExternalDispatcher;
 
-class SymfonyEventDispatcherAdapter implements LocalDispatcher
+class SymfonyEventDispatcherAdapter implements ExternalDispatcher
 {
     /**
      * @var EventDispatcherInterface
