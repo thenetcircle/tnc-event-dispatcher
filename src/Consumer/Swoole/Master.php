@@ -6,24 +6,25 @@ class Master
 {
     // todo get return value for failed creation
 
-    private $processes = [];
-    private $fetchersNum;
-    private $workersNumOfEachFetcher;
+    private $workers = [];
+    private $workerNum;
+    private $taskNum;
 
-    public static function run($fetchersNum = 1, $workersNumOfEachFetcher = 1)
+    public static function run($workerNum = 1, $taskNum = 1)
     {
-        $instance = new self($fetchersNum, $workersNumOfEachFetcher);
+        $instance = new self($workerNum, $taskNum);
         $instance->initName();
         $instance->initProcesses();
 
         $recv = \swoole_process::wait();
+
         echo "Shutdown" . PHP_EOL;
     }
 
-    public function __construct($fetchersNum, $workersNumOfEachFetcher)
+    public function __construct($workerNum, $taskNum)
     {
-        $this->fetchersNum             = $fetchersNum;
-        $this->workersNumOfEachFetcher = $workersNumOfEachFetcher;
+        $this->workerNum = $workerNum;
+        $this->taskNum   = $taskNum;
     }
 
     public function initName()
@@ -33,10 +34,9 @@ class Master
 
     public function initProcesses()
     {
-        for ($i = 0; $i < $this->fetchersNum; $i++) {
-
-            $fetcher = Worker::createInstance($this);
-
+        for ($i = 0; $i < $this->workerNum; $i++) {
+            $worker = Worker::createInstance($this->taskNum);
+            $this->workers[$worker->getPid()] = $worker;
         }
     }
 }
