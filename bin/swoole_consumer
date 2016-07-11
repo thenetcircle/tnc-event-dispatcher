@@ -37,4 +37,4 @@ if (!defined('COMPOSER_AUTOLOAD_FILE')) {
 
 require COMPOSER_AUTOLOAD_FILE;
 
-\Tnc\Service\EventDispatcher\Consumer\Swoole\Master::run(1, 1);
+\Tnc\Service\EventDispatcher\Consumer\Pcntl\Master::run(1, 1);

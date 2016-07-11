@@ -4,26 +4,36 @@ namespace Tnc\Service\EventDispatcher\Consumer\Pcntl;
 
 class Master
 {
-    // todo get return value for failed creation
+    private static $pid;
 
-    private $workers = [];
     private $workerNum;
     private $taskNum;
+    private $workers = [];
+    private $queues  = [];
+    private $tasks   = [];
 
     public static function run($workerNum = 1, $taskNum = 1)
     {
+        self::$pid = getmypid();
+        Process::setTitle('event-dispatcher master');
+
         $instance = new self($workerNum, $taskNum);
-        $instance->initName();
-        $instance->initWorks();
+        $instance->initProcesses();
 
-        sleep(10);
-
-        while (false !== ($recv = \swoole_process::wait())) {
+        while (($pid = pcntl_wait($status)) > 0) {
             echo 'Process Exit: ' . PHP_EOL;
-            var_dump($recv);
+            var_dump($pid);
         }
 
+        var_dump($pid);
+
         echo "Shutdown" . PHP_EOL;
+    }
+
+    public static function getQueueKey($queueId)
+    {
+        $file = tempnam(sys_get_temp_dir(), 's');
+        return ftok($file, 'a') + self::$pid + $queueId;
     }
 
     public function __construct($workerNum, $taskNum)
@@ -32,16 +42,29 @@ class Master
         $this->taskNum   = $taskNum;
     }
 
-    protected function initName()
+    protected function initQueues()
     {
-        swoole_set_process_name('event-dispatcher master');
+        for ($i = 1; $i <= $this->workerNum; $i++) {
+            $queueKey                = self::getQueueKey($i);
+            $this->queues[$queueKey] = msg_get_queue($queueKey, 0666);
+        }
     }
 
-    public function initWorks()
+    protected function initProcesses()
     {
-        for ($i = 0; $i < $this->workerNum; $i++) {
-            $worker                           = Worker::createInstance($this->taskNum);
+        for ($i = 1; $i <= $this->workerNum; $i++) {
+
+            $queueKey       = self::getQueueKey($i);
+            $this->queues[] = $queueKey;
+
+            $worker                           = Worker::createInstance($queueKey);
             $this->workers[$worker->getPid()] = $worker;
+
+            for ($j = 1; $j <= $this->taskNum; $j++) {
+                $task                         = Task::createInstance($queueKey);
+                $this->tasks[$task->getPid()] = $task;
+            }
+
         }
     }
 }

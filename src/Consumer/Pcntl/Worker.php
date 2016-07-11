@@ -2,75 +2,14 @@
 
 namespace Tnc\Service\EventDispatcher\Consumer\Pcntl;
 
-class Worker
+class Worker extends Process
 {
-    /**
-     * @var int
-     */
-    private $pid;
-
-    /**
-     * @var \swoole_process
-     */
-    private $process;
-
-    /**
-     * @var int
-     */
-    private $taskNum;
-
-    /**
-     * @var int[]
-     */
-    private $tasks = [];
-
-    public static function createInstance($taskNum)
+    protected function run()
     {
-        $instance = new self();
+        self::setTitle('event-dispatcher worker');
 
-        $instance->taskNum = $taskNum;
-        $instance->process = new \swoole_process(array($instance, 'run'));
-        $instance->pid = $instance->process->start();
-
-        return $instance;
-    }
-
-    public function run(\swoole_process $process)
-    {
-        $this->initName();
-        $this->initTasks();
-
-        echo 'Im a fetcher' . $this->getProcess()->pid . PHP_EOL;
-        sleep(50);
-    }
-
-    /**
-     * @return int
-     */
-    public function getPid()
-    {
-        return $this->pid;
-    }
-
-    /**
-     * @return \swoole_process
-     */
-    public function getProcess()
-    {
-        return $this->process;
-    }
-
-    protected function initName()
-    {
-        swoole_set_process_name('event-dispatcher worker');
-    }
-
-    protected function initTasks()
-    {
-        for($i=0; $i<$this->taskNum; $i++)
-        {
-            $task = Task::createInstance();
-            $this->tasks[$task->getPid()] = $task;
-        }
+        echo 'Im a worker' . $this->getPid() . PHP_EOL;
+        echo $this->getQueueKey() . PHP_EOL;
+        sleep(10);
     }
 }
