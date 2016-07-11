@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Consumer\Swoole;
+namespace Tnc\Service\EventDispatcher\Consumer\Pcntl;
 
 class Master
 {

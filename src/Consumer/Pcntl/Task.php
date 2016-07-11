@@ -1,8 +1,8 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Consumer\Swoole;
+namespace Tnc\Service\EventDispatcher\Consumer\Pcntl;
 
-class Worker
+class Task
 {
     /**
      * @var int
@@ -14,22 +14,12 @@ class Worker
      */
     private $process;
 
-    /**
-     * @var int
-     */
-    private $taskNum;
-
-    /**
-     * @var int[]
-     */
-    private $tasks = [];
-
-    public static function createInstance($taskNum)
+    public static function createInstance()
     {
         $instance = new self();
 
-        $instance->taskNum = $taskNum;
         $instance->process = new \swoole_process(array($instance, 'run'));
+        $instance->process->useQueue(-1, 2);
         $instance->pid = $instance->process->start();
 
         return $instance;
@@ -38,10 +28,8 @@ class Worker
     public function run(\swoole_process $process)
     {
         $this->initName();
-        $this->initTasks();
-
-        echo 'Im a fetcher' . $this->getProcess()->pid . PHP_EOL;
-        sleep(50);
+        echo 'Im a task' . $this->getProcess()->pid . PHP_EOL;
+        sleep(100);
     }
 
     /**
@@ -62,15 +50,6 @@ class Worker
 
     protected function initName()
     {
-        swoole_set_process_name('event-dispatcher worker');
-    }
-
-    protected function initTasks()
-    {
-        for($i=0; $i<$this->taskNum; $i++)
-        {
-            $task = Task::createInstance();
-            $this->tasks[$task->getPid()] = $task;
-        }
+        swoole_set_process_name('event-dispatcher task');
     }
 }
