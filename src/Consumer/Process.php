@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Consumer\Pcntl;
+namespace Tnc\Service\EventDispatcher\Consumer;
 
 class Process
 {
@@ -8,6 +8,11 @@ class Process
      * @var int
      */
     private $id;
+
+    /**
+     * @var string
+     */
+    private $title;
 
     /**
      * @var Manager
@@ -24,9 +29,20 @@ class Process
      */
     private $job;
 
-    public function __construct($id, callable $job, Manager $manager)
+
+    /**
+     * Process constructor.
+     *
+     * @param int      $id
+     * @param string   $title
+     * @param callable $job
+     * @param Manager  $manager
+     */
+    public function __construct($id, $title, callable $job, Manager $manager)
     {
-        $this->id = $id;
+        $this->id      = $id;
+        $this->title   = $title;
+        $this->job     = $job;
         $this->manager = $manager;
     }
 
@@ -36,6 +52,14 @@ class Process
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
     }
 
     /**
@@ -66,6 +90,19 @@ class Process
         return $this->manager;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return Queue
+     */
+    public function getQueue($name)
+    {
+        return $this->getManager()->getQueue($name);
+    }
+
+    /**
+     * run the real job
+     */
     public function run()
     {
         call_user_func($this->job, $this);

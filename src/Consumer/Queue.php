@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Consumer\Pcntl;
+namespace Tnc\Service\EventDispatcher\Consumer;
 
 class Queue
 {
