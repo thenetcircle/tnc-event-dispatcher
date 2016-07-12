@@ -262,7 +262,7 @@ class KafkaPipeline extends AbstractBackend
             'consumer' => [
                 'group.id'                   => 'EventDispatcherService',
                 'client.id'                  => __CLASS__,
-                'queued.max.messages.kbytes' => 100000,
+                'queued.max.messages.kbytes' => 10000,
                 'socket.keepalive.enable'    => 'true',
             ]
         ];

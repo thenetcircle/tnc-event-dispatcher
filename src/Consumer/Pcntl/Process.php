@@ -2,37 +2,40 @@
 
 namespace Tnc\Service\EventDispatcher\Consumer\Pcntl;
 
-abstract class Process
+class Process
 {
+    /**
+     * @var int
+     */
+    private $id;
+
+    /**
+     * @var Manager
+     */
+    private $manager;
+
     /**
      * @var int
      */
     private $pid;
 
     /**
-     * @var Master
+     * @var callable
      */
-    private $master;
+    private $job;
 
-    public static function fork(Master $master)
+    public function __construct($id, callable $job, Manager $manager)
     {
-        $instance         = new static();
-        $instance->master = $master;
-
-        if(($pid = pcntl_fork()) === 0) {
-            $instance->run();
-            exit(0);
-        }
-        elseif ($pid === -1) {
-            throw new \RuntimeException('Failure on pcntl_fork');
-        }
-
-        $instance->pid = $pid;
-        return $instance;
+        $this->id = $id;
+        $this->manager = $manager;
     }
 
-    private function __construct()
+    /**
+     * @return int
+     */
+    public function getId()
     {
+        return $this->id;
     }
 
     /**
@@ -40,21 +43,31 @@ abstract class Process
      */
     public function getPid()
     {
-        return $this->pid ?: getmypid();
+        return $this->pid;
     }
 
     /**
-     * @return Master
+     * @param int $pid
+     *
+     * @return $this
      */
-    public function getMaster()
+    public function setPid($pid)
     {
-        return $this->master;
+        $this->pid = $pid;
+
+        return $this;
     }
 
-    public function getQueue()
+    /**
+     * @return Manager
+     */
+    public function getManager()
     {
-        return $this->master->getQueue();
+        return $this->manager;
     }
 
-    abstract protected function run();
+    public function run()
+    {
+        call_user_func($this->job, $this);
+    }
 }
