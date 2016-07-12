@@ -4,23 +4,33 @@ namespace Tnc\Service\EventDispatcher\Consumer\Pcntl;
 
 class Master
 {
-    private static $pid;
+    private $pid;
 
-    private $workerNum;
-    private $taskNum;
-    private $workers = [];
-    private $queues  = [];
-    private $tasks   = [];
+    private $queue;
 
-    public static function run($workerNum = 1, $taskNum = 1)
+    private $fetchers = [];
+    private $fetchersNum;
+    private $workers  = [];
+    private $workersNum;
+
+    public function __construct($fetchersNum, $workersNum)
     {
-        self::$pid = getmypid();
-        Process::setTitle('event-dispatcher master');
+        $this->fetchersNum = $fetchersNum;
+        $this->workersNum  = $workersNum;
+        $this->pid         = getmypid();
+    }
 
-        $instance = new self($workerNum, $taskNum);
-        $instance->initProcesses();
+    public function run()
+    {
+        printf("Master [%d] running.\n", $this->getPid());
 
-        while (($pid = pcntl_wait($status)) > 0) {
+        Utils::setProcessTitle('event-dispatcher master');
+
+        $this->initQueue();
+        $this->initFetchers();
+        $this->initWorkers();
+
+        while(($pid = pcntl_wait($status)) > 0) {
             echo 'Process Exit: ' . PHP_EOL;
             var_dump($pid);
         }
@@ -30,41 +40,35 @@ class Master
         echo "Shutdown" . PHP_EOL;
     }
 
-    public static function getQueueKey($queueId)
+    public function getPid()
     {
-        $file = tempnam(sys_get_temp_dir(), 's');
-        return ftok($file, 'a') + self::$pid + $queueId;
+        return $this->pid;
     }
 
-    public function __construct($workerNum, $taskNum)
+    public function getQueue()
     {
-        $this->workerNum = $workerNum;
-        $this->taskNum   = $taskNum;
+        return $this->queue;
     }
 
-    protected function initQueues()
+    protected function initQueue()
     {
-        for ($i = 1; $i <= $this->workerNum; $i++) {
-            $queueKey                = self::getQueueKey($i);
-            $this->queues[$queueKey] = msg_get_queue($queueKey, 0666);
+        $key         = ftok(__FILE__, 'A'); // + $this->getPid();
+        $this->queue = msg_get_queue($key, 0666);
+    }
+
+    protected function initFetchers()
+    {
+        for($i = 0; $i < $this->fetchersNum; $i++) {
+            $fetcher                            = Fetcher::fork($this);
+            $this->fetchers[$fetcher->getPid()] = $fetcher;
         }
     }
 
-    protected function initProcesses()
+    protected function initWorkers()
     {
-        for ($i = 1; $i <= $this->workerNum; $i++) {
-
-            $queueKey       = self::getQueueKey($i);
-            $this->queues[] = $queueKey;
-
-            $worker                           = Worker::createInstance($queueKey);
-            $this->workers[$worker->getPid()] = $worker;
-
-            for ($j = 1; $j <= $this->taskNum; $j++) {
-                $task                         = Task::createInstance($queueKey);
-                $this->tasks[$task->getPid()] = $task;
-            }
-
+        for($i = 0; $i <= $this->workersNum; $i++) {
+            $workers                           = Worker::fork($this);
+            $this->workers[$workers->getPid()] = $workers;
         }
     }
 }

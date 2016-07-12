@@ -6,10 +6,18 @@ class Worker extends Process
 {
     protected function run()
     {
-        self::setTitle('event-dispatcher worker');
+        Utils::setProcessTitle('event-dispatcher worker');
+        printf("Worker [%d] running, Parent [%d].\n", $this->getPid(), $this->getMaster()->getPid());
 
-        echo 'Im a worker' . $this->getPid() . PHP_EOL;
-        echo $this->getQueueKey() . PHP_EOL;
-        sleep(10);
+        while(true === msg_receive($this->getQueue(), 0, $msgType, 10000, $message, true, 0, $errorCode))
+        {
+            printf(
+                "Worker [%s] has received a message, MsgType: %s, Message: %s, ErrorCode: %d\n",
+                $this->getPid(), $msgType, $message, $errorCode
+            );
+            usleep(100000);
+        }
+
+        sleep(5);
     }
 }

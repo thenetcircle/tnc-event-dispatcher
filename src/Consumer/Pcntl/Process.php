@@ -10,14 +10,14 @@ abstract class Process
     private $pid;
 
     /**
-     * @var string
+     * @var Master
      */
-    private $queueKey;
+    private $master;
 
-    public static function createInstance($queueKey)
+    public static function fork(Master $master)
     {
-        $instance = new static();
-        $instance->queueKey = $queueKey;
+        $instance         = new static();
+        $instance->master = $master;
 
         if(($pid = pcntl_fork()) === 0) {
             $instance->run();
@@ -31,13 +31,8 @@ abstract class Process
         return $instance;
     }
 
-    public static function setTitle($title)
+    private function __construct()
     {
-        if(function_exists('cli_set_process_title')) {
-            cli_set_process_title($title); //PHP >= 5.5.
-        } else if(function_exists('setproctitle')) {
-            setproctitle($title); //PECL proctitle
-        }
     }
 
     /**
@@ -48,9 +43,17 @@ abstract class Process
         return $this->pid ?: getmypid();
     }
 
-    public function getQueueKey()
+    /**
+     * @return Master
+     */
+    public function getMaster()
     {
-        return $this->queueKey;
+        return $this->master;
+    }
+
+    public function getQueue()
+    {
+        return $this->master->getQueue();
     }
 
     abstract protected function run();
