@@ -33,12 +33,12 @@ class Process
     /**
      * Process constructor.
      *
-     * @param int      $id
-     * @param string   $title
-     * @param callable $job
-     * @param Manager  $manager
+     * @param Manager     $manager
+     * @param callable    $job
+     * @param string|null $title
+     * @param int|null    $id
      */
-    public function __construct($id, $title, callable $job, Manager $manager)
+    public function __construct(Manager $manager, callable $job, $title = null, $id = null)
     {
         $this->id      = $id;
         $this->title   = $title;
@@ -60,6 +60,14 @@ class Process
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getJob()
+    {
+        return $this->job;
     }
 
     /**
@@ -98,6 +106,14 @@ class Process
     public function getQueue($name)
     {
         return $this->getManager()->getQueue($name);
+    }
+
+    /**
+     * @return \Psr\Log\LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->getManager()->getLogger();
     }
 
     /**

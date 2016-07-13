@@ -3,32 +3,65 @@
 namespace Tnc\Service\EventDispatcher\Consumer\Job;
 
 use Tnc\Service\EventDispatcher\Consumer\Process;
+use Tnc\Service\EventDispatcher\ExternalDispatcher;
 
 final class Worker
 {
+    /**
+     * @var ExternalDispatcher
+     */
+    private $externalDispatcher;
+
+    public function __construct(ExternalDispatcher $externalDispatcher)
+    {
+        $this->externalDispatcher = $externalDispatcher;
+    }
+
     public function __invoke(Process $process)
     {
-        printf("Worker [%d] running, Parent [%d].\n", $process->getPid(), $process->getManager()->getPid());
+        $process->getLogger()->debug(sprintf('Worker [%d] is running.', $process->getId()));
 
         $jobQueue     = $process->getQueue('job');
         $receiptQueue = $process->getQueue('receipt');
+        $jobsNum = 0;
 
-        if(false !== ($payload = $jobQueue->pop($process->getId()))) {
-            printf("Worker [%d] has received a job: %s\n", $process->getPid(), $payload);
+        while (false !== ($job = $jobQueue->pop($process->getId(), 3600000))) {
+            list($fetcherId, $eventWrapper, $receipt) = $job;
 
+            $process->getLogger()->debug(
+                sprintf(
+                    'Worker [%d] got a new job from Fetcher [%d]. EventWrapper: %s, Receipt: %s',
+                    $process->getId(), $fetcherId, var_export($eventWrapper, true), var_export($receipt, true)
+                )
+            );
 
-            sleep(3);
+            $process->getLogger()->debug(
+                sprintf('Worker [%d] got %d jobs.', $process->getId(), ++$jobsNum)
+            );
 
-            $receipt = 'receipt_' . $payload;
-            if($receiptQueue->push(1, $receipt)) {
-                printf("Worker [%d] has sent a receipt: %s\n", $process->getPid(), $receipt);
+            if ($receiptQueue->push($fetcherId, $receipt)) {
+                $process->getLogger()->debug(
+                    sprintf(
+                        'Worker [%d] has pushed a receipt to Fetcher [%d].',
+                        $process->getId(), $fetcherId
+                    )
+                );
             }
             else {
-                printf("Worker [%d] sent message failed, Error: %s\n", $process->getPid(), $receiptQueue->getLastErrorCode());
+                $process->getLogger()->warning(
+                    sprintf(
+                        'Worker [%d] pushing a receipt to Fetcher [%d] failed. LastErrorCode: %d',
+                        $process->getId(), $fetcherId, $receiptQueue->getLastErrorCode()
+                    )
+                );
             }
         }
 
-        printf('Worker [%d] push message failed. Error: %s', $process->getPid(),$jobQueue->getLastErrorCode());
-        sleep(5);
+        $process->getLogger()->warning(
+            sprintf(
+                'Worker [%d] will quit as there is no more jobs. LastErrorCode: %d',
+                $process->getId(), $jobQueue->getLastErrorCode()
+            )
+        );
     }
 }

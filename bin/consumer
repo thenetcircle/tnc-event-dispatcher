@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-if(version_compare('5.6.0', PHP_VERSION, '>')) {
+if (version_compare('5.6.0', PHP_VERSION, '>')) {
     fwrite(
         STDERR,
         'The runner requires PHP 5.6; using the latest version of PHP is highly recommended.' . PHP_EOL
@@ -10,12 +10,12 @@ if(version_compare('5.6.0', PHP_VERSION, '>')) {
     die(1);
 }
 
-if(!ini_get('date.timezone')) {
+if (!ini_get('date.timezone')) {
     ini_set('date.timezone', 'UTC');
 }
 
-foreach(array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
-    if(file_exists($file)) {
+foreach (array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
+    if (file_exists($file)) {
         define('COMPOSER_AUTOLOAD_FILE', $file);
 
         break;
@@ -24,7 +24,7 @@ foreach(array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.ph
 
 unset($file);
 
-if(!defined('COMPOSER_AUTOLOAD_FILE')) {
+if (!defined('COMPOSER_AUTOLOAD_FILE')) {
     fwrite(STDERR,
            'You need to set up the project dependencies using the following commands:' . PHP_EOL .
            'wget http://getcomposer.org/composer.phar' . PHP_EOL .
@@ -42,8 +42,27 @@ use \Tnc\Service\EventDispatcher\Consumer\Queue;
 use \Tnc\Service\EventDispatcher\Consumer\Job\Fetcher;
 use \Tnc\Service\EventDispatcher\Consumer\Job\Worker;
 
-$manager = (new Manager('EventDispatcher Master'))->addQueue(new Queue('job'))
-                                                  ->addQueue(new Queue('receipt'));
-$manager->spawn(1, 'EventDispatcher Fetcher', new Fetcher(1));
-$manager->spawn(1, 'EventDispatcher Worker', new Worker());
+
+$externalDispatcher = new \Tnc\Service\EventDispatcher\ExternalDispatcher\NullExternalDispatcher();
+$backend = new \Tnc\Service\EventDispatcher\Backend\KafkaBackend(
+    #'10.20.2.103:19092,10.20.2.103:29092,10.20.2.103:39092',
+    '10.60.0.129:9092,10.60.0.129:9093,10.60.0.129:9094',
+    [],
+    false
+);
+$serializer = new \Tnc\Service\EventDispatcher\Serializer\JsonSerializer();
+$pipeline = new \Tnc\Service\EventDispatcher\Pipeline($externalDispatcher, $backend, $serializer);
+
+$logger = new \Tnc\Service\EventDispatcher\Consumer\SimpleLogger(\Psr\Log\LogLevel::DEBUG);
+
+$manager = (new Manager('EventDispatcher Master', $logger))
+    // ->demonize()
+    ->addQueue(new Queue('job'))
+    ->addQueue(new Queue('receipt'));
+
+$manager->spawn(new Fetcher($pipeline, '^event-*', 3), 'EventDispatcher Fetcher', 1);
+$manager->spawn(new Worker($externalDispatcher), 'EventDispatcher Worker 1', 1);
+$manager->spawn(new Worker($externalDispatcher), 'EventDispatcher Worker 2', 2);
+$manager->spawn(new Worker($externalDispatcher), 'EventDispatcher Worker 3', 3);
+
 $manager->wait();

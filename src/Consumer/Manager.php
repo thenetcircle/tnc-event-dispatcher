@@ -2,16 +2,35 @@
 
 namespace Tnc\Service\EventDispatcher\Consumer;
 
+use Psr\Log\LoggerInterface;
+
 class Manager
 {
+    /**
+     * @var int
+     */
     private $pid;
+
+    /**
+     * @var Queue[]
+     */
     private $queues    = [];
+
+    /**
+     * @var Process[]
+     */
     private $processes = [];
 
-    public function __construct($title)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct($title, LoggerInterface $logger = null)
     {
         $this->pid = getmypid();
         $this->setTitle($title);
+        $this->logger = $logger ?: new SimpleLogger();
     }
 
     public function getPid()
@@ -26,21 +45,57 @@ class Manager
         return $this;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return Queue
+     */
     public function getQueue($name)
     {
         return $this->queues[$name];
     }
 
-    public function spawn($id, $title, callable $job)
+    /**
+     * @return \Psr\Log\LoggerInterface
+     */
+    public function getLogger()
     {
-        $process = new Process($id, $title, $job, $this);
+        return $this->logger;
+    }
 
-        if(($pid = pcntl_fork()) === 0) {
-            $this->setTitle($title);
-            $process->setPid(getmypid())->run();
+    public function demonize()
+    {
+        if(($pid = pcntl_fork()) > 0) {
             exit(0);
-        } elseif($pid === -1) {
-            throw new \RuntimeException('{Manager:spawn} Failure on pcntl_fork.');
+        }
+        elseif ($pid === -1) {
+            throw new \RuntimeException('{Manager} Failure on demonize.');
+        }
+
+        return $this;
+    }
+
+    public function spawn(callable $job, $title = null, $id = null)
+    {
+        $process = new Process($this, $job, $title, $id);
+
+        if (($pid = pcntl_fork()) === 0) {
+
+            $this->setTitle($title);
+            $process->setPid(getmypid());
+
+            $this->getLogger()->debug(
+                sprintf(
+                    'New Child Process<%d> [%d] will run, Title: %s.',
+                    $process->getPid(), $process->getId(), $title
+                )
+            );
+
+            $process->run();
+            exit(0);
+
+        } elseif ($pid === -1) {
+            throw new \RuntimeException('{Manager} Failure on spawn.');
         }
 
         $process->setPid($pid);
@@ -51,17 +106,36 @@ class Manager
 
     public function wait()
     {
-        while(($pid = pcntl_wait($status)) > 0) {
-            printf("Process [%d] exited.\n", $pid);
+        while (($pid = pcntl_wait($status)) > 0) {
+
+            $this->getLogger()->debug(
+                sprintf('Child Process<%d> exited, Status: %d.', $pid, $status)
+            );
+
+            // TODO whether check success exit or not
+            if (isset($this->processes[$pid])) { // respawn a process
+                $process = $this->processes[$pid];
+                $this->spawn($process->getJob(), $process->getTitle(), $process->getId());
+            }
+            else {
+                $this->getLogger()->warning(
+                    sprintf('Child Process<%d> exited, Not in watching list, Status: %d.', $pid, $status)
+                );
+            }
+
         }
+
+        $this->getLogger()->debug(
+            sprintf('Manager Process<%d> waiting finished, Last Status: %d.', $this->getPid(), $status)
+        );
     }
 
     protected function setTitle($title)
     {
-        /*if(function_exists('cli_set_process_title')) {
+        if(function_exists('cli_set_process_title')) {
             cli_set_process_title($title); //PHP >= 5.5.
         } else if(function_exists('setproctitle')) {
             setproctitle($title); //PECL proctitle
-        }*/
+        }
     }
 }

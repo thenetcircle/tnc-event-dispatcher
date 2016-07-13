@@ -15,7 +15,7 @@ use Tnc\Service\EventDispatcher\Exception;
 use Tnc\Service\EventDispatcher\Event\Internal\ErrorEvent;
 use Tnc\Service\EventDispatcher\Event\Internal\MessageEvent;
 
-class KafkaPipeline extends AbstractBackend
+class KafkaBackend extends AbstractBackend
 {
     /**
      * @var \RdKafka\Producer
@@ -105,7 +105,7 @@ class KafkaPipeline extends AbstractBackend
         switch ($message->err) {
 
             case RD_KAFKA_RESP_ERR_NO_ERROR:
-                return array($message->payload, null);
+                return array($message->payload, $message);
 
             case RD_KAFKA_RESP_ERR__PARTITION_EOF:
                 throw new Exception\NoDataException("No more messages, will wait for more.");

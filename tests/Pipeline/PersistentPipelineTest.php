@@ -4,8 +4,6 @@ namespace Tnc\Service\EventDispatcher\Test;
 
 use Tnc\Service\EventDispatcher\Backend;
 use Tnc\Service\EventDispatcher\Event;
-use Tnc\Service\EventDispatcher\Backend;
-use Tnc\Service\EventDispatcher\Backend\PersistentPipeline;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
 

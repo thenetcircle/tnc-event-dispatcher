@@ -92,7 +92,7 @@ class EventWrapper implements Normalizable
     /**
      * @return string
      */
-    public function getKey()
+    public function getGroup()
     {
         return $this->event->getGroup();
     }

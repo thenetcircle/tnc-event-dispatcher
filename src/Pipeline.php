@@ -32,6 +32,7 @@ class Pipeline
     {
         $this->externalDispatcher = $externalDispatcher;
         $this->backend            = $backend;
+        $this->backend->setEventDispatcher($externalDispatcher);
         $this->serializer         = $serializer;
     }
 
@@ -46,7 +47,7 @@ class Pipeline
             $this->backend->push(
                 $eventWrapper->getChannel(),
                 $message,
-                $eventWrapper->getKey()
+                $eventWrapper->getGroup()
             );
         }
         catch (\Exception $e) {

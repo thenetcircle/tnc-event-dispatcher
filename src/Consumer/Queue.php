@@ -27,6 +27,12 @@ class Queue
         return $this->name;
     }
 
+    /**
+     * @param int   $channel
+     * @param mixed $message
+     *
+     * @return bool
+     */
     public function push($channel, $message)
     {
         $result = msg_send(
@@ -43,29 +49,62 @@ class Queue
         return $result;
     }
 
-    public function pop($channel)
+    /**
+     * @param int $channel
+     * @param int $timeout milliseconds
+     *
+     * @return mixed
+     */
+    public function pop($channel, $timeout = 3000)
     {
-        $result = msg_receive(
-            $this->msgQueue,
-            $channel,
-            $msgType,
-            self::MSG_MAX_RECEIVE_SIZE,
-            $message,
-            true,
-            0,
-            $errorCode
-        );
+        $expireTime = microtime(true) + ($timeout / 1000);
+
+        while (
+            false === ($result = msg_receive(
+                $this->msgQueue,
+                $channel,
+                $msgType,
+                self::MSG_MAX_RECEIVE_SIZE,
+                $message,
+                true,
+                MSG_IPC_NOWAIT,
+                $errorCode
+            ))
+            && $errorCode === MSG_ENOMSG
+        ) {
+
+            if (microtime(true) > $expireTime) {
+                break;
+            }
+
+            usleep(50000);
+        }
 
         $this->lastErrorCode = $errorCode;
 
-        return $message;
+        return $result === false ? false : $message;
     }
 
+    /**
+     * @return array
+     */
     public function info()
     {
         return msg_stat_queue($this->msgQueue);
     }
 
+    /**
+     * @return int
+     */
+    public function length()
+    {
+        $info = $this->info();
+        return $info['msg_qnum'];
+    }
+
+    /**
+     * @return int
+     */
     public function getLastErrorCode()
     {
         return $this->lastErrorCode;
