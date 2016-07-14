@@ -260,8 +260,8 @@ class KafkaBackend extends AbstractBackend
                 'message.timeout.ms'    => 1000
             ],
             'consumer' => [
-                'group.id'                   => 'EventDispatcherService',
-                'client.id'                  => __CLASS__,
+                'group.id'                   => 'EventDispatcherConsumer',
+                'client.id'                  => 'DefaultClient',
                 'queued.max.messages.kbytes' => 10000,
                 'socket.keepalive.enable'    => 'true',
             ]

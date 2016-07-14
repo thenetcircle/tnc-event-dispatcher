@@ -34,7 +34,6 @@ if (!defined('COMPOSER_AUTOLOAD_FILE')) {
     die(1);
 }
 
-
 require COMPOSER_AUTOLOAD_FILE;
 
 use \Tnc\Service\EventDispatcher\Consumer\Manager;
@@ -42,8 +41,8 @@ use \Tnc\Service\EventDispatcher\Consumer\Queue;
 use \Tnc\Service\EventDispatcher\Consumer\Job\Fetcher;
 use \Tnc\Service\EventDispatcher\Consumer\Job\Worker;
 
-
 $externalDispatcher = new \Tnc\Service\EventDispatcher\ExternalDispatcher\NullExternalDispatcher();
+
 $backend = new \Tnc\Service\EventDispatcher\Backend\KafkaBackend(
     #'10.20.2.103:19092,10.20.2.103:29092,10.20.2.103:39092',
     '10.60.0.129:9092,10.60.0.129:9093,10.60.0.129:9094',
@@ -51,7 +50,8 @@ $backend = new \Tnc\Service\EventDispatcher\Backend\KafkaBackend(
     false
 );
 $serializer = new \Tnc\Service\EventDispatcher\Serializer\JsonSerializer();
-$pipeline = new \Tnc\Service\EventDispatcher\Pipeline($externalDispatcher, $backend, $serializer);
+$channelDetective = new \Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective();
+$pipeline = new \Tnc\Service\EventDispatcher\Pipeline($externalDispatcher, $backend, $serializer, $channelDetective);
 
 $logger = new \Tnc\Service\EventDispatcher\Consumer\SimpleLogger(\Psr\Log\LogLevel::DEBUG);
 
@@ -60,7 +60,11 @@ $manager = (new Manager('EventDispatcher Master', $logger))
     ->addQueue(new Queue('job'))
     ->addQueue(new Queue('receipt'));
 
-$manager->spawn(new Fetcher($pipeline, '^event-*', 3), 'EventDispatcher Fetcher', 1);
+$manager->spawn(
+    new Fetcher($externalDispatcher, $pipeline, 3, $channelDetective->getDefaultPoppingChannel()),
+    'EventDispatcher Fetcher',
+    1
+);
 $manager->spawn(new Worker($externalDispatcher), 'EventDispatcher Worker 1', 1);
 $manager->spawn(new Worker($externalDispatcher), 'EventDispatcher Worker 2', 2);
 $manager->spawn(new Worker($externalDispatcher), 'EventDispatcher Worker 3', 3);

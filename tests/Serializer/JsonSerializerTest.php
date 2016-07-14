@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Test;
+namespace Tnc\Service\EventDispatcher\Test\Serializer;
 
 use Tnc\Service\EventDispatcher\Dispatcher;
 use Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
@@ -8,7 +8,7 @@ use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
 
-class SerializerTest extends \PHPUnit_Framework_TestCase
+class JsonSerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var DefaultEvent
@@ -91,7 +91,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
           }}';
         $this->serializedWrappedActivityEvent = preg_replace(
             '/}}$/',
-            ',"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\MockActivityEvent"}}',
+            ',"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\Serializer\\\\\MockActivityEvent"}}',
             $this->serializedActivityEvent
         );
 

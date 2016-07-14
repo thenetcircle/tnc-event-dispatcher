@@ -7,6 +7,7 @@ use Tnc\Service\EventDispatcher\EventWrapper;
 use Tnc\Service\EventDispatcher\Exception\FatalException;
 use Tnc\Service\EventDispatcher\Exception\NoDataException;
 use Tnc\Service\EventDispatcher\Exception\TimeoutException;
+use Tnc\Service\EventDispatcher\ExternalDispatcher;
 use Tnc\Service\EventDispatcher\Pipeline;
 
 final class Fetcher
@@ -24,15 +25,26 @@ final class Fetcher
     private $pipeline;
 
     /**
+     * @var ExternalDispatcher
+     */
+    private $externalDispatcher;
+
+    /**
      * @var string
      */
-    private $topic;
+    private $channel;
 
-    public function __construct(Pipeline $pipeline, $topic, $workersNum)
+    /**
+     * @var array
+     */
+    private $unAcknowledgedMessages = [];
+
+    public function __construct(ExternalDispatcher $externalDispatcher, Pipeline $pipeline, $workersNum, $channel = null)
     {
-        $this->workersNum = $workersNum;
-        $this->pipeline   = $pipeline;
-        $this->topic      = $topic;
+        $this->externalDispatcher = $externalDispatcher;
+        $this->workersNum         = $workersNum;
+        $this->pipeline           = $pipeline;
+        $this->channel            = $channel;
     }
 
     public function __invoke(Process $process)
@@ -42,7 +54,9 @@ final class Fetcher
         $jobQueue     = $process->getQueue('job');
         $receiptQueue = $process->getQueue('receipt');
 
-        $process->getLogger()->debug(sprintf('Fetcher [%d] will listen to topic %s.', $process->getId(), $this->topic));
+        $process->getLogger()->debug(
+            sprintf('Fetcher [%d] will listen to channel %s.', $process->getId(), $this->channel)
+        );
 
         while (true) {
 
@@ -50,13 +64,10 @@ final class Fetcher
 
             try {
 
-                // if no free workers, will waiting
-                while ($jobQueue->length() > 5) {
-                    usleep(50000);
-                }
+                //TODO set consumer client id
 
                 /** @var EventWrapper $eventWrapper */
-                list($eventWrapper, $receipt) = $this->pipeline->pop($this->topic, 600000);
+                list($eventWrapper, $receipt) = $this->pipeline->pop(600000, $this->channel);
 
                 if ($eventWrapper === null) {
 
@@ -68,12 +79,14 @@ final class Fetcher
                     // TODO check if there is a listener, otherwise maybe unsubscribe the topic
                 } else {
 
-                    $targetWorkerId = $this->getTargetWorkerId($eventWrapper->getGroup());
-                    $message        = [
-                        $process->getId(),
-                        $eventWrapper,
-                        $receipt
-                    ];
+                    // if no free workers, will waiting
+                    while ($jobQueue->length() > 5) {
+                        usleep(50000);
+                    }
+
+                    $event          = $eventWrapper->getEvent();
+                    $targetWorkerId = $this->getTargetWorkerId($event->getGroup());
+                    $message        = [$process->getId(), $event, $receipt];
 
                     if ($jobQueue->push($targetWorkerId, $message)) {
 

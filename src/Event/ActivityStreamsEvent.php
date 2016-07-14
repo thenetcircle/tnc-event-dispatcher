@@ -54,7 +54,7 @@ use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
  * @method string getPublished()
  * @method $this setPublished(string $datetime)
  */
-abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizable
+class ActivityStreamsEvent extends AbstractEvent implements Normalizable
 {
     /**
      * @var Activity

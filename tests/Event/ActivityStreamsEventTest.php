@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Test;
+namespace Tnc\Service\EventDispatcher\Test\Event;
 
 use Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
 

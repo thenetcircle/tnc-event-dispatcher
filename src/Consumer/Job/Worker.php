@@ -23,15 +23,16 @@ final class Worker
 
         $jobQueue     = $process->getQueue('job');
         $receiptQueue = $process->getQueue('receipt');
-        $jobsNum = 0;
+        $jobsNum      = 0;
 
         while (false !== ($job = $jobQueue->pop($process->getId(), 3600000))) {
-            list($fetcherId, $eventWrapper, $receipt) = $job;
+
+            list($fetcherId, $event, $receipt) = $job;
 
             $process->getLogger()->debug(
                 sprintf(
-                    'Worker [%d] got a new job from Fetcher [%d]. EventWrapper: %s, Receipt: %s',
-                    $process->getId(), $fetcherId, var_export($eventWrapper, true), var_export($receipt, true)
+                    'Worker [%d] got a new job from Fetcher [%d]. Event: %s, Receipt: %s',
+                    $process->getId(), $fetcherId, var_export($event, true), var_export($receipt, true)
                 )
             );
 
@@ -46,8 +47,7 @@ final class Worker
                         $process->getId(), $fetcherId
                     )
                 );
-            }
-            else {
+            } else {
                 $process->getLogger()->warning(
                     sprintf(
                         'Worker [%d] pushing a receipt to Fetcher [%d] failed. LastErrorCode: %d',
@@ -55,6 +55,7 @@ final class Worker
                     )
                 );
             }
+
         }
 
         $process->getLogger()->warning(
@@ -63,5 +64,7 @@ final class Worker
                 $process->getId(), $jobQueue->getLastErrorCode()
             )
         );
+
+        usleep(10000);
     }
 }
