@@ -66,6 +66,7 @@ class Dispatcher
         }
 
         $event->setName($name);
+        $event->setMode($mode);
 
         switch ($mode) {
 
@@ -74,16 +75,16 @@ class Dispatcher
                 break;
 
             case self::MODE_ASYNC:
-                $this->pipeline->push(new EventWrapper($event, $mode));
+                $this->pipeline->push(new EventWrapper($event));
                 break;
 
             case self::MODE_SYNC_PLUS:
                 $this->externalDispatcher->dispatch($name, $event);
-                $this->pipeline->push(new EventWrapper($event, $mode));
+                $this->pipeline->push(new EventWrapper($event));
                 break;
 
             default:
-                throw new InvalidArgumentException('{Dispatcher} Unsupported dispatch mode.');
+                throw new InvalidArgumentException('{Dispatcher} Unsupported dispatching mode.');
 
         }
 

@@ -157,8 +157,8 @@ final class Fetcher
         }
     }
 
-    protected function getTargetWorkerId($channel)
+    protected function getTargetWorkerId($group)
     {
-        return ((int)abs(crc32($channel)) % $this->workersNum) + 1;
+        return ((int)abs(crc32($group)) % $this->workersNum) + 1;
     }
 }

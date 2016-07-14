@@ -4,13 +4,6 @@ namespace Tnc\Service\EventDispatcher\Normalizer;
 
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 
-/**
- * CustomNormalizer
- *
- * @package    Tnc\Service\EventDispatcher\Serializer
- *
- * @author     The NetCircle
- */
 class CustomNormalizer extends AbstractNormalizer
 {
     /**

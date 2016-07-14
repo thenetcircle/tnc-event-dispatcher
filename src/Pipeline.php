@@ -23,17 +23,28 @@ class Pipeline
     private $serializer;
 
     /**
+     * @var ChannelDetective
+     */
+    private $channelDetective;
+
+    /**
      * PersistentQueue constructor.
      *
      * @param Backend    $backend
      * @param Serializer $serializer
      */
-    public function __construct(ExternalDispatcher $externalDispatcher, Backend $backend, Serializer $serializer)
+    public function __construct(
+        ExternalDispatcher $externalDispatcher,
+        Backend $backend,
+        Serializer $serializer,
+        ChannelDetective $channelDetective
+    )
     {
         $this->externalDispatcher = $externalDispatcher;
         $this->backend            = $backend;
         $this->backend->setEventDispatcher($externalDispatcher);
-        $this->serializer         = $serializer;
+        $this->serializer       = $serializer;
+        $this->channelDetective = $channelDetective;
     }
 
     /**
@@ -42,13 +53,11 @@ class Pipeline
     public function push(EventWrapper $eventWrapper)
     {
         try {
+            $key     = $eventWrapper->getEvent()->getGroup();
+            $channel = $this->channelDetective->getPushingChannel($eventWrapper);
             $message = $this->serializer->serialize($eventWrapper);
 
-            $this->backend->push(
-                $eventWrapper->getChannel(),
-                $message,
-                $eventWrapper->getGroup()
-            );
+            $this->backend->push($channel, $message, $key);
         }
         catch (\Exception $e) {
             $this->externalDispatcher->dispatch(
@@ -59,8 +68,8 @@ class Pipeline
     }
 
     /**
-     * @param string $channel
-     * @param int    $timeout
+     * @param int         $timeout
+     * @param string|null $channel If null, will get default listening channel from ChannelDetective
      *
      * @return array [EventWrapper $eventWrapper, mixed $receipt]
      *
@@ -68,15 +77,19 @@ class Pipeline
      * @throws \Tnc\Service\EventDispatcher\Exception\TimeoutException
      * @throws \Tnc\Service\EventDispatcher\Exception\NoDataException
      */
-    public function pop($channel, $timeout = 5000)
+    public function pop($timeout = 5000, $channel = null)
     {
         try {
+            $channel = ($channel === null) ? $this->channelDetective->getDefaultPoppingChannel() : $channel;
+
             list($message, $receipt) = $this->backend->pop($channel, $timeout);
 
             $eventWrapper = null;
             if ($message) {
                 $eventWrapper = $this->serializer->unserialize($message, EventWrapper::class);
             }
+
+            return array($eventWrapper, $receipt);
         }
         catch (FatalException $e) {
             $this->externalDispatcher->dispatch(
@@ -86,8 +99,6 @@ class Pipeline
 
             throw $e;
         }
-
-        return array($eventWrapper, $receipt);
     }
 
     /**

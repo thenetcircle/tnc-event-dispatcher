@@ -31,26 +31,6 @@ class DefaultEvent extends AbstractEvent implements Normalizable, \ArrayAccess
     }
 
     /**
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->offsetGet('name');
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function setName($name)
-    {
-        $this->offsetSet('name', $name);
-
-        return $this;
-    }
-
-    /**
      * @param string $name
      *
      * @return mixed
@@ -107,7 +87,10 @@ class DefaultEvent extends AbstractEvent implements Normalizable, \ArrayAccess
      */
     public function normalize(Serializer $serializer)
     {
-        return $this->data;
+        $data = $this->data;
+        $data['extra'] = parent::normalize($serializer);
+
+        return $data;
     }
 
     /**
@@ -115,6 +98,9 @@ class DefaultEvent extends AbstractEvent implements Normalizable, \ArrayAccess
      */
     public function denormalize(Serializer $serializer, array $data)
     {
+        parent::denormalize($serializer, (array)$data['extra']);
+        unset($data['extra']);
+
         $this->data = $data;
     }
 }

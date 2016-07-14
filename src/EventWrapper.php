@@ -2,68 +2,31 @@
 
 namespace Tnc\Service\EventDispatcher;
 
-use Tnc\Service\EventDispatcher\Event\DefaultEvent;
-use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
-
 /**
  * Class EventWrapper
  *
  * @package Tnc\Service\EventDispatcher
  */
-class EventWrapper implements Normalizable
+class EventWrapper
 {
-    CONST EXTRA_KEY      = '_php_';
-
     /**
      * @var Event
      */
     protected $event;
+
     /**
      * @var string
      */
     protected $class;
-    /**
-     * @var string
-     */
-    protected $mode;
-
-
-    /**
-     * Returns the prefix string of channels
-     *
-     * @return string
-     */
-    public static function getChannelPrefix()
-    {
-        return 'event-';
-    }
 
 
     /**
      * @param Event  $event
-     * @param string $mode
      */
-    public function __construct(Event $event, $mode)
+    public function __construct(Event $event)
     {
         $this->event = $event;
         $this->class = get_class($event);
-        $this->mode  = $mode;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClass()
-    {
-        return $this->class;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMode()
-    {
-        return $this->mode;
     }
 
     /**
@@ -77,60 +40,8 @@ class EventWrapper implements Normalizable
     /**
      * @return string
      */
-    public function getChannel()
+    public function getClass()
     {
-        $name = $this->event->getName();
-        if (($pos = strpos($name, '.')) !== false) {
-            $channel = substr($name, 0, $pos);
-        } else {
-            $channel = $name;
-        }
-
-        return self::getChannelPrefix() . $channel;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGroup()
-    {
-        return $this->event->getGroup();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function normalize(Serializer $serializer)
-    {
-        $data                  = $serializer->normalize($this->event);
-        $data[self::EXTRA_KEY] = [
-            'class' => $this->getClass(),
-            'mode'  => $this->getMode()
-        ];
-        return $data;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function denormalize(Serializer $serializer, array $data)
-    {
-        $class = $mode = null;
-
-        if (isset($data[self::EXTRA_KEY])) {
-            $class = $data[self::EXTRA_KEY]['class'];
-            $mode = $data[self::EXTRA_KEY]['mode'];
-            unset($data[self::EXTRA_KEY]);
-        }
-
-        $this->class = (!empty($class) && class_exists($class)) ? $class : DefaultEvent::class;
-        $this->mode  = $mode ?: Dispatcher::MODE_ASYNC;
-
-        try {
-            $this->event = $serializer->denormalize($data, $this->class);
-        }
-        catch(\Exception $e) {
-            $this->event = $serializer->denormalize($data, DefaultEvent::class);
-        }
+        return $this->class;
     }
 }

@@ -13,13 +13,6 @@ namespace Tnc\Service\EventDispatcher;
 interface Event
 {
     /**
-     * Gets the group of the event
-     *
-     * @return string|null
-     */
-    public function getGroup();
-
-    /**
      * Gets the event name
      *
      * @return string
@@ -30,8 +23,42 @@ interface Event
      * Sets the event name
      *
      * @param string $name
+     *
+     * @return $this
      */
     public function setName($name);
+
+    /**
+     * Gets the group of the event
+     *
+     * @return string|null
+     */
+    public function getGroup();
+
+    /**
+     * Sets the group of the event
+     *
+     * @param string $group
+     *
+     * @return $this
+     */
+    public function setGroup($group);
+
+    /**
+     * Gets the dispatching mode of the event
+     *
+     * @return int
+     */
+    public function getMode();
+
+    /**
+     * Sets the dispatching mode of the event
+     *
+     * @param int $mode
+     *
+     * @return $this
+     */
+    public function setMode($mode);
 
     /**
      * Returns whether further event listeners should be triggered.

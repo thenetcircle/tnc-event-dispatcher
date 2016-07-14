@@ -11,6 +11,7 @@
 namespace Tnc\Service\EventDispatcher\Event;
 
 use Tnc\Service\EventDispatcher\Event;
+use Tnc\Service\EventDispatcher\Serializer;
 
 abstract class AbstractEvent implements Event
 {
@@ -20,18 +21,20 @@ abstract class AbstractEvent implements Event
     protected $name;
 
     /**
-     * @var bool Whether no further event listeners should be triggered
+     * @var string
      */
-    private $propagationStopped = false;
-
+    protected $group;
 
     /**
-     * {@inheritdoc}
+     * @var int
      */
-    public function getGroup()
-    {
-        return null;
-    }
+    protected $mode;
+
+    /**
+     * @var bool Whether no further event listeners should be triggered
+     */
+    protected $propagationStopped = false;
+
 
     /**
      * {@inheritdoc}
@@ -54,6 +57,42 @@ abstract class AbstractEvent implements Event
     /**
      * {@inheritdoc}
      */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isPropagationStopped()
     {
         return $this->propagationStopped;
@@ -65,5 +104,37 @@ abstract class AbstractEvent implements Event
     public function stopPropagation()
     {
         $this->propagationStopped = true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function normalize(Serializer $serializer)
+    {
+        return [
+            'name'               => $this->getName(),
+            'group'              => $this->getGroup(),
+            'mode'               => $this->getMode(),
+            'propagationStopped' => $this->propagationStopped
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function denormalize(Serializer $serializer, array $data)
+    {
+        if(isset($data['name'])) {
+            $this->name = $data['name'];
+        }
+        if(isset($data['group'])) {
+            $this->group = $data['group'];
+        }
+        if(isset($data['mode'])) {
+            $this->mode = $data['mode'];
+        }
+        if(isset($data['propagationStopped'])) {
+            $this->propagationStopped = $data['propagationStopped'];
+        }
     }
 }

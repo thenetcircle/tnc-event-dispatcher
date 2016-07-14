@@ -82,39 +82,6 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
         $this->activity->setPublished((new \DateTime())->format(\DateTime::RFC3339));
     }
 
-
-    // Override
-    /**
-     * {@inheritdoc}
-     */
-    public function getGroup()
-    {
-        $actor = $this->activity->getActor();
-        if ($actor) {
-            return $actor->getObjectType() . '_' . $actor->getId();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return $this->getVerb();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setName($name)
-    {
-        $this->setVerb($name);
-
-        return $this;
-    }
-
     //Magic methods
 
     public function __call($name, $arguments)
@@ -184,8 +151,18 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
         if (null === $this->getId()) {
             $this->generateId();
         }
+        if (null === $this->getVerb()) {
+            $this->generateVerb();
+        }
+        if (null === $this->getGroup()) {
+            $this->generateGroup();
+        }
+        $data = $serializer->normalize($this->activity);
 
-        return $serializer->normalize($this->activity);
+        $extraData = parent::normalize($serializer);
+        $data['extra'] = $extraData;
+
+        return $data;
     }
 
     /**
@@ -193,9 +170,15 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
      */
     public function denormalize(Serializer $serializer, array $data)
     {
+        parent::denormalize($serializer, (array)$data['extra']);
+        unset($data['extra']);
+
         $this->activity = $serializer->denormalize($data, Activity::class);
     }
 
+    /**
+     * Generates "id" if it's not set
+     */
     protected function generateId()
     {
         $uuidArr = [$this->getProvider()->getId()];
@@ -208,5 +191,24 @@ abstract class ActivityStreamsEvent extends AbstractEvent implements Normalizabl
         $uuid      = implode('-', $uuidArr);
 
         $this->setId($uuid);
+    }
+
+    /**
+     * Generates "group" if it's not set
+     */
+    protected function generateGroup()
+    {
+        $actor = $this->getActor();
+        $this->setGroup(
+            $actor ? ($actor->getObjectType() . '_' . $actor->getId()) : null
+        );
+    }
+
+    /**
+     * Generates "verb" if it's not set
+     */
+    protected function generateVerb()
+    {
+        $this->setVerb($this->getName());
     }
 }
