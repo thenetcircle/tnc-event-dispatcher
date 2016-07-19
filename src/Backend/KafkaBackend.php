@@ -74,11 +74,16 @@ class KafkaBackend extends AbstractBackend
      *
      * {@inheritdoc}
      */
-    public function push($channel, $message, $key = null)
+    public function push($channels, $message, $key = null)
     {
-        $this->getProducerTopic($channel)->produce(
-            \RD_KAFKA_PARTITION_UA, 0, $message, $key
-        );
+        foreach ($channels as $channel) {
+            $this->getProducerTopic($channel)->produce(
+                \RD_KAFKA_PARTITION_UA,
+                0,
+                $message,
+                $key
+            );
+        }
     }
 
     /**
@@ -86,19 +91,18 @@ class KafkaBackend extends AbstractBackend
      *
      * $channel supports regexp with prefix ^
      */
-    public function pop($channel, $timeout)
+    public function pop($channels, $timeout)
     {
         $this->initConsumer();
 
         try {
-            if ($channel != $this->subscribingTopic) {
-                $this->consumer->subscribe((array)$channel);
-                $this->subscribingTopic = $channel;
+            if ($channels != $this->subscribingTopic) {
+                $this->consumer->subscribe($channels);
+                $this->subscribingTopic = $channels;
             }
 
             $message = $this->consumer->consume($timeout);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             throw new Exception\FatalException('Consuming failed.', $e->getCode(), $e);
         }
 
@@ -124,6 +128,8 @@ class KafkaBackend extends AbstractBackend
      */
     public function ack($receipt)
     {
+        $this->initConsumer();
+        $this->consumer->commitAsync($receipt);
     }
 
     /**
@@ -133,11 +139,14 @@ class KafkaBackend extends AbstractBackend
      */
     public function kafkaErrorCallback($kafka, $err, $reason)
     {
-        $this->eventDispatcher->dispatch(ErrorEvent::NAME, new ErrorEvent(
-            $err,
-            sprintf('error: %s, reason: %s', rd_kafka_err2str($err), $reason),
-            '{KafkaDriver::kafkaErrorCallback}'
-        ));
+        $this->eventDispatcher->dispatch(
+            ErrorEvent::NAME,
+            new ErrorEvent(
+                $err,
+                sprintf('error: %s, reason: %s', rd_kafka_err2str($err), $reason),
+                '{KafkaDriver::kafkaErrorCallback}'
+            )
+        );
 
         if ($this->debug) {
             printf("{kafkaErrorCallback} [%s]%s (reason: %s)\n", $err, rd_kafka_err2str($err), $reason);
@@ -150,9 +159,12 @@ class KafkaBackend extends AbstractBackend
      */
     public function deliveryMessageCallback(\RdKafka\Producer $producer, \RdKafka\Message $message)
     {
-        $this->eventDispatcher->dispatch(MessageEvent::DELIVERY_FAILED, new MessageEvent(
-            $message->topic_name, $message->payload, $message->key, $message->err
-        ));
+        $this->eventDispatcher->dispatch(
+            MessageEvent::DELIVERY_FAILED,
+            new MessageEvent(
+                $message->topic_name, $message->payload, $message->key, $message->err
+            )
+        );
 
         if ($this->debug) {
             printf(
@@ -175,7 +187,7 @@ class KafkaBackend extends AbstractBackend
         if (!isset($this->producerTopics[$topicName])) {
 
             $topicConf = new \RdKafka\TopicConf();
-            foreach ($this->options['topic'] as $_key => $_value) {
+            foreach ($this->options['producer_topic'] as $_key => $_value) {
                 $topicConf->set($_key, $_value);
             }
             $topicConf->setPartitioner(\RD_KAFKA_MSG_PARTITIONER_CONSISTENT);
@@ -227,6 +239,12 @@ class KafkaBackend extends AbstractBackend
             $conf->set($_key, $_value);
         }
 
+        $topicConf = new \RdKafka\TopicConf();
+        foreach ($this->options['consumer_topic'] as $_key => $_value) {
+            $topicConf->set($_key, $_value);
+        }
+        $conf->setDefaultTopicConf($topicConf);
+
         $this->consumer = new \RdKafka\KafkaConsumer($conf);
     }
 
@@ -236,35 +254,44 @@ class KafkaBackend extends AbstractBackend
     private function initOptions(array $options)
     {
         $defaultOptions = [
-            'broker'   => [
-                'metadata.broker.list'               => '', // brokers list
-                'log.connection.close'               => 'false',
-                'delivery.report.only.error'         => 'true',
-                'topic.metadata.refresh.sparse'      => 'true',
-                'topic.metadata.refresh.interval.ms' => 600000,
+            'broker'         => [
+                'metadata.broker.list'       => '', // brokers list
+                'log.connection.close'       => 'false',
+                'delivery.report.only.error' => 'true',
+                'api.version.request'        => 'false',
                 // 'socket.timeout.ms'                  => 10,
                 // 'socket.blocking.max.ms'             => 10,
                 // 'reconnect.backoff.jitter.ms' => 0,
-                'api.version.request'                => 'false',
             ],
-            'producer' => [
+            'producer'       => [
+                'topic.metadata.refresh.sparse'         => 'true',
+                'topic.metadata.refresh.interval.ms'    => 600000,
                 'socket.blocking.max.ms'                => 50,
-                'message.send.max.retries'              => 0,
                 'socket.keepalive.enable'               => 'false',
-                'compression.codec'                     => 'gzip',
+                'message.send.max.retries'              => 0,
                 'max.in.flight.requests.per.connection' => 1000,
+                'compression.codec'                     => 'gzip',
             ],
-            'topic'    => [ // this only using for producer
+            'producer_topic' => [
                 'request.required.acks' => 1,
-                // 'request.timeout.ms' => 1000,
                 'message.timeout.ms'    => 1000
+                // 'request.timeout.ms' => 1000,
             ],
-            'consumer' => [
-                'group.id'                   => 'EventDispatcherConsumer',
-                'client.id'                  => 'DefaultClient',
-                'queued.max.messages.kbytes' => 10000,
-                'socket.keepalive.enable'    => 'true',
-            ]
+            'consumer'       => [
+                'group.id'                           => 'EventDispatcherService',
+                'client.id'                          => 'EventDispatcherBuildInConsumer',
+                'topic.metadata.refresh.sparse'      => 'false',
+                'topic.metadata.refresh.interval.ms' => 30000,
+                'queued.max.messages.kbytes'         => 100000,
+                'socket.keepalive.enable'            => 'true',
+                'enable.auto.commit'                 => 'false',
+                'enable.auto.offset.store'           => 'false',
+            ],
+            'consumer_topic' => [
+                'auto.offset.reset'   => 'earliest',
+                /*'offset.store.method' => 'file',
+                'offset.store.path'   => '/tmp/kafka-offset',*/
+            ],
         ];
 
         if ($this->debug) {

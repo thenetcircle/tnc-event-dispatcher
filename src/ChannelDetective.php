@@ -7,12 +7,12 @@ interface ChannelDetective
     /**
      * @param \Tnc\Service\EventDispatcher\EventWrapper $eventWrapper
      *
-     * @return mixed
+     * @return array
      */
-    public function getPushingChannel(EventWrapper $eventWrapper);
+    public function getPushingChannels(EventWrapper $eventWrapper);
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getDefaultPoppingChannel();
+    public function getListeningChannels();
 }

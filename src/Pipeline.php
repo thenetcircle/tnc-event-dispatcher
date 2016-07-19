@@ -38,8 +38,7 @@ class Pipeline
         Backend $backend,
         Serializer $serializer,
         ChannelDetective $channelDetective
-    )
-    {
+    ) {
         $this->externalDispatcher = $externalDispatcher;
         $this->backend            = $backend;
         $this->backend->setEventDispatcher($externalDispatcher);
@@ -53,13 +52,12 @@ class Pipeline
     public function push(EventWrapper $eventWrapper)
     {
         try {
-            $key     = $eventWrapper->getEvent()->getGroup();
-            $channel = $this->channelDetective->getPushingChannel($eventWrapper);
-            $message = $this->serializer->serialize($eventWrapper);
+            $message  = $this->serializer->serialize($eventWrapper);
+            $channels = $this->channelDetective->getPushingChannels($eventWrapper);
+            $key      = $eventWrapper->getEvent()->getGroup();
 
-            $this->backend->push($channel, $message, $key);
-        }
-        catch (\Exception $e) {
+            $this->backend->push($channels, $message, $key);
+        } catch (\Exception $e) {
             $this->externalDispatcher->dispatch(
                 ErrorEvent::NAME,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::push}')
@@ -68,8 +66,8 @@ class Pipeline
     }
 
     /**
-     * @param int         $timeout
-     * @param string|null $channel If null, will get default listening channel from ChannelDetective
+     * @param int        $timeout
+     * @param array|null $channels If null, will get default listening channels from ChannelDetective
      *
      * @return array [EventWrapper $eventWrapper, mixed $receipt]
      *
@@ -77,12 +75,12 @@ class Pipeline
      * @throws \Tnc\Service\EventDispatcher\Exception\TimeoutException
      * @throws \Tnc\Service\EventDispatcher\Exception\NoDataException
      */
-    public function pop($timeout = 5000, $channel = null)
+    public function pop($timeout = 5000, $channels = null)
     {
         try {
-            $channel = ($channel === null) ? $this->channelDetective->getDefaultPoppingChannel() : $channel;
+            $channels = ($channels === null) ? $this->channelDetective->getListeningChannels() : $channels;
 
-            list($message, $receipt) = $this->backend->pop($channel, $timeout);
+            list($message, $receipt) = $this->backend->pop($channels, $timeout);
 
             $eventWrapper = null;
             if ($message) {
@@ -90,8 +88,7 @@ class Pipeline
             }
 
             return array($eventWrapper, $receipt);
-        }
-        catch (FatalException $e) {
+        } catch (FatalException $e) {
             $this->externalDispatcher->dispatch(
                 ErrorEvent::NAME,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::pop}')
@@ -108,12 +105,35 @@ class Pipeline
     {
         try {
             $this->backend->ack($receipt);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->externalDispatcher->dispatch(
                 ErrorEvent::NAME,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::ack}')
             );
         }
+    }
+
+    /**
+     * @return \Tnc\Service\EventDispatcher\Backend
+     */
+    public function getBackend()
+    {
+        return $this->backend;
+    }
+
+    /**
+     * @return \Tnc\Service\EventDispatcher\Serializer
+     */
+    public function getSerializer()
+    {
+        return $this->serializer;
+    }
+
+    /**
+     * @return \Tnc\Service\EventDispatcher\ChannelDetective
+     */
+    public function getChannelDetective()
+    {
+        return $this->channelDetective;
     }
 }

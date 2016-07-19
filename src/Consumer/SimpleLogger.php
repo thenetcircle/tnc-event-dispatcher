@@ -45,6 +45,6 @@ class SimpleLogger implements LoggerInterface
             $context
         );
 
-        printf("%s %s %s\n", $level, $message, json_encode($context));
+        printf("%s %s%s\n", $level, $message, $context ? (' ' . json_encode($context)) : '');
     }
 }

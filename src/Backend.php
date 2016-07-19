@@ -17,20 +17,20 @@ interface Backend
     /**
      * Push a message to the specific channel of a pipeline
      *
-     * @param string      $channel
+     * @param array       $channels
      * @param string      $message
      * @param string|null $key
      *
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push($channel, $message, $key = null);
+    public function push($channels, $message, $key = null);
 
     /**
      * Pop a message to the specific channel of a pipeline
      *
-     * @param string $channel
-     * @param int    $timeout milliseconds
+     * @param array $channels
+     * @param int   $timeout milliseconds
      *
      * @return array [$message, $receipt]
      *
@@ -38,7 +38,7 @@ interface Backend
      * @throws Exception\TimeoutException
      * @throws Exception\NoDataException
      */
-    public function pop($channel, $timeout);
+    public function pop($channels, $timeout);
 
     /**
      * Acknowledge a message after it's consumed successfully.

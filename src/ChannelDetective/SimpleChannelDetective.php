@@ -8,29 +8,33 @@ use Tnc\Service\EventDispatcher\EventWrapper;
 
 class SimpleChannelDetective implements ChannelDetective
 {
-    CONST CHANNEL_PREFIX = 'event-';
+    protected $channels = ['event-default', 'event-message'];
+    protected $channelsMapping = [
+            '^message\\.' => ['event-message'],
+            '.*'          => ['event-default'],
+        ];
 
     /**
      * {@inheritdoc}
      */
-    public function getPushingChannel(EventWrapper $eventWrapper)
+    public function getPushingChannels(EventWrapper $eventWrapper)
     {
         $eventName = $eventWrapper->getEvent()->getName();
 
-        if (($pos = strpos($eventName, '.')) !== false) {
-            $channel = substr($eventName, 0, $pos);
-        } else {
-            $channel = $eventName;
+        foreach ($this->channelsMapping as $_key => $_value) {
+            if (preg_match('/'.$_key.'/i', $eventName)) {
+                return $_value;
+            }
         }
 
-        return self::CHANNEL_PREFIX . $channel;
+        return ['event-default'];
     }
 
     /**
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function getDefaultPoppingChannel()
+    public function getListeningChannels()
     {
-        return '^' . self::CHANNEL_PREFIX . '*';
+        return $this->channels;
     }
 }
