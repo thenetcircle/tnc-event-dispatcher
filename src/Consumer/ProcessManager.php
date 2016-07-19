@@ -3,8 +3,9 @@
 namespace Tnc\Service\EventDispatcher\Consumer;
 
 use Psr\Log\LoggerInterface;
+use Tnc\Service\EventDispatcher\SimpleLogger;
 
-class Manager
+class ProcessManager
 {
     /**
      * @var int

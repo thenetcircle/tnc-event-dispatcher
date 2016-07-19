@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Consumer;
+namespace Tnc\Service\EventDispatcher;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerTrait;

@@ -15,7 +15,7 @@ class Process
     private $title;
 
     /**
-     * @var Manager
+     * @var ProcessManager
      */
     private $manager;
 
@@ -33,12 +33,12 @@ class Process
     /**
      * Process constructor.
      *
-     * @param Manager     $manager
-     * @param callable    $job
-     * @param string|null $title
-     * @param int|null    $id
+     * @param ProcessManager $manager
+     * @param callable       $job
+     * @param string|null    $title
+     * @param int|null       $id
      */
-    public function __construct(Manager $manager, callable $job, $title = null, $id = null)
+    public function __construct(ProcessManager $manager, callable $job, $title = null, $id = null)
     {
         $this->id      = $id;
         $this->title   = $title;
@@ -103,7 +103,7 @@ class Process
     }
 
     /**
-     * @return Manager
+     * @return ProcessManager
      */
     public function getManager()
     {
