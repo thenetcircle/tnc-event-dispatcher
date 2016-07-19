@@ -2,7 +2,6 @@
 
 namespace Tnc\Service\EventDispatcher\Consumer\Job;
 
-use RdKafka\Message;
 use Tnc\Service\EventDispatcher\Consumer\Process;
 use Tnc\Service\EventDispatcher\EventWrapper;
 use Tnc\Service\EventDispatcher\Exception\FatalException;
@@ -41,9 +40,9 @@ final class Executor
     {
         $process->getLogger()->debug(
             sprintf(
-                'Executor [%d] is running, Parent [%d], Will listen to channel %s.',
-                $process->getId(),
-                posix_getppid(),
+                'Executor<%d> is running, Parent<%d>, Will listen to channel %s.',
+                $process->getPid(),
+                $process->getParentPid(),
                 implode(', ', $this->channels ?: $this->pipeline->getChannelDetective()->getListeningChannels())
             )
         );
@@ -53,18 +52,20 @@ final class Executor
 
         while (true) {
 
+            if ($process->getParentPid() === 1) { // master exited
+                sleep(5); // sleep 5 seconds for clean up, e.g. async acknowledges
+                exit(0);
+            }
+
             try {
 
                 /** @var EventWrapper $eventWrapper */
-                /** @var Message $receipt */
-                list($eventWrapper, $receipt) = $this->pipeline->pop(1000, $this->channels);
-
-                printf('Parent [%d]', posix_getppid());
+                list($eventWrapper, $receipt) = $this->pipeline->pop(500000, $this->channels);
 
                 if ($eventWrapper === null) {
 
                     $process->getLogger()->warning(
-                        sprintf('Executor [%d] got a null event, receipt: %s.', $process->getId(), serialize($receipt))
+                        sprintf('Executor<%d> got a null event, receipt: %s.', $process->getPid(), serialize($receipt))
                     );
 
                 } elseif (0) {
@@ -77,9 +78,8 @@ final class Executor
                     // TODO do dispatch
                     $process->getLogger()->debug(
                         sprintf(
-                            'Executor [%d], AcceptedJobs: %d, Got a new event %s, Topic: %s, Partition: %d LastOffset: %d.',
-                            $process->getId(),
-                            $acceptedJobsNum,
+                            'Executor<%d>, Got a new event %s, Topic: %s, Partition: %d, LastOffset: %d.',
+                            $process->getPid(),
                             get_class($event),
                             $receipt->topic_name,
                             $receipt->partition,
@@ -88,23 +88,20 @@ final class Executor
                     );
 
                     $this->pipeline->ack($receipt);
-
-                    // TODO waiting for ack finished then shutdown
-
                 }
 
             } catch (NoDataException $e) {
                 $process->getLogger()->debug(
                     sprintf(
-                        'Executor [%d], There is no data in upstream backend.',
-                        $process->getId()
+                        'Executor<%d>, There is no data in upstream backend.',
+                        $process->getPid()
                     )
                 );
             } catch (TimeoutException $e) {
                 $process->getLogger()->debug(
                     sprintf(
-                        'Executor [%d], Fetch data from upstream backend timeout, will try it again.',
-                        $process->getId()
+                        'Executor<%d>, Fetch data from upstream backend timeout, will try it again.',
+                        $process->getPid()
                     )
                 );
             } catch (FatalException $e) {
@@ -113,30 +110,29 @@ final class Executor
 
                 $process->getLogger()->error(
                     sprintf(
-                        'Executor [%d], Fetch data from upstream backend failed %d times, ErrorCode: %d, ErrorMessage: %s.',
-                        $process->getId(),
+                        'Executor<%d>, Fetch data from upstream backend failed %d times, ErrorCode: %d, ErrorMessage: %s.',
+                        $process->getPid(),
                         $failedTimes,
                         $e->getCode(),
                         $e->getMessage()
                     )
                 );
 
-                if ($failedTimes > self::MAX_FAILED_TIMES) {
+                if ($failedTimes >= self::MAX_FAILED_TIMES) {
 
                     $process->getLogger()->warning(
                         sprintf(
-                            'Executor [%d] exceed the max failed times %d, Will exit.',
-                            $process->getId(),
+                            'Executor<%d> exceed the max failed times %d, Will exit.',
+                            $process->getPid(),
                             self::MAX_FAILED_TIMES
                         )
                     );
 
-                    usleep(100000); // sleep 100 milliseconds then exit, to pretect autorestart
-
+                    sleep(5); // sleep 5 seconds then exit, to protect auto-restart
                     exit(1);
                 }
 
-                usleep(1000000);
+                sleep(1); // sleep 1 second then retry
 
             }
 

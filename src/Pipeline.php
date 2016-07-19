@@ -66,7 +66,7 @@ class Pipeline
     }
 
     /**
-     * @param int        $timeout
+     * @param int        $timeout  milliseconds
      * @param array|null $channels If null, will get default listening channels from ChannelDetective
      *
      * @return array [EventWrapper $eventWrapper, mixed $receipt]

@@ -49,6 +49,38 @@ class Process
     /**
      * @return int
      */
+    public function getPid()
+    {
+        return $this->pid;
+    }
+
+    /**
+     * @param int $pid
+     *
+     * @return $this
+     */
+    public function setPid($pid)
+    {
+        $this->pid = $pid;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getParentPid()
+    {
+        if(function_exists('posix_getppid')) {
+            return posix_getppid();
+        }
+
+        return 0;
+    }
+
+    /**
+     * @return int
+     */
     public function getId()
     {
         return $this->id;
@@ -68,26 +100,6 @@ class Process
     public function getJob()
     {
         return $this->job;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPid()
-    {
-        return $this->pid;
-    }
-
-    /**
-     * @param int $pid
-     *
-     * @return $this
-     */
-    public function setPid($pid)
-    {
-        $this->pid = $pid;
-
-        return $this;
     }
 
     /**
