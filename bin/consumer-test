@@ -1,0 +1,47 @@
+#!/usr/bin/env php
+<?php
+foreach (
+    array( __DIR__.'/../../autoload.php', __DIR__.'/../vendor/autoload.php', __DIR__.'/vendor/autoload.php',) as $file
+) {
+    if (file_exists($file)) {
+        define('COMPOSER_AUTOLOAD_FILE', $file);
+        break;
+    }
+}
+unset($file);
+
+if (!defined('COMPOSER_AUTOLOAD_FILE')) {
+    fwrite(
+        STDERR,
+        'You need to set up the project dependencies using the following commands:'.PHP_EOL.
+        'wget http://getcomposer.org/composer.phar'.PHP_EOL.
+        'php composer.phar install'.PHP_EOL
+    );
+    die(1);
+}
+require COMPOSER_AUTOLOAD_FILE;
+
+use \Tnc\Service\EventDispatcher\Consumer\Manager;
+use \Tnc\Service\EventDispatcher\Consumer\Job\Executor;
+use \Tnc\Service\EventDispatcher\ExternalDispatcher\NullExternalDispatcher;
+use \Tnc\Service\EventDispatcher\Backend\KafkaBackend;
+use \Tnc\Service\EventDispatcher\Serializer\JsonSerializer;
+use \Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
+use \Tnc\Service\EventDispatcher\Pipeline;
+use \Tnc\Service\EventDispatcher\Consumer\SimpleLogger;
+use \Psr\Log\LogLevel;
+
+#'10.20.2.103:19092,10.20.2.103:29092,10.20.2.103:39092',
+#'10.60.0.129:9092,10.60.0.129:9093,10.60.0.129:9094',
+$brokers = 'maggie-kafka-1.thenetcircle.lab:9092,maggie-kafka-2.thenetcircle.lab:9092,maggie-kafka-3.thenetcircle.lab:9092';
+$backend = new KafkaBackend($brokers, [], false);
+
+$externalDispatcher = new NullExternalDispatcher();
+$pipeline           = new Pipeline($externalDispatcher, $backend, new JsonSerializer(), new SimpleChannelDetective());
+$logger             = new SimpleLogger(LogLevel::DEBUG);
+
+$manager = (new Manager('EventDispatcher Master', $logger)); //->demonize();
+for ($id = 1; $id <= 3; $id++) {
+    $manager->spawn(new Executor($externalDispatcher, $pipeline), 'EventDispatcher Executor '.$id, $id);
+}
+$manager->wait();

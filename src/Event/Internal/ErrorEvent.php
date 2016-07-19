@@ -14,7 +14,7 @@ use Tnc\Service\EventDispatcher\Event\AbstractEvent;
 
 class ErrorEvent extends AbstractEvent
 {
-    const NAME = 'service.event-dispatcher.error';
+    const ERROR = 'service.event-dispatcher.error';
 
     /**
      * @var string

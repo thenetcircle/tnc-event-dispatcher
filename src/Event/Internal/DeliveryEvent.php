@@ -12,9 +12,9 @@ namespace Tnc\Service\EventDispatcher\Event\Internal;
 
 use Tnc\Service\EventDispatcher\Event\AbstractEvent;
 
-class MessageEvent extends AbstractEvent
+class DeliveryEvent extends AbstractEvent
 {
-    const DELIVERY_FAILED = 'service.event-dispatcher.delivery.failed';
+    const FAILED = 'service.event-dispatcher.delivery.failed';
 
     /**
      * @var string

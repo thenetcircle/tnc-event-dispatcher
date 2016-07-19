@@ -59,7 +59,7 @@ class Pipeline
             $this->backend->push($channels, $message, $key);
         } catch (\Exception $e) {
             $this->externalDispatcher->dispatch(
-                ErrorEvent::NAME,
+                ErrorEvent::ERROR,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::push}')
             );
         }
@@ -90,7 +90,7 @@ class Pipeline
             return array($eventWrapper, $receipt);
         } catch (FatalException $e) {
             $this->externalDispatcher->dispatch(
-                ErrorEvent::NAME,
+                ErrorEvent::ERROR,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::pop}')
             );
 
@@ -107,7 +107,7 @@ class Pipeline
             $this->backend->ack($receipt);
         } catch (\Exception $e) {
             $this->externalDispatcher->dispatch(
-                ErrorEvent::NAME,
+                ErrorEvent::ERROR,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::ack}')
             );
         }
