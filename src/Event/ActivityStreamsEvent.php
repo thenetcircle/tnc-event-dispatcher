@@ -144,6 +144,42 @@ class ActivityStreamsEvent extends AbstractEvent implements Normalizable
     }
 
     /**
+     * Adds a item to context
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function addContext($key, $value)
+    {
+        $context = (array) $this->getContext();
+        $context[$key] = $value;
+        $this->setContext($context);
+
+        return $this;
+    }
+
+    /**
+     * Adds a item to context
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function delContext($key)
+    {
+        $context = (array) $this->getContext();
+        if(isset($context[$key])) {
+            unset($context[$key]);
+            $this->setContext(count($context) > 0 ? $context : null);
+        }
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function normalize(Serializer $serializer)

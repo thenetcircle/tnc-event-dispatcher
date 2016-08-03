@@ -14,7 +14,8 @@ use Tnc\Service\EventDispatcher\Event\AbstractEvent;
 
 class DeliveryEvent extends AbstractEvent
 {
-    const FAILED = 'service.event-dispatcher.delivery.failed';
+    const SUCCEED = 'service.event-dispatcher.delivery.succeed';
+    const FAILED  = 'service.event-dispatcher.delivery.failed';
 
     /**
      * @var string
@@ -44,7 +45,7 @@ class DeliveryEvent extends AbstractEvent
      * @param string $key
      * @param int    $errCode
      */
-    public function __construct($channel, $message, $key, $errCode)
+    public function __construct($channel, $message, $key, $errCode = 0)
     {
         $this->channel = $channel;
         $this->message = $message;

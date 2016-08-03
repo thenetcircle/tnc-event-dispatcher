@@ -3,6 +3,7 @@
 namespace Tnc\Service\EventDispatcher\Test;
 
 use Tnc\Service\EventDispatcher\Backend;
+use Tnc\Service\EventDispatcher\ChannelDetective;
 use Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\ExternalDispatcher\NullExternalDispatcher;
@@ -16,6 +17,11 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
     private $backend;
+
+    /**
+     * @var ChannelDetective
+     */
+    private $channelDetective;
 
     /**
      * @var Pipeline
@@ -40,9 +46,9 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
 
         $serializer         = new Serializer\JsonSerializer();
         $externalDispatcher = new NullExternalDispatcher();
-        $channelDetective   = new SimpleChannelDetective();
 
-        $this->pipeline = new Pipeline($externalDispatcher, $this->backend, $serializer, $channelDetective);
+        $this->channelDetective   = new SimpleChannelDetective();
+        $this->pipeline = new Pipeline($externalDispatcher, $this->backend, $serializer, $this->channelDetective);
 
         $event = new Event\DefaultEvent(['sender' => 'user1', 'receiver' => 'user2']);
         $event->setName('message.send');
@@ -58,7 +64,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
         $this->backend->expects($this->once())
                       ->method('push')
                       ->with(
-                          $this->equalTo('event-message'),
+                          $this->channelDetective->getPushingChannels($this->eventWrapper),
                           $this->equalTo($this->serializedEventWrapper),
                           $this->equalTo(null)
                       );

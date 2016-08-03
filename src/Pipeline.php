@@ -2,6 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher;
 
+use Tnc\Service\EventDispatcher\Event\Internal\DeliveryEvent;
 use Tnc\Service\EventDispatcher\Exception\FatalException;
 use Tnc\Service\EventDispatcher\Event\Internal\ErrorEvent;
 
@@ -52,11 +53,18 @@ class Pipeline
     public function push(EventWrapper $eventWrapper)
     {
         try {
+
             $message  = $this->serializer->serialize($eventWrapper);
             $channels = $this->channelDetective->getPushingChannels($eventWrapper);
             $key      = $eventWrapper->getEvent()->getGroup();
 
             $this->backend->push($channels, $message, $key);
+
+            $this->externalDispatcher->dispatch(
+                DeliveryEvent::SUCCEED,
+                new DeliveryEvent(implode(',', $channels), $message, $key)
+            );
+
         } catch (\Exception $e) {
             $this->externalDispatcher->dispatch(
                 ErrorEvent::ERROR,
