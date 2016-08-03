@@ -69,7 +69,7 @@ class ActivityStreamsEvent extends AbstractEvent implements Normalizable
      *
      * @return \Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj
      */
-    public static function createObj($objectType = null, $id = null)
+    public static function obj($objectType = null, $id = null)
     {
         return (new Obj())->setObjectType($objectType)
                           ->setId($id);

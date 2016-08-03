@@ -20,11 +20,11 @@ class ActivityStreamsEventTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($event->getActorId(), '111');
         $this->assertEquals($event->getActorObjectType(), 'user');
         $this->assertEquals($event->getActorDisplayName(), 'benn');
-        $this->assertEquals($event->getActor(), MessageEvent::createObj('user', '111')->setDisplayName('benn'));
+        $this->assertEquals($event->getActor(), MessageEvent::obj('user', '111')->setDisplayName('benn'));
 
         $this->assertEquals($event->getTargetId(), '222');
         $this->assertEquals($event->getTargetObjectType(), 'user');
-        $this->assertEquals($event->getTarget(), MessageEvent::createObj('user', '222'));
+        $this->assertEquals($event->getTarget(), MessageEvent::obj('user', '222'));
 
         $this->assertEquals($event->getContext(), $context);
 
@@ -33,7 +33,7 @@ class ActivityStreamsEventTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($event->getObjectContent(), $message->getMessage());
         $this->assertEquals(
             $event->getObject(),
-            MessageEvent::createObj('message', $message->getId())->setContent($message->getMessage())
+            MessageEvent::obj('message', $message->getId())->setContent($message->getMessage())
         );
     }
 }
@@ -56,7 +56,7 @@ class MessageEvent extends ActivityStreamsEvent
              ->setContext($context);
 
         $this->setObject(
-            self::createObj('message', $message->getId())
+            self::obj('message', $message->getId())
                 ->setContent($message->getMessage())
         );
     }

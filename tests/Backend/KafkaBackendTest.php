@@ -30,10 +30,10 @@ class KafkaBackendTest extends \PHPUnit_Framework_TestCase
 
         for ($i = 0; $i < 100; $i++) {
             $event = new ActivityStreamsEvent();
-            $event->setProvider(ActivityStreamsEvent::createObj('test', 'KafkaBackend'))
-                  ->setActor( ActivityStreamsEvent::createObj('user', mt_rand(100000, 999999)))
-                  ->setObject( ActivityStreamsEvent::createObj('message', 15))
-                  ->setTarget( ActivityStreamsEvent::createObj('user', 171))
+            $event->setProvider(ActivityStreamsEvent::obj('test', 'KafkaBackend'))
+                  ->setActor( ActivityStreamsEvent::obj('user', mt_rand(100000, 999999)))
+                  ->setObject( ActivityStreamsEvent::obj('message', 15))
+                  ->setTarget( ActivityStreamsEvent::obj('user', 171))
                   ->setContext( ['ip' => '192.168.1.1', 'user-agent' => 'Apache']);
 
             $dispatcher->dispatch('message.test-'.mt_rand(10000, 99999).'.send', $event, Dispatcher::MODE_ASYNC);

@@ -65,10 +65,10 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
 
         $this->activityEvent = (new MockActivityEvent())->setName('message.send')
                                                         ->setVerb('send')
-                                                        ->setProvider(MockActivityEvent::createObj('community', 'DD'))
-                                                        ->setActor(MockActivityEvent::createObj('user', '171'))
-                                                        ->setObject(MockActivityEvent::createObj('message', '2221'))
-                                                        ->setTarget(MockActivityEvent::createObj('user', '2281'))
+                                                        ->setProvider(MockActivityEvent::obj('community', 'DD'))
+                                                        ->setActor(MockActivityEvent::obj('user', '171'))
+                                                        ->setObject(MockActivityEvent::obj('message', '2221'))
+                                                        ->setTarget(MockActivityEvent::obj('user', '2281'))
                                                         ->setPublished($this->datetime)
                                                         ->setId('TestId');
         $this->activityEvent->setMode($this->mode);
