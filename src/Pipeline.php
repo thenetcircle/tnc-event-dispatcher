@@ -6,13 +6,8 @@ use Tnc\Service\EventDispatcher\Event\Internal\DeliveryEvent;
 use Tnc\Service\EventDispatcher\Exception\FatalException;
 use Tnc\Service\EventDispatcher\Event\Internal\ErrorEvent;
 
-class Pipeline
+class Pipeline extends InternalEventProducer
 {
-    /**
-     * @var ExternalDispatcher
-     */
-    private $externalDispatcher;
-
     /**
      * @var Backend;
      */
@@ -33,16 +28,10 @@ class Pipeline
      *
      * @param Backend    $backend
      * @param Serializer $serializer
+     * @param ChannelDetective $channelDetective
      */
-    public function __construct(
-        ExternalDispatcher $externalDispatcher,
-        Backend $backend,
-        Serializer $serializer,
-        ChannelDetective $channelDetective
-    ) {
-        $this->externalDispatcher = $externalDispatcher;
-        $this->backend            = $backend;
-        $this->backend->setEventDispatcher($externalDispatcher);
+    public function __construct(Backend $backend, Serializer $serializer, ChannelDetective $channelDetective) {
+        $this->backend          = $backend;
         $this->serializer       = $serializer;
         $this->channelDetective = $channelDetective;
     }
@@ -60,13 +49,13 @@ class Pipeline
 
             $this->backend->push($channels, $message, $key);
 
-            $this->externalDispatcher->dispatch(
+            $this->dispatchInternalEvent(
                 DeliveryEvent::SUCCEED,
                 new DeliveryEvent(implode(',', $channels), $message, $key)
             );
 
         } catch (\Exception $e) {
-            $this->externalDispatcher->dispatch(
+            $this->dispatchInternalEvent(
                 ErrorEvent::ERROR,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::push}')
             );
@@ -97,7 +86,7 @@ class Pipeline
 
             return array($eventWrapper, $receipt);
         } catch (FatalException $e) {
-            $this->externalDispatcher->dispatch(
+            $this->dispatchInternalEvent(
                 ErrorEvent::ERROR,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::pop}')
             );
@@ -114,7 +103,7 @@ class Pipeline
         try {
             $this->backend->ack($receipt);
         } catch (\Exception $e) {
-            $this->externalDispatcher->dispatch(
+            $this->dispatchInternalEvent(
                 ErrorEvent::ERROR,
                 new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::ack}')
             );
@@ -143,5 +132,17 @@ class Pipeline
     public function getChannelDetective()
     {
         return $this->channelDetective;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setInternalEventDispatcher(Dispatcher $dispatcher)
+    {
+        $this->internalEventDispatcher = $dispatcher;
+
+        if($this->backend instanceof InternalEventProducer) {
+            $this->backend->setInternalEventDispatcher($dispatcher);
+        }
     }
 }

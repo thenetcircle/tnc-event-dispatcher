@@ -1,8 +1,10 @@
 #!/usr/bin/env php
 <?php
-foreach (
-    array( __DIR__.'/../../autoload.php', __DIR__.'/../vendor/autoload.php', __DIR__.'/vendor/autoload.php',) as $file
-) {
+foreach (array(
+             __DIR__.'/../../autoload.php',
+             __DIR__.'/../vendor/autoload.php',
+             __DIR__.'/vendor/autoload.php',
+         ) as $file) {
     if (file_exists($file)) {
         define('COMPOSER_AUTOLOAD_FILE', $file);
         break;
@@ -13,9 +15,7 @@ unset($file);
 if (!defined('COMPOSER_AUTOLOAD_FILE')) {
     fwrite(
         STDERR,
-        'You need to set up the project dependencies using the following commands:'.PHP_EOL.
-        'wget http://getcomposer.org/composer.phar'.PHP_EOL.
-        'php composer.phar install'.PHP_EOL
+        'You need to set up the project dependencies using the following commands:'.PHP_EOL.'wget http://getcomposer.org/composer.phar'.PHP_EOL.'php composer.phar install'.PHP_EOL
     );
     die(1);
 }
@@ -30,17 +30,117 @@ use \Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
 use \Tnc\Service\EventDispatcher\Pipeline;
 use \Tnc\Service\EventDispatcher\SimpleLogger;
 use \Psr\Log\LogLevel;
+use \Tnc\Service\EventDispatcher\Dispatcher;
+use \Tnc\Service\EventDispatcher\Consumer;
+use \Tnc\Service\EventDispatcher\EventWrapper;
+use \Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
 
-# '10.60.0.129:9092,10.60.0.129:9093,10.60.0.129:9094';
-$brokers = 'maggie-kafka-1.thenetcircle.lab:9092,maggie-kafka-2.thenetcircle.lab:9092,maggie-kafka-3.thenetcircle.lab:9092';
-$backend = new KafkaBackend($brokers, [], false);
+$consumer = new Consumer(function(){
+    $externalDispatcher = new NullExternalDispatcher();
 
-$externalDispatcher = new NullExternalDispatcher();
-$pipeline           = new Pipeline($externalDispatcher, $backend, new JsonSerializer(), new SimpleChannelDetective());
-$logger             = new SimpleLogger(LogLevel::NOTICE);
+    $brokers = '10.60.0.129:9092,10.60.0.129:9093,10.60.0.129:9094';
+    #$brokers = 'maggie-kafka-1.thenetcircle.lab:9092,maggie-kafka-2.thenetcircle.lab:9092,maggie-kafka-3.thenetcircle.lab:9092';
+    $backend = new KafkaBackend($brokers, [], false);
+    $pipeline = new Pipeline($backend, new JsonSerializer(), new SimpleChannelDetective());
 
-$manager = (new ProcessManager('EventDispatcher Master', $logger)); //->demonize();
-for ($id = 1; $id <= 3; $id++) {
-    $manager->spawn(new Executor($externalDispatcher, $pipeline), 'EventDispatcher Executor '.$id, $id);
-}
-$manager->wait();
+    $dispatcher = new Dispatcher($externalDispatcher, $pipeline);
+
+    while (true) {
+
+        try {
+
+            /** @var EventWrapper $eventWrapper */
+            /** @var ActivityStreamsEvent $event */
+            list($eventWrapper, $receipt) = $pipeline->pop(500000, $this->channels);
+
+            if ($eventWrapper === null) {
+
+            } elseif (0) {
+                // TODO check if there is a listener, otherwise maybe unsubscribe the topic
+            } else {
+
+                try { // TODO handler failed jobs
+
+                    $acceptedJobsNum++;
+                    $event = $eventWrapper->getEvent();
+
+                    // TODO do dispatch
+                    $process->getLogger()->debug(
+                        sprintf(
+                            'Executor<%d>, Got a new event %s, Topic: %s, Partition: %d, LastOffset: %d.',
+                            $process->getPid(),
+                            get_class($event),
+                            $receipt->topic_name,
+                            $receipt->partition,
+                            $receipt->offset
+                        )
+                    );
+
+                    $sql =
+                        'UPDATE kafka_consumer_test SET status=1, u_time='.microtime(true).' WHERE id="'.$event->getId(
+                        ).'"';
+                    $pdo->exec($sql);
+
+                    $this->pipeline->ack($receipt);
+
+                } catch (\Exception $e) {
+
+                    $process->getLogger()->error(
+                        sprintf(
+                            'Executor<%d>, Job execute failed, ErrorCode: %d, ErrorMessage: %s.',
+                            $process->getPid(),
+                            $e->getCode(),
+                            $e->getMessage()
+                        )
+                    );
+
+                }
+
+            }
+
+        } catch (NoDataException $e) {
+            $process->getLogger()->debug(
+                sprintf(
+                    'Executor<%d>, There is no data in upstream backend.',
+                    $process->getPid()
+                )
+            );
+        } catch (TimeoutException $e) {
+            $process->getLogger()->debug(
+                sprintf(
+                    'Executor<%d>, Fetch data from upstream backend timeout, will try it again.',
+                    $process->getPid()
+                )
+            );
+        } catch (FatalException $e) {
+
+            $failedTimes++;
+
+            $process->getLogger()->error(
+                sprintf(
+                    'Executor<%d>, Fetch data from upstream backend failed %d times, ErrorCode: %d, ErrorMessage: %s.',
+                    $process->getPid(),
+                    $failedTimes,
+                    $e->getCode(),
+                    $e->getMessage()
+                )
+            );
+
+            if ($failedTimes >= self::MAX_FAILED_TIMES) {
+
+                $process->getLogger()->warning(
+                    sprintf(
+                        'Executor<%d> exceed the max failed times %d, Will exit.',
+                        $process->getPid(),
+                        self::MAX_FAILED_TIMES
+                    )
+                );
+
+                sleep(5); // sleep 5 seconds then exit, to protect auto-restart
+                exit(1);
+            }
+
+            sleep(1); // sleep 1 second then retry
+
+        }
+});

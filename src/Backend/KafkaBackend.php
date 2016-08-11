@@ -139,7 +139,7 @@ class KafkaBackend extends AbstractBackend
      */
     public function kafkaErrorCallback($kafka, $err, $reason)
     {
-        $this->eventDispatcher->dispatch(
+        $this->dispatchInternalEvent(
             ErrorEvent::ERROR,
             new ErrorEvent(
                 $err,
@@ -159,7 +159,7 @@ class KafkaBackend extends AbstractBackend
      */
     public function deliveryMessageCallback(\RdKafka\Producer $producer, \RdKafka\Message $message)
     {
-        $this->eventDispatcher->dispatch(
+        $this->dispatchInternalEvent(
             DeliveryEvent::FAILED,
             new DeliveryEvent(
                 $message->topic_name, $message->payload, $message->key, $message->err

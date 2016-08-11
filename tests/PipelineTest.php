@@ -45,10 +45,9 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
         $this->backend = $this->createMock(Backend::class);
 
         $serializer         = new Serializer\JsonSerializer();
-        $externalDispatcher = new NullExternalDispatcher();
 
         $this->channelDetective   = new SimpleChannelDetective();
-        $this->pipeline = new Pipeline($externalDispatcher, $this->backend, $serializer, $this->channelDetective);
+        $this->pipeline = new Pipeline($this->backend, $serializer, $this->channelDetective);
 
         $event = new Event\DefaultEvent(['sender' => 'user1', 'receiver' => 'user2']);
         $event->setName('message.send');

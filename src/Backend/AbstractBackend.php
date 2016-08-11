@@ -11,21 +11,8 @@
 namespace Tnc\Service\EventDispatcher\Backend;
 
 use Tnc\Service\EventDispatcher\Backend;
-use Tnc\Service\EventDispatcher\Exception;
-use Tnc\Service\EventDispatcher\ExternalDispatcher;
+use Tnc\Service\EventDispatcher\InternalEventProducer;
 
-abstract class AbstractBackend implements Backend
+abstract class AbstractBackend extends InternalEventProducer implements Backend
 {
-    /**
-     * @var ExternalDispatcher
-     */
-    protected $eventDispatcher;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setEventDispatcher(ExternalDispatcher $externalDispatcher)
-    {
-        $this->eventDispatcher = $externalDispatcher;
-    }
 }

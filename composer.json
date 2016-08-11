@@ -8,7 +8,8 @@
   "type": "library",
   "license": "proprietary",
   "require": {
-    "php": ">=5.5"
+    "php": ">=5.5",
+    "misterion/ko-process": "*"
   },
   "require-dev": {
     "psr/log": "~1.0",

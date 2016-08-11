@@ -43,6 +43,7 @@ class Dispatcher
     {
         $this->externalDispatcher = $externalDispatcher;
         $this->pipeline           = $pipeline;
+        $this->pipeline->setInternalEventDispatcher($this);
         $this->defaultEvent       = $defaultEvent === null ? new DefaultEvent() : $defaultEvent;
     }
 
@@ -97,5 +98,13 @@ class Dispatcher
     public function getExternalDispatcher()
     {
         return $this->externalDispatcher;
+    }
+
+    /**
+     * @return Pipeline
+     */
+    public function getPipeline()
+    {
+        return $this->pipeline;
     }
 }
