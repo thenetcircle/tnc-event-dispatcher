@@ -30,7 +30,7 @@ class Consumer
     /**
      * Consumer constructor.
      *
-     * @param callable $job
+     * @param callable $job The callable will accept one parameter (\Ko\Process $process)
      * @param int      $workerNum
      */
     public function __construct(callable $job, $workerNum = 1, $processTitle = 'EventDispatcher')
@@ -41,18 +41,43 @@ class Consumer
     }
 
     /**
+     * @return callable
+     */
+    public function getJob()
+    {
+        return $this->job;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWorkerNum()
+    {
+        return $this->workerNum;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProcessTitle()
+    {
+        return $this->processTitle;
+    }
+
+    /**
      * Runs Consumer
      */
     public function run()
     {
+        $consumer = $this;
         $manager = new \Ko\ProcessManager();
-        $manager->demonize();
-        $manager->setProcessTitle($this->processTitle . ':Master');
+        // $manager->demonize();
+        $manager->setProcessTitle($this->getProcessTitle() . ':Master');
         for ($i = 0; $i < $this->workerNum; $i++) {
             $manager->spawn(
-                function (\Ko\Process $process) use ($this) {
-                    $process->setProcessTitle($this->processTitle . ':Worker');
-                    call_user_func($this->job);
+                function (\Ko\Process $process) use ($consumer) {
+                    $process->setProcessTitle($consumer->getProcessTitle() . ':Worker');
+                    call_user_func($consumer->getJob(), $process);
                 }
             );
         }

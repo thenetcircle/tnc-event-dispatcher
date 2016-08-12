@@ -35,15 +35,26 @@ use \Tnc\Service\EventDispatcher\Consumer;
 use \Tnc\Service\EventDispatcher\EventWrapper;
 use \Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
 
+function processlog($message)
+{
+    echo "[".posix_getpid()."] " . $message . PHP_EOL;
+}
+
 $consumer = new Consumer(function(){
+
     $externalDispatcher = new NullExternalDispatcher();
 
     $brokers = '10.60.0.129:9092,10.60.0.129:9093,10.60.0.129:9094';
     #$brokers = 'maggie-kafka-1.thenetcircle.lab:9092,maggie-kafka-2.thenetcircle.lab:9092,maggie-kafka-3.thenetcircle.lab:9092';
     $backend = new KafkaBackend($brokers, [], false);
-    $pipeline = new Pipeline($backend, new JsonSerializer(), new SimpleChannelDetective());
+    $channelDetective = new SimpleChannelDetective();
+    $pipeline = new Pipeline($backend, new JsonSerializer(), $channelDetective);
 
     $dispatcher = new Dispatcher($externalDispatcher, $pipeline);
+
+    // $pdo = new \PDO('mysql:dbname=poppen;host=moleman-poppen;', 'poppen_admin', 'NetNet2');
+    $failedTimes     = 0;
+    $acceptedJobsNum = 0;
 
     while (true) {
 
@@ -51,7 +62,7 @@ $consumer = new Consumer(function(){
 
             /** @var EventWrapper $eventWrapper */
             /** @var ActivityStreamsEvent $event */
-            list($eventWrapper, $receipt) = $pipeline->pop(500000, $this->channels);
+            list($eventWrapper, $receipt) = $pipeline->pop(500000, $channelDetective->getListeningChannels());
 
             if ($eventWrapper === null) {
 
@@ -65,10 +76,9 @@ $consumer = new Consumer(function(){
                     $event = $eventWrapper->getEvent();
 
                     // TODO do dispatch
-                    $process->getLogger()->debug(
+                    processlog(
                         sprintf(
-                            'Executor<%d>, Got a new event %s, Topic: %s, Partition: %d, LastOffset: %d.',
-                            $process->getPid(),
+                            'Got a new event %s, Topic: %s, Partition: %d, LastOffset: %d.',
                             get_class($event),
                             $receipt->topic_name,
                             $receipt->partition,
@@ -76,19 +86,18 @@ $consumer = new Consumer(function(){
                         )
                     );
 
-                    $sql =
+                    /*$sql =
                         'UPDATE kafka_consumer_test SET status=1, u_time='.microtime(true).' WHERE id="'.$event->getId(
                         ).'"';
-                    $pdo->exec($sql);
+                    $pdo->exec($sql);*/
 
-                    $this->pipeline->ack($receipt);
+                    $pipeline->ack($receipt);
 
                 } catch (\Exception $e) {
 
-                    $process->getLogger()->error(
+                    processlog(
                         sprintf(
-                            'Executor<%d>, Job execute failed, ErrorCode: %d, ErrorMessage: %s.',
-                            $process->getPid(),
+                            'Job execute failed, ErrorCode: %d, ErrorMessage: %s.',
                             $e->getCode(),
                             $e->getMessage()
                         )
@@ -98,41 +107,29 @@ $consumer = new Consumer(function(){
 
             }
 
-        } catch (NoDataException $e) {
-            $process->getLogger()->debug(
-                sprintf(
-                    'Executor<%d>, There is no data in upstream backend.',
-                    $process->getPid()
-                )
-            );
-        } catch (TimeoutException $e) {
-            $process->getLogger()->debug(
-                sprintf(
-                    'Executor<%d>, Fetch data from upstream backend timeout, will try it again.',
-                    $process->getPid()
-                )
-            );
-        } catch (FatalException $e) {
+        } catch (\Tnc\Service\EventDispatcher\Exception\NoDataException $e) {
+            processlog('There is no data in upstream backend.');
+        } catch (\Tnc\Service\EventDispatcher\Exception\TimeoutException $e) {
+            processlog('Fetch data from upstream backend timeout, will try it again.');
+        } catch (\Tnc\Service\EventDispatcher\Exception\FatalException $e) {
 
             $failedTimes++;
 
-            $process->getLogger()->error(
+            processlog(
                 sprintf(
-                    'Executor<%d>, Fetch data from upstream backend failed %d times, ErrorCode: %d, ErrorMessage: %s.',
-                    $process->getPid(),
+                    'Fetch data from upstream backend failed %d times, ErrorCode: %d, ErrorMessage: %s.',
                     $failedTimes,
                     $e->getCode(),
                     $e->getMessage()
                 )
             );
 
-            if ($failedTimes >= self::MAX_FAILED_TIMES) {
+            if ($failedTimes >= 10) {
 
-                $process->getLogger()->warning(
+                processlog(
                     sprintf(
-                        'Executor<%d> exceed the max failed times %d, Will exit.',
-                        $process->getPid(),
-                        self::MAX_FAILED_TIMES
+                        'Exceed the max failed times %d, Will exit.',
+                        10
                     )
                 );
 
@@ -143,4 +140,7 @@ $consumer = new Consumer(function(){
             sleep(1); // sleep 1 second then retry
 
         }
-});
+    }
+}, 3);
+
+$consumer->run();
