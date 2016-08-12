@@ -4,12 +4,11 @@ namespace Tnc\Service\EventDispatcher\ChannelDetective;
 
 use Tnc\Service\EventDispatcher\ChannelDetective;
 use Tnc\Service\EventDispatcher\Event;
-use Tnc\Service\EventDispatcher\EventWrapper;
 
 class SimpleChannelDetective implements ChannelDetective
 {
-    protected $channels = ['event-default', 'event-message'];
-    protected $channelsMapping = [
+    protected $listeningChannels = ['event-default', 'event-message'];
+    protected $pushingChannelsMapping = [
             '^message\\.' => ['event-message'],
             '.*'          => ['event-default'],
         ];
@@ -17,11 +16,11 @@ class SimpleChannelDetective implements ChannelDetective
     /**
      * {@inheritdoc}
      */
-    public function getPushingChannels(EventWrapper $eventWrapper)
+    public function getPushingChannels(Event $event)
     {
-        $eventName = $eventWrapper->getEvent()->getName();
+        $eventName = $event->getName();
 
-        foreach ($this->channelsMapping as $_key => $_value) {
+        foreach ($this->pushingChannelsMapping as $_key => $_value) {
             if (preg_match('/'.$_key.'/i', $eventName)) {
                 return $_value;
             }
@@ -35,6 +34,6 @@ class SimpleChannelDetective implements ChannelDetective
      */
     public function getListeningChannels()
     {
-        return $this->channels;
+        return $this->listeningChannels;
     }
 }

@@ -44,7 +44,7 @@ class Pipeline extends InternalEventProducer
         try {
 
             $message  = $this->serializer->serialize($eventWrapper);
-            $channels = $this->channelDetective->getPushingChannels($eventWrapper);
+            $channels = $this->channelDetective->getPushingChannels($eventWrapper->getEvent());
             $key      = $eventWrapper->getEvent()->getGroup();
 
             $this->backend->push($channels, $message, $key);

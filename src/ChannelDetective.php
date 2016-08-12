@@ -5,11 +5,11 @@ namespace Tnc\Service\EventDispatcher;
 interface ChannelDetective
 {
     /**
-     * @param \Tnc\Service\EventDispatcher\EventWrapper $eventWrapper
+     * @param \Tnc\Service\EventDispatcher\Event $event
      *
      * @return array
      */
-    public function getPushingChannels(EventWrapper $eventWrapper);
+    public function getPushingChannels(Event $event);
 
     /**
      * @return array

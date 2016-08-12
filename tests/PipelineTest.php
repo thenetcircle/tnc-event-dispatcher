@@ -63,7 +63,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
         $this->backend->expects($this->once())
                       ->method('push')
                       ->with(
-                          $this->channelDetective->getPushingChannels($this->eventWrapper),
+                          $this->channelDetective->getPushingChannels($this->eventWrapper->getEvent()),
                           $this->equalTo($this->serializedEventWrapper),
                           $this->equalTo(null)
                       );
