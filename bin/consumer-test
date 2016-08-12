@@ -21,126 +21,142 @@ if (!defined('COMPOSER_AUTOLOAD_FILE')) {
 }
 require COMPOSER_AUTOLOAD_FILE;
 
-use \Tnc\Service\EventDispatcher\Consumer\ProcessManager;
-use \Tnc\Service\EventDispatcher\Consumer\Job\Executor;
-use \Tnc\Service\EventDispatcher\ExternalDispatcher\NullExternalDispatcher;
-use \Tnc\Service\EventDispatcher\Backend\KafkaBackend;
-use \Tnc\Service\EventDispatcher\Serializer\JsonSerializer;
-use \Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
-use \Tnc\Service\EventDispatcher\Pipeline;
-use \Tnc\Service\EventDispatcher\SimpleLogger;
-use \Psr\Log\LogLevel;
-use \Tnc\Service\EventDispatcher\Dispatcher;
 use \Tnc\Service\EventDispatcher\Consumer;
 use \Tnc\Service\EventDispatcher\EventWrapper;
-use \Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
+use \Tnc\Service\EventDispatcher\Exception\NoDataException;
+use \Tnc\Service\EventDispatcher\Exception\TimeoutException;
+use \Tnc\Service\EventDispatcher\Exception\FatalException;
+use \Tnc\Service\EventDispatcher\ExternalDispatcher\NullExternalDispatcher;
+use \Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
+use \Tnc\Service\EventDispatcher\Backend\KafkaBackend;
+use \Tnc\Service\EventDispatcher\Pipeline;
+use \Tnc\Service\EventDispatcher\Serializer\JsonSerializer;
+use \Ko\Process;
 
-function processlog($message)
-{
-    echo "[".posix_getpid()."] " . $message . PHP_EOL;
+if ($argc < 3) {
+    die('Usage: ./consumer brokers workerNum [processTitle]'.PHP_EOL);
 }
 
-$consumer = new Consumer(function(){
+$brokers      = $argv[1];
+$workerNum    = $argv[2];
+$processTitle = $argv[3] ?: 'EventDispatcher';
 
+$job = function (Process $process) use ($brokers) {
+
+    // bootstrap
     $externalDispatcher = new NullExternalDispatcher();
+    $pipeline           = new Pipeline(new KafkaBackend($brokers, [], false), new JsonSerializer(), new SimpleChannelDetective());
+    $listeningChannels  = null; // if null, will listen default channels from ChannelDetective
 
-    $brokers = '10.60.0.129:9092,10.60.0.129:9093,10.60.0.129:9094';
-    #$brokers = 'maggie-kafka-1.thenetcircle.lab:9092,maggie-kafka-2.thenetcircle.lab:9092,maggie-kafka-3.thenetcircle.lab:9092';
-    $backend = new KafkaBackend($brokers, [], false);
-    $channelDetective = new SimpleChannelDetective();
-    $pipeline = new Pipeline($backend, new JsonSerializer(), $channelDetective);
+    $initFilemtime = filemtime(__FILE__);
+    $acceptedJobs = 0;
+    $failedJobs   = 0;
 
-    $dispatcher = new Dispatcher($externalDispatcher, $pipeline);
-
-    // $pdo = new \PDO('mysql:dbname=poppen;host=moleman-poppen;', 'poppen_admin', 'NetNet2');
-    $failedTimes     = 0;
-    $acceptedJobsNum = 0;
-
+    // start working
     while (true) {
 
-        try {
+        // check if code is changed, usually for redeployment
+        if (filemtime(__FILE__) !== $initFilemtime) {
+            sleep(5);
+            exit(1);
+        }
 
+        try {
             /** @var EventWrapper $eventWrapper */
-            /** @var ActivityStreamsEvent $event */
-            list($eventWrapper, $receipt) = $pipeline->pop(500000, $channelDetective->getListeningChannels());
+            list($eventWrapper, $receipt) = $pipeline->pop(500000, $listeningChannels);
+            $acceptedJobs++;
 
             if ($eventWrapper === null) {
-
-            } elseif (0) {
-                // TODO check if there is a listener, otherwise maybe unsubscribe the topic
+                debugLog(
+                    sprintf(
+                        'Got null event from pipeline, Receipt: %s.',
+                        serialize($receipt)
+                    )
+                );
             } else {
-
-                try { // TODO handler failed jobs
-
-                    $acceptedJobsNum++;
-                    $event = $eventWrapper->getEvent();
-
-                    // TODO do dispatch
-                    processlog(
+                $event = $eventWrapper->getEvent();
+                // only accepts TncEvent instances
+                /*if (!$event instanceof TncEvent) {
+                    continue;
+                }*/
+                // only accepts ASYNC events
+                /*if ($event->getMode() !== TncEvent::MODE_ASYNC) {
+                    continue;
+                }*/
+                // if there is no listeners for the event, just skip it
+                /*if (!$externalDispatcher->getListeners($event->getName())) {
+                    continue;
+                }*/
+                try {
+                    // Optimize receipt
+                    debugLog(
                         sprintf(
-                            'Got a new event %s, Topic: %s, Partition: %d, LastOffset: %d.',
+                            'Got a new event %s, Total: %d, Topic: %s, Partition: %d, LastOffset: %d.',
                             get_class($event),
+                            $acceptedJobs,
                             $receipt->topic_name,
                             $receipt->partition,
                             $receipt->offset
                         )
                     );
 
-                    /*$sql =
-                        'UPDATE kafka_consumer_test SET status=1, u_time='.microtime(true).' WHERE id="'.$event->getId(
-                        ).'"';
-                    $pdo->exec($sql);*/
+                    // TODO dispatch events to listeners
 
                     $pipeline->ack($receipt);
-
                 } catch (\Exception $e) {
-
-                    processlog(
+                    // TODO handler failed jobs
+                    debugLog(
                         sprintf(
                             'Job execute failed, ErrorCode: %d, ErrorMessage: %s.',
                             $e->getCode(),
                             $e->getMessage()
                         )
                     );
-
                 }
-
             }
-
-        } catch (\Tnc\Service\EventDispatcher\Exception\NoDataException $e) {
-            processlog('There is no data in upstream backend.');
-        } catch (\Tnc\Service\EventDispatcher\Exception\TimeoutException $e) {
-            processlog('Fetch data from upstream backend timeout, will try it again.');
-        } catch (\Tnc\Service\EventDispatcher\Exception\FatalException $e) {
-
-            $failedTimes++;
-
-            processlog(
+        } catch (NoDataException $e) {
+            debugLog('There is no data in upstream backend.');
+        } catch (TimeoutException $e) {
+            debugLog('Fetch data from upstream backend timeout, will try it again.');
+        } catch (FatalException $e) {
+            $failedJobs++;
+            debugLog(
                 sprintf(
                     'Fetch data from upstream backend failed %d times, ErrorCode: %d, ErrorMessage: %s.',
-                    $failedTimes,
+                    $failedJobs,
                     $e->getCode(),
                     $e->getMessage()
                 )
             );
+            // sleep 1 second before retry
+            sleep(1);
+        }
 
-            if ($failedTimes >= 10) {
+        if ($failedJobs >= 10 || $acceptedJobs >= 10000) {
+            debugLog(
+                sprintf(
+                    'Exceed the limitation, FailedJobs %d, AcceptedJobs: %d, Will exit.',
+                    $failedJobs,
+                    $acceptedJobs
+                )
+            );
+            // sleep 5 seconds then exit, to protect that worker process will be auto-restarted
+            sleep(5);
+            exit(1);
+        }
 
-                processlog(
-                    sprintf(
-                        'Exceed the max failed times %d, Will exit.',
-                        10
-                    )
-                );
-
-                sleep(5); // sleep 5 seconds then exit, to protect auto-restart
-                exit(1);
-            }
-
-            sleep(1); // sleep 1 second then retry
-
+        // dispatch pending signals
+        $process->dispatch();
+        if ($process->isShouldShutdown()) {
+            exit();
         }
     }
-}, 3);
+};
 
-$consumer->run();
+function debugLog($message)
+{
+    echo "[".posix_getpid()."] ".$message.PHP_EOL;
+    ob_flush();
+}
+
+(new Consumer($job, $workerNum, $processTitle))->run();

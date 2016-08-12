@@ -71,7 +71,7 @@ class Consumer
     {
         $consumer = $this;
         $manager = new \Ko\ProcessManager();
-        // $manager->demonize();
+        $manager->demonize();
         $manager->setProcessTitle($this->getProcessTitle() . ':Master');
         for ($i = 0; $i < $this->workerNum; $i++) {
             $manager->spawn(
