@@ -47,6 +47,14 @@ class Pipeline extends InternalEventProducer
             $channels = $this->channelDetective->getPushingChannels($eventWrapper->getEvent());
             $key      = $eventWrapper->getEvent()->getGroup();
 
+            if (empty($message)) {
+                $this->dispatchInternalEvent(
+                    DeliveryEvent::FAILED,
+                    new DeliveryEvent(implode(',', $channels), serialize($eventWrapper), $key)
+                );
+                return;
+            }
+
             $this->backend->push($channels, $message, $key);
 
             $this->dispatchInternalEvent(
@@ -80,7 +88,7 @@ class Pipeline extends InternalEventProducer
             list($message, $receipt) = $this->backend->pop($channels, $timeout);
 
             $eventWrapper = null;
-            if ($message) {
+            if (!empty($message)) {
                 $eventWrapper = $this->serializer->unserialize($message, EventWrapper::class);
             }
 
