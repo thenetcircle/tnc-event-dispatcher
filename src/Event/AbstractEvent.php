@@ -105,36 +105,4 @@ abstract class AbstractEvent implements Event
     {
         $this->propagationStopped = true;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function normalize(Serializer $serializer)
-    {
-        return [
-            'name'               => $this->getName(),
-            'group'              => $this->getGroup(),
-            'mode'               => $this->getMode(),
-            'propagationStopped' => $this->propagationStopped
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function denormalize(Serializer $serializer, array $data)
-    {
-        if(isset($data['name'])) {
-            $this->name = $data['name'];
-        }
-        if(isset($data['group'])) {
-            $this->group = $data['group'];
-        }
-        if(isset($data['mode'])) {
-            $this->mode = $data['mode'];
-        }
-        if(isset($data['propagationStopped'])) {
-            $this->propagationStopped = $data['propagationStopped'];
-        }
-    }
 }

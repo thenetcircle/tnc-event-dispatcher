@@ -6,7 +6,6 @@ use Tnc\Service\EventDispatcher\Backend;
 use Tnc\Service\EventDispatcher\ChannelDetective;
 use Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
 use Tnc\Service\EventDispatcher\Event;
-use Tnc\Service\EventDispatcher\ExternalDispatcher\NullExternalDispatcher;
 use Tnc\Service\EventDispatcher\Pipeline;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;

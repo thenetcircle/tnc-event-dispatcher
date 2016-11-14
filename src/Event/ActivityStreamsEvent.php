@@ -195,7 +195,12 @@ class ActivityStreamsEvent extends AbstractEvent implements Normalizable
         }
         $data = $serializer->normalize($this->activity);
 
-        $extraData = parent::normalize($serializer);
+        $extraData = [
+            'name'               => $this->getName(),
+            'group'              => $this->getGroup(),
+            'mode'               => $this->getMode(),
+            'propagationStopped' => $this->propagationStopped
+        ];
         $data['extra'] = $extraData;
 
         return $data;
@@ -206,8 +211,23 @@ class ActivityStreamsEvent extends AbstractEvent implements Normalizable
      */
     public function denormalize(Serializer $serializer, array $data)
     {
-        parent::denormalize($serializer, (array)$data['extra']);
-        unset($data['extra']);
+        if (isset($data['extra'])) {
+            $extra = $data['extra'];
+            unset($data['extra']);
+
+            if (isset($extra['name'])) {
+                $this->name = $extra['name'];
+            }
+            if (isset($extra['group'])) {
+                $this->group = $extra['group'];
+            }
+            if (isset($extra['mode'])) {
+                $this->mode = $extra['mode'];
+            }
+            if (isset($extra['propagationStopped'])) {
+                $this->propagationStopped = $extra['propagationStopped'];
+            }
+        }
 
         $this->activity = $serializer->denormalize($data, Activity::class);
     }

@@ -6,7 +6,7 @@ use Tnc\Service\EventDispatcher\Backend\KafkaBackend;
 use Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
 use Tnc\Service\EventDispatcher\Dispatcher;
 use Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
-use Tnc\Service\EventDispatcher\ExternalDispatcher\NullExternalDispatcher;
+use Tnc\Service\EventDispatcher\Test\MockExternalDispatcher;
 use Tnc\Service\EventDispatcher\Pipeline;
 use Tnc\Service\EventDispatcher\Serializer\JsonSerializer;
 
@@ -14,7 +14,7 @@ class KafkaBackendTest extends \PHPUnit_Framework_TestCase
 {
     public function testPush()
     {
-        $externalDispatcher = new NullExternalDispatcher();
+        $externalDispatcher = new MockExternalDispatcher();
 
         $backend          = new KafkaBackend(
             '10.60.0.129:9092,10.60.0.129:9093,10.60.0.129:9094',

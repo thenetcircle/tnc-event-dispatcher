@@ -88,7 +88,12 @@ class DefaultEvent extends AbstractEvent implements Normalizable, \ArrayAccess
     public function normalize(Serializer $serializer)
     {
         $data = $this->data;
-        $data['extra'] = parent::normalize($serializer);
+        $data['extra'] = [
+            'name'               => $this->getName(),
+            'group'              => $this->getGroup(),
+            'mode'               => $this->getMode(),
+            'propagationStopped' => $this->propagationStopped
+        ];
 
         return $data;
     }
@@ -98,8 +103,23 @@ class DefaultEvent extends AbstractEvent implements Normalizable, \ArrayAccess
      */
     public function denormalize(Serializer $serializer, array $data)
     {
-        parent::denormalize($serializer, (array)$data['extra']);
-        unset($data['extra']);
+        if (isset($data['extra'])) {
+            $extra = $data['extra'];
+            unset($data['extra']);
+
+            if (isset($extra['name'])) {
+                $this->name = $extra['name'];
+            }
+            if (isset($extra['group'])) {
+                $this->group = $extra['group'];
+            }
+            if (isset($extra['mode'])) {
+                $this->mode = $extra['mode'];
+            }
+            if (isset($extra['propagationStopped'])) {
+                $this->propagationStopped = $extra['propagationStopped'];
+            }
+        }
 
         $this->data = $data;
     }

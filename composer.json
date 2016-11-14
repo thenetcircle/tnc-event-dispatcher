@@ -8,8 +8,10 @@
   "type": "library",
   "license": "proprietary",
   "require": {
-    "php": ">=5.5",
-    "misterion/ko-process": "*"
+    "php": ">=5.5"
+  },
+  "suggest": {
+    "misterion/ko-process": "If you want consume messages from pipeline"
   },
   "require-dev": {
     "psr/log": "~1.0",

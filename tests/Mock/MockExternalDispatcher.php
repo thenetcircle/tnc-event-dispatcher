@@ -1,11 +1,11 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\ExternalDispatcher;
+namespace Tnc\Service\EventDispatcher\Test;
 
 use Tnc\Service\EventDispatcher\Event;
 use Tnc\Service\EventDispatcher\ExternalDispatcher;
 
-class NullExternalDispatcher implements ExternalDispatcher
+class MockExternalDispatcher implements ExternalDispatcher
 {
     /**
      * {@inheritdoc}
