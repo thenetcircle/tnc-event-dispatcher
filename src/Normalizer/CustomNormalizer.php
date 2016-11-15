@@ -3,6 +3,8 @@
 namespace Tnc\Service\EventDispatcher\Normalizer;
 
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
+use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
+use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
 
 class CustomNormalizer extends AbstractNormalizer
 {
@@ -25,11 +27,11 @@ class CustomNormalizer extends AbstractNormalizer
         }
 
         $reflectionClass = new \ReflectionClass($class);
-        if (!$reflectionClass->isSubclassOf(Normalizable::class)) {
+        if (!$reflectionClass->isSubclassOf(Denormalizable::class)) {
             throw new InvalidArgumentException(sprintf('Class %s not normalizable.', $class));
         }
 
-        /** @var Normalizable $object */
+        /** @var Denormalizable $object */
         $object = $reflectionClass->newInstanceWithoutConstructor();
         $object->denormalize($this->serializer, $data);
         return $object;
@@ -52,6 +54,6 @@ class CustomNormalizer extends AbstractNormalizer
             return false;
         }
 
-        return is_subclass_of($class, Normalizable::class);
+        return is_subclass_of($class, Denormalizable::class);
     }
 }

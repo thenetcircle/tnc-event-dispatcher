@@ -10,10 +10,11 @@
 
 namespace Tnc\Service\EventDispatcher\Event;
 
+use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
 use Tnc\Service\EventDispatcher\Serializer;
-use Tnc\Service\EventDispatcher\Normalizer\Normalizable;
+use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
 
-class DefaultEvent extends AbstractEvent implements Normalizable, \ArrayAccess
+class DefaultEvent extends AbstractEvent implements Normalizable, Denormalizable, \ArrayAccess
 {
     /**
      * @var array

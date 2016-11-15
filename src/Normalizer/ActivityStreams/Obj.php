@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Event\ActivityStreams;
+namespace Tnc\Service\EventDispatcher\Normalizer\ActivityStreams;
 
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
 use Tnc\Service\EventDispatcher\Serializer;

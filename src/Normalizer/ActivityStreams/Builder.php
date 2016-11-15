@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Event;
+namespace Tnc\Service\EventDispatcher\Normalizer\ActivityStreams;
 
 use Tnc\Service\EventDispatcher\Event\ActivityStreams\Activity;
 use Tnc\Service\EventDispatcher\Event\ActivityStreams\Obj;
@@ -26,8 +26,6 @@ use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
  * In most cases these components will be explicit, but they may also be implied.
  *
  * @see     http://activitystrea.ms/specs/json/1.0/
- *
- * @package Tnc\Service\EventDispatcher\Event
  *
  * @author  Service Team
  *
@@ -55,7 +53,7 @@ use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
  * @method string getPublished()
  * @method $this setPublished(string $datetime)
  */
-class ActivityStreamsEvent extends AbstractEvent implements Normalizable, Denormalizable
+class Builder implements Normalizable, Denormalizable
 {
     /**
      * @var Activity
