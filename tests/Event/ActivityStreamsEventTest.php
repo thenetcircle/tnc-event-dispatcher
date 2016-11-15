@@ -2,7 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher\Test\Event;
 
-use Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
+use Tnc\Service\EventDispatcher\Event\ActivityEvent;
 
 class ActivityStreamsEventTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,7 +38,7 @@ class ActivityStreamsEventTest extends \PHPUnit_Framework_TestCase
     }
 }
 
-class MessageEvent extends ActivityStreamsEvent
+class MessageEvent extends ActivityEvent
 {
     const SEND = 'message.send';
 

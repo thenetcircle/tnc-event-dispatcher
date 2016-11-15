@@ -22,5 +22,5 @@ interface Normalizable
      *
      * @throws \Tnc\Service\EventDispatcher\Exception\InvalidArgumentException
      */
-    public function normalize(Serializer $serializer);
+    public function normalize(\Tnc\Service\EventDispatcher\Serializer $serializer);
 }

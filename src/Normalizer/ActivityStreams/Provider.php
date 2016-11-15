@@ -10,6 +10,6 @@
 
 namespace Tnc\Service\EventDispatcher\Normalizer\ActivityStreams;
 
-class Obj extends AbstractObject
+class Provider extends AbstractObject
 {
 }

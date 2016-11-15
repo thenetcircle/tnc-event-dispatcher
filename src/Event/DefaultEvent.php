@@ -86,7 +86,7 @@ class DefaultEvent extends AbstractEvent implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(Serializer $serializer)
+    public function normalize(\Tnc\Service\EventDispatcher\Serializer $serializer)
     {
         $data = $this->data;
         $data['extra'] = [
@@ -102,7 +102,7 @@ class DefaultEvent extends AbstractEvent implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(Serializer $serializer, array $data)
+    public function denormalize(\Tnc\Service\EventDispatcher\Serializer $serializer, array $data)
     {
         if (isset($data['extra'])) {
             $extra = $data['extra'];

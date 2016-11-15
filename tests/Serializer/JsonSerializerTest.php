@@ -3,7 +3,7 @@
 namespace Tnc\Service\EventDispatcher\Test\Serializer;
 
 use Tnc\Service\EventDispatcher\Dispatcher;
-use Tnc\Service\EventDispatcher\Event\ActivityStreamsEvent;
+use Tnc\Service\EventDispatcher\Event\ActivityEvent;
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
@@ -211,6 +211,6 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
 }
 
 
-class MockActivityEvent extends ActivityStreamsEvent
+class MockActivityEvent extends ActivityEvent
 {
 }

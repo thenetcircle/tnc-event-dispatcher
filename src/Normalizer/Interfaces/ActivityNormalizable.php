@@ -2,23 +2,23 @@
 
 namespace Tnc\Service\EventDispatcher\Normalizer\Interfaces;
 
-use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Builder;
+use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
 
 /**
- * ActivityStreamsNormalizable
+ * ActivityNormalizable
  *
  * @package    Tnc\Service\EventDispatcher
  *
  * @author     The NetCircle
  */
-interface ActivityStreamsNormalizable
+interface ActivityNormalizable
 {
     /**
      * Normalize instance to activity streams structure.
      *
-     * @param \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Builder $builder
+     * @return \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity
      *
      * @throws \Tnc\Service\EventDispatcher\Exception\InvalidArgumentException
      */
-    public function normalize(Builder $builder);
+    public function normalizeActivity();
 }

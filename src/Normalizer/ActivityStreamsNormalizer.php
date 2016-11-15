@@ -3,30 +3,19 @@
 namespace Tnc\Service\EventDispatcher\Normalizer;
 
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Builder;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityStreamsNormalizable;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityStreamsDenormalizable;
+use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
+use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityNormalizable;
+use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityDenormalizable;
 
 class ActivityStreamsNormalizer extends AbstractNormalizer
 {
-    /**
-     * @var Builder
-     */
-    protected $builder = null;
-
-    public function __construct()
-    {
-        $this->builder = new Builder();
-    }
-
     /**
      * {@inheritdoc}
      */
     public function normalize($object)
     {
-        /** @var ActivityStreamsNormalizable $object */
-        $object->normalize($this->builder);
-        return $this->serializer->normalize($this->builder);
+        $activity = $object->normalizeActivity();
+        return $this->serializer->normalize($activity);
     }
 
     /**
@@ -39,16 +28,16 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
         }
 
         $reflectionClass = new \ReflectionClass($class);
-        if (!$reflectionClass->isSubclassOf(ActivityStreamsDenormalizable::class)) {
+        if (!$reflectionClass->isSubclassOf(ActivityDenormalizable::class)) {
             throw new InvalidArgumentException(sprintf('Class %s not normalizable.', $class));
         }
 
-        /** @var Builder $builder */
-        $builder = $this->serializer->denormalize($data, Builder::class);
+        /** @var Activity $activity */
+        $activity = $this->serializer->denormalize($data, Activity::class);
 
-        /** @var ActivityStreamsDenormalizable $object */
+        /** @var ActivityDenormalizable $object */
         $object = $reflectionClass->newInstanceWithoutConstructor();
-        $object->denormalize($builder);
+        $object->denormalizeActivity($activity);
         return $object;
     }
 
@@ -57,7 +46,7 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
      */
     public function supportsNormalization($object)
     {
-        return ($object instanceof ActivityStreamsNormalizable);
+        return ($object instanceof ActivityNormalizable);
     }
 
     /**
@@ -69,6 +58,6 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
             return false;
         }
 
-        return is_subclass_of($class, ActivityStreamsDenormalizable::class);
+        return is_subclass_of($class, ActivityDenormalizable::class);
     }
 }

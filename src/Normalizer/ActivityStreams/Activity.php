@@ -10,41 +10,49 @@
 
 namespace Tnc\Service\EventDispatcher\Normalizer\ActivityStreams;
 
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
 use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
 
+
+/**
+ * ActivityStreams
+ *
+ * an activity consists of an actor, a verb, an an object, and a target.
+ * It tells the story of a person performing an action on or with an object --
+ * "Geraldine posted a photo to her album" or "John shared a video".
+ * In most cases these components will be explicit, but they may also be implied.
+ *
+ * @see     http://activitystrea.ms/specs/json/1.0/
+ *
+ * @author  Service Team
+ */
 class Activity implements Normalizable, Denormalizable
 {
+    /**
+     * @var Actor
+     */
+    private $actor = null;
+
+    /**
+     * @var string
+     */
+    private $content;
+
+    /**
+     * @var Generator
+     */
+    private $generator = null;
+
     /**
      * @var string
      */
     private $id;
 
     /**
-     * @var string
-     */
-    private $verb;
-
-    /**
      * @var Obj
      */
-    private $provider;
-
-    /**
-     * @var Obj
-     */
-    private $actor;
-
-    /**
-     * @var Obj
-     */
-    private $object;
-
-    /**
-     * @var Obj
-     */
-    private $target;
+    private $object = null;
 
     /**
      * @var string
@@ -52,24 +60,116 @@ class Activity implements Normalizable, Denormalizable
     private $published;
 
     /**
+     * @var Provider
+     */
+    private $provider = null;
+
+    /**
+     * @var Target
+     */
+    private $target = null;
+
+    /**
+     * @var string
+     */
+    private $title;
+
+    /**
      * @var string
      */
     private $updated;
 
+    /**
+     * @var string
+     */
+    private $url;
 
-    // Custom Fileds
+    /**
+     * @var string
+     */
+    private $verb;
 
+
+    // non-standard fields
     /**
      * @var array
      */
-    private $context;
+    private $context = [];
 
     /**
      * @var string
      */
     private $version = '1.0';
+    //---
 
 
+    /**
+     * Activity constructor.
+     */
+    public function __construct()
+    {
+        $this->setPublished((new \DateTime())->format(\DateTime::RFC3339));
+    }
+
+    /**
+     * @return \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Actor
+     */
+    public function getActor()
+    {
+        return $this->actor ?: new Actor();
+    }
+
+    /**
+     * @param \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Actor $actor
+     *
+     * @return $this
+     */
+    public function setActor(Actor $actor)
+    {
+        $this->actor = $actor;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param string $content
+     *
+     * @return $this
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * @return \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Generator
+     */
+    public function getGenerator()
+    {
+        return $this->generator ?: new Generator();
+    }
+
+    /**
+     * @param \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Generator $generator
+     *
+     * @return $this
+     */
+    public function setGenerator(Generator $generator)
+    {
+        $this->generator = $generator;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -81,90 +181,34 @@ class Activity implements Normalizable, Denormalizable
 
     /**
      * @param string $id
+     *
+     * @return $this
      */
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
     }
 
     /**
-     * @return string
-     */
-    public function getVerb()
-    {
-        return $this->verb;
-    }
-
-    /**
-     * @param string $verb
-     */
-    public function setVerb($verb)
-    {
-        $this->verb = $verb;
-    }
-
-    /**
-     * @return Obj
-     */
-    public function getProvider()
-    {
-        return $this->getEmptyObjectIfNull($this->provider);
-    }
-
-    /**
-     * @param Obj $provider
-     */
-    public function setProvider(Obj $provider)
-    {
-        $this->provider = $provider;
-    }
-
-    /**
-     * @return Obj
-     */
-    public function getActor()
-    {
-        return $this->getEmptyObjectIfNull($this->actor);
-    }
-
-    /**
-     * @param Obj $actor
-     */
-    public function setActor(Obj $actor)
-    {
-        $this->actor = $actor;
-    }
-
-    /**
-     * @return Obj
+     * @return \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Obj
      */
     public function getObject()
     {
-        return $this->getEmptyObjectIfNull($this->object);
+        return $this->object ?: new Obj();
     }
 
     /**
-     * @param Obj $object
+     * @param \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Obj $object
+     *
+     * @return $this
      */
     public function setObject(Obj $object)
     {
         $this->object = $object;
-    }
 
-    /**
-     * @return Obj
-     */
-    public function getTarget()
-    {
-        return $this->getEmptyObjectIfNull($this->target);
-    }
-
-    /**
-     * @param Obj $target
-     */
-    public function setTarget(Obj $target)
-    {
-        $this->target = $target;
+        return $this;
     }
 
     /**
@@ -177,10 +221,74 @@ class Activity implements Normalizable, Denormalizable
 
     /**
      * @param string $published
+     *
+     * @return $this
      */
     public function setPublished($published)
     {
         $this->published = $published;
+
+        return $this;
+    }
+
+    /**
+     * @return \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Provider
+     */
+    public function getProvider()
+    {
+        return $this->provider ?: new Provider();
+    }
+
+    /**
+     * @param \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Provider $provider
+     *
+     * @return $this
+     */
+    public function setProvider(Provider $provider)
+    {
+        $this->provider = $provider;
+
+        return $this;
+    }
+
+    /**
+     * @return \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Target
+     */
+    public function getTarget()
+    {
+        return $this->target ?: new Target();
+    }
+
+    /**
+     * @param \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Target $target
+     *
+     * @return $this
+     */
+    public function setTarget(Target $target)
+    {
+        $this->target = $target;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     *
+     * @return $this
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
     }
 
     /**
@@ -193,10 +301,54 @@ class Activity implements Normalizable, Denormalizable
 
     /**
      * @param string $updated
+     *
+     * @return $this
      */
     public function setUpdated($updated)
     {
         $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return $this
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVerb()
+    {
+        return $this->verb;
+    }
+
+    /**
+     * @param string $verb
+     *
+     * @return $this
+     */
+    public function setVerb($verb)
+    {
+        $this->verb = $verb;
+
+        return $this;
     }
 
     /**
@@ -220,6 +372,34 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function addContext($key, $value)
+    {
+        $this->context[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function delContext($key)
+    {
+        if(isset($this->context[$key])) {
+            unset($this->context[$key]);
+        }
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getVersion()
@@ -230,24 +410,22 @@ class Activity implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(Serializer $serializer)
+    public function normalize(\Tnc\Service\EventDispatcher\Serializer $serializer)
     {
-        $data = get_object_vars($this);
+        $vars = get_object_vars($this);
+        $data = [];
 
-        foreach ($data as $_key => $_value) {
-            if ($_value === null) {
-                unset($data[$_key]);
-                continue;
-            }
-
-            if (is_object($_value) && ($_value instanceof Normalizable)) {
-                $data[$_key] = $serializer->normalize($_value);
-            }
-            elseif (is_array($_value)) {
-                $data[$_key] = $_value;
-            }
-            else {
-                $data[$_key] = (string)$_value;
+        foreach ($vars as $_key => $_value) {
+            if (!empty($_value)) {
+                if (is_object($_value)) {
+                    $data[$_key] = $serializer->normalize($_value);
+                }
+                elseif (is_array($_value)) {
+                    $data[$_key] = $_value;
+                }
+                else {
+                    $data[$_key] = (string)$_value;
+                }
             }
         }
 
@@ -257,25 +435,23 @@ class Activity implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(Serializer $serializer, array $data)
+    public function denormalize(\Tnc\Service\EventDispatcher\Serializer $serializer, array $data)
     {
+        $classMapping = [
+            'actor'     => Actor::class,
+            'generator' => Generator::class,
+            'object'    => Obj::class,
+            'provider'  => Provider::class,
+            'target'    => Target::class,
+        ];
+
         foreach ($data as $_key => $_value) {
-            if (in_array($_key, array('actor', 'object', 'target', 'provider', 'generator'), true)) {
-                $this->{$_key} = $serializer->denormalize($_value, Obj::class);
+            if (array_key_exists($_key, $classMapping)) {
+                $this->{$_key} = $serializer->denormalize($_value, $classMapping[$_key]);
             }
             else {
                 $this->{$_key} = $_value;
             }
         }
-    }
-
-    /**
-     * @param Obj $object
-     *
-     * @return Obj
-     */
-    protected function getEmptyObjectIfNull($object)
-    {
-        return $object === null ? new Obj() : $object;
     }
 }

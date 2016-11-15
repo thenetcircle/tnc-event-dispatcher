@@ -21,5 +21,5 @@ interface Denormalizable
      *
      * @throws \Tnc\Service\EventDispatcher\Exception\InvalidArgumentException
      */
-    public function denormalize(Serializer $serializer, array $data);
+    public function denormalize(\Tnc\Service\EventDispatcher\Serializer $serializer, array $data);
 }
