@@ -11,11 +11,11 @@ class EventWrapperNormalizer extends AbstractNormalizer
     /**
      * @var string
      */
-    private $wrapperName;
+    private $wrapperField;
 
-    public function __construct($wrapperName = 'extra')
+    public function __construct($wrapperField = DefaultEvent::EXTRA_FIELD)
     {
-        $this->wrapperName = $wrapperName;
+        $this->wrapperField = $wrapperField;
     }
 
     /**
@@ -24,8 +24,8 @@ class EventWrapperNormalizer extends AbstractNormalizer
     public function normalize($object)
     {
         /** @var EventWrapper $object */
-        $data                              = $this->serializer->normalize($object->getEvent());
-        $data[$this->wrapperName]['class'] = $object->getClass();
+        $data                               = $this->serializer->normalize($object->getEvent());
+        $data[$this->wrapperField]['class'] = $object->getClass();
         return $data;
     }
 
@@ -34,7 +34,7 @@ class EventWrapperNormalizer extends AbstractNormalizer
      */
     public function denormalize($data, $class)
     {
-        $temp       = $data[$this->wrapperName]['class'];
+        $temp       = $data[$this->wrapperField]['class'];
         $eventClass = (!empty($temp) && class_exists($temp)) ? $temp : DefaultEvent::class;
 
         /** @var Event $event */

@@ -79,6 +79,16 @@ abstract class AbstractObject implements Normalizable, Denormalizable
 
 
     /**
+     * AbstractObject constructor.
+     */
+    public function __construct($objectType = '', $id = '', $content = '')
+    {
+        $this->objectType = $objectType;
+        $this->id = $id;
+        $this->content = $content;
+    }
+
+    /**
      * @return \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Attachment[]
      */
     public function getAttachments()

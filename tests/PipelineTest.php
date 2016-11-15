@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Test;
+namespace Tnc\Service\EventDispatcher\Tests;
 
 use Tnc\Service\EventDispatcher\Backend;
 use Tnc\Service\EventDispatcher\ChannelDetective;
@@ -43,7 +43,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
     {
         $this->backend = $this->createMock(Backend::class);
 
-        $serializer         = new Serializer\JsonSerializer();
+        $serializer         = new Serializer\DefaultSerializer();
 
         $this->channelDetective   = new SimpleChannelDetective();
         $this->pipeline = new Pipeline($this->backend, $serializer, $this->channelDetective);

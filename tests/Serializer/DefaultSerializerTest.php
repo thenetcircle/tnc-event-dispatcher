@@ -1,14 +1,15 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Test\Serializer;
+namespace Tnc\Service\EventDispatcher\Tests\Serializer;
 
 use Tnc\Service\EventDispatcher\Dispatcher;
-use Tnc\Service\EventDispatcher\Event\ActivityEvent;
+use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
+use Tnc\Service\EventDispatcher\Tests\Mock\MockActivityEvent;
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\EventWrapper;
 
-class JsonSerializerTest extends \PHPUnit_Framework_TestCase
+class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var DefaultEvent
@@ -28,7 +29,7 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
     private $serializedUnknownEvent;
 
     /**
-     * @var Serializer\JsonSerializer
+     * @var Serializer\DefaultSerializer
      */
     private $serializer;
     private $datetime;
@@ -39,7 +40,7 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
     {
         $this->datetime   = (new \DateTime())->format(\DateTime::RFC3339);
         $this->mode       = Dispatcher::MODE_SYNC_PLUS;
-        $this->serializer = new Serializer\JsonSerializer();
+        $this->serializer = new Serializer\DefaultSerializer();
 
 
         $this->event = new DefaultEvent(['sender' => 'user1', 'receiver' => 'user2']);
@@ -63,16 +64,25 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
         );
 
 
-        $this->activityEvent = (new MockActivityEvent())->setName('message.send')
-                                                        ->setVerb('send')
-                                                        ->setProvider(MockActivityEvent::obj('community', 'DD'))
-                                                        ->setActor(MockActivityEvent::obj('user', '171'))
-                                                        ->setObject(MockActivityEvent::obj('message', '2221'))
-                                                        ->setTarget(MockActivityEvent::obj('user', '2281'))
-                                                        ->setPublished($this->datetime)
-                                                        ->setId('TestId');
+        $activity = ActivityBuilder::createActivity()
+                                   ->setVerb('send')
+                                   ->setProviderByParams('community', 'DD')
+                                   ->setActorByParams('user', '171')
+                                   ->setObjectByParams('message', '2221')
+                                   ->setTargetByParams('user', '2281')
+                                   ->setPublished($this->datetime)
+                                   ->setId('TestId')
+                                   ->getActivity();
+        $this->activityEvent = new MockActivityEvent($activity);
+        $this->activityEvent->setName('message.send');
         $this->activityEvent->setMode($this->mode);
         $this->activityEvent->setGroup('group1');
+        $activity->setExtra([
+            'name'               => $this->activityEvent->getName(),
+            'group'              => $this->activityEvent->getGroup(),
+            'mode'               => $this->activityEvent->getMode(),
+            'propagationStopped' => false,
+        ]);
         $this->serializedActivityEvent
                                               = '{
           "verb": "send",
@@ -91,7 +101,7 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
           }}';
         $this->serializedWrappedActivityEvent = preg_replace(
             '/}}$/',
-            ',"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\Serializer\\\\\MockActivityEvent"}}',
+            ',"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Tests\\\\\Mock\\\\\MockActivityEvent"}}',
             $this->serializedActivityEvent
         );
 
@@ -194,6 +204,8 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
             get_class($eventWrapper)
         );
 
+        $eventWrapper->getEvent()->getActivity()->addExtra('class', MockActivityEvent::class);
+
         $this->assertEquals($eventWrapper, $newEventWrapper);
         $this->assertEquals($this->activityEvent, $newEventWrapper->getEvent());
     }
@@ -208,9 +220,4 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($unknownEvent, $unserializedUnknownEvent);
     }
-}
-
-
-class MockActivityEvent extends ActivityEvent
-{
 }

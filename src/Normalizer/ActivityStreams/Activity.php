@@ -97,6 +97,11 @@ class Activity implements Normalizable, Denormalizable
     private $context = [];
 
     /**
+     * @var array
+     */
+    private $extra = [];
+
+    /**
      * @var string
      */
     private $version = '1.0';
@@ -394,6 +399,54 @@ class Activity implements Normalizable, Denormalizable
     {
         if(isset($this->context[$key])) {
             unset($this->context[$key]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtra()
+    {
+        return $this->extra;
+    }
+
+    /**
+     * @param array $extra
+     *
+     * @return $this
+     */
+    public function setExtra(array $extra)
+    {
+        $this->extra = $extra;
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function addExtra($key, $value)
+    {
+        $this->extra[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return $this
+     */
+    public function delExtra($key)
+    {
+        if(isset($this->extra[$key])) {
+            unset($this->extra[$key]);
         }
 
         return $this;

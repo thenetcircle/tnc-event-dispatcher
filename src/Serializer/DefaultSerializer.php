@@ -3,17 +3,32 @@
 namespace Tnc\Service\EventDispatcher\Serializer;
 
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
+use Tnc\Service\EventDispatcher\Normalizer;
 use Tnc\Service\EventDispatcher\Serializer;
 
 /**
- * JsonSerializer
+ * DefaultSerializer
  *
  * @package    Tnc\Service\EventDispatcher
  *
  * @author     The NetCircle
  */
-class JsonSerializer extends AbstractSerializer
+class DefaultSerializer extends AbstractSerializer
 {
+    /**
+     * AbstractSerializer constructor.
+     *
+     * @param Normalizer[] $normalizers
+     */
+    public function __construct(array $normalizers = null)
+    {
+        if ($normalizers === null) {
+            $normalizers = [new Normalizer\ActivityStreamsNormalizer(), new Normalizer\CustomNormalizer()];
+        }
+
+        parent::__construct($normalizers);
+    }
+
     /**
      * {@inheritdoc}
      */

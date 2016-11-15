@@ -14,7 +14,7 @@ use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
 interface ActivityDenormalizable
 {
     /**
-     * Normalize instance to activity streams structure.
+     * Denormalize ActivityStreams representation back to this instance.
      *
      * @param \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity
      *

@@ -26,11 +26,11 @@ use \Tnc\Service\EventDispatcher\EventWrapper;
 use \Tnc\Service\EventDispatcher\Exception\NoDataException;
 use \Tnc\Service\EventDispatcher\Exception\TimeoutException;
 use \Tnc\Service\EventDispatcher\Exception\FatalException;
-use \Tnc\Service\EventDispatcher\Test\MockExternalDispatcher;
+use \Tnc\Service\EventDispatcher\Tests\Mock\MockExternalDispatcher;
 use \Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
 use \Tnc\Service\EventDispatcher\Backend\KafkaBackend;
 use \Tnc\Service\EventDispatcher\Pipeline;
-use \Tnc\Service\EventDispatcher\Serializer\JsonSerializer;
+use \Tnc\Service\EventDispatcher\Serializer\DefaultSerializer;
 use \Ko\Process;
 
 if ($argc < 3) {
@@ -45,7 +45,7 @@ $job = function (Process $process) use ($brokers) {
 
     // bootstrap
     $externalDispatcher = new MockExternalDispatcher();
-    $pipeline           = new Pipeline(new KafkaBackend($brokers, [], false), new JsonSerializer(), new SimpleChannelDetective());
+    $pipeline           = new Pipeline(new KafkaBackend($brokers, [], false), new DefaultSerializer(), new SimpleChannelDetective());
     $listeningChannels  = null; // if null, will listen default channels from ChannelDetective
 
     $initFilemtime = filemtime(__FILE__);

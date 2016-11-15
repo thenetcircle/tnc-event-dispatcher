@@ -14,6 +14,7 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
      */
     public function normalize($object)
     {
+        /** @var ActivityNormalizable $object */
         $activity = $object->normalizeActivity();
         return $this->serializer->normalize($activity);
     }

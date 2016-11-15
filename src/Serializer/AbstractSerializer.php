@@ -25,20 +25,15 @@ abstract class AbstractSerializer implements Serializer
      *
      * @param Normalizer[] $normalizers
      */
-    public function __construct(array $normalizers = null)
+    public function __construct(array $normalizers)
     {
-        if ($normalizers === null) {
-            $this->normalizers = [new Normalizer\ActivityStreamsNormalizer(), new Normalizer\CustomNormalizer()];
-        }
-        else {
-            $this->normalizers = $normalizers;
-        }
+        array_unshift($normalizers, new Normalizer\EventWrapperNormalizer());
 
-        array_unshift($this->normalizers, new Normalizer\EventWrapperNormalizer());
-
-        foreach ($this->normalizers as $normalizer) {
+        foreach ($normalizers as $normalizer) {
             $normalizer->setSerializer($this);
         }
+
+        $this->normalizers = $normalizers;
     }
 
     /**

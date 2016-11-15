@@ -2,7 +2,6 @@
 
 namespace Tnc\Service\EventDispatcher\Normalizer\Interfaces;
 
-use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
 
 /**
  * ActivityNormalizable
@@ -14,7 +13,7 @@ use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
 interface ActivityNormalizable
 {
     /**
-     * Normalize instance to activity streams structure.
+     * Normalize instance to ActivityStreams representation.
      *
      * @return \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity
      *

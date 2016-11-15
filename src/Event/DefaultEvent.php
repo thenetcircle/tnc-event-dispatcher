@@ -16,6 +16,8 @@ use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
 
 class DefaultEvent extends AbstractEvent implements Normalizable, Denormalizable, \ArrayAccess
 {
+    const EXTRA_FIELD = 'extra';
+
     /**
      * @var array
      */
@@ -89,7 +91,7 @@ class DefaultEvent extends AbstractEvent implements Normalizable, Denormalizable
     public function normalize(\Tnc\Service\EventDispatcher\Serializer $serializer)
     {
         $data = $this->data;
-        $data['extra'] = [
+        $data[self::EXTRA_FIELD] = [
             'name'               => $this->getName(),
             'group'              => $this->getGroup(),
             'mode'               => $this->getMode(),
@@ -104,9 +106,9 @@ class DefaultEvent extends AbstractEvent implements Normalizable, Denormalizable
      */
     public function denormalize(\Tnc\Service\EventDispatcher\Serializer $serializer, array $data)
     {
-        if (isset($data['extra'])) {
-            $extra = $data['extra'];
-            unset($data['extra']);
+        if (isset($data[self::EXTRA_FIELD])) {
+            $extra = $data[self::EXTRA_FIELD];
+            unset($data[self::EXTRA_FIELD]);
 
             if (isset($extra['name'])) {
                 $this->name = $extra['name'];
