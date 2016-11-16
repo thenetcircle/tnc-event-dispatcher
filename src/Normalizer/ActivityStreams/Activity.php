@@ -10,7 +10,7 @@
 
 namespace Tnc\Service\EventDispatcher\Normalizer\ActivityStreams;
 
-use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Interfaces\Serializer;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
 
@@ -95,11 +95,6 @@ class Activity implements Normalizable, Denormalizable
      * @var array
      */
     private $context = [];
-
-    /**
-     * @var array
-     */
-    private $extra = [];
 
     /**
      * @var string
@@ -405,54 +400,6 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @return array
-     */
-    public function getExtra()
-    {
-        return $this->extra;
-    }
-
-    /**
-     * @param array $extra
-     *
-     * @return $this
-     */
-    public function setExtra(array $extra)
-    {
-        $this->extra = $extra;
-
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function addExtra($key, $value)
-    {
-        $this->extra[$key] = $value;
-
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function delExtra($key)
-    {
-        if(isset($this->extra[$key])) {
-            unset($this->extra[$key]);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getVersion()
@@ -463,7 +410,7 @@ class Activity implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(\Tnc\Service\EventDispatcher\Serializer $serializer)
+    public function normalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer)
     {
         $vars = get_object_vars($this);
         $data = [];
@@ -488,7 +435,7 @@ class Activity implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(\Tnc\Service\EventDispatcher\Serializer $serializer, array $data)
+    public function denormalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer, array $data)
     {
         $classMapping = [
             'actor'     => Actor::class,

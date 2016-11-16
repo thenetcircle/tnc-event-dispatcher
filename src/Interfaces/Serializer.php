@@ -1,6 +1,6 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher;
+namespace Tnc\Service\EventDispatcher\Interfaces;
 
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 

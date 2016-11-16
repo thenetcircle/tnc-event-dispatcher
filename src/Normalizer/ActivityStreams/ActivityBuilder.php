@@ -285,42 +285,4 @@ class ActivityBuilder
 
         return $this;
     }
-
-    /**
-     * @param array $extra
-     *
-     * @return $this
-     */
-    public function setExtra(array $extra)
-    {
-        $this->activity->setExtra($extra);
-
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function addExtra($key, $value)
-    {
-        $this->activity->addExtra($key, $value);
-
-        return $this;
-    }
-
-    /**
-     * @param string $key
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function delExtra($key)
-    {
-        $this->activity->delExtra($key);
-
-        return $this;
-    }
 }

@@ -6,8 +6,8 @@ use Tnc\Service\EventDispatcher\Dispatcher;
 use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
 use Tnc\Service\EventDispatcher\Tests\Mock\MockActivityEvent;
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
-use Tnc\Service\EventDispatcher\Serializer;
-use Tnc\Service\EventDispatcher\EventWrapper;
+use Tnc\Service\EventDispatcher\Interfaces\Serializer;
+use Tnc\Service\EventDispatcher\Event\EventWrapper;
 
 class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 {

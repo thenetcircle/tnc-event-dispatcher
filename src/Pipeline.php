@@ -2,9 +2,14 @@
 
 namespace Tnc\Service\EventDispatcher;
 
+use Tnc\Service\EventDispatcher\Event\EventWrapper;
 use Tnc\Service\EventDispatcher\Event\Internal\DeliveryEvent;
+use Tnc\Service\EventDispatcher\Event\Internal\InternalEventProducer;
 use Tnc\Service\EventDispatcher\Exception\FatalException;
 use Tnc\Service\EventDispatcher\Event\Internal\ErrorEvent;
+use Tnc\Service\EventDispatcher\Interfaces\Backend;
+use Tnc\Service\EventDispatcher\Interfaces\ChannelDetective;
+use Tnc\Service\EventDispatcher\Interfaces\Serializer;
 
 class Pipeline extends InternalEventProducer
 {
@@ -37,15 +42,15 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @param \Tnc\Service\EventDispatcher\EventWrapper $eventWrapper
+     * @param \Tnc\Service\EventDispatcher\Event\EventWrapper $eventWrapper
      */
     public function push(EventWrapper $eventWrapper)
     {
         try {
 
             $message  = $this->serializer->serialize($eventWrapper);
-            $channels = $this->channelDetective->getPushingChannels($eventWrapper->getEvent());
-            $key      = $eventWrapper->getEvent()->getGroup();
+            $channels = $this->channelDetective->getPushingChannels($eventWrapper);
+            $key      = $eventWrapper->getTransportToken();
 
             if (empty($message)) {
                 $this->dispatchInternalEvent(
@@ -119,7 +124,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @return \Tnc\Service\EventDispatcher\Backend
+     * @return \Tnc\Service\EventDispatcher\Interfaces\Backend
      */
     public function getBackend()
     {
@@ -127,7 +132,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @return \Tnc\Service\EventDispatcher\Serializer
+     * @return \Tnc\Service\EventDispatcher\Interfaces\Serializer
      */
     public function getSerializer()
     {
@@ -135,7 +140,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @return \Tnc\Service\EventDispatcher\ChannelDetective
+     * @return \Tnc\Service\EventDispatcher\Interfaces\ChannelDetective
      */
     public function getChannelDetective()
     {

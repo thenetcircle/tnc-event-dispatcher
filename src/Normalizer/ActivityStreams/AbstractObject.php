@@ -10,7 +10,7 @@
 
 namespace Tnc\Service\EventDispatcher\Normalizer\ActivityStreams;
 
-use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Interfaces\Serializer;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
 
@@ -367,7 +367,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(\Tnc\Service\EventDispatcher\Serializer $serializer)
+    public function normalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer)
     {
         $vars = get_object_vars($this);
         $data = [];
@@ -399,7 +399,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(\Tnc\Service\EventDispatcher\Serializer $serializer, array $data)
+    public function denormalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer, array $data)
     {
         foreach ($data as $_key => $_value) {
             if ($_key === 'attachments') {

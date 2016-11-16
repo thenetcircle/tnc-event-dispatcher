@@ -10,14 +10,13 @@
 
 namespace Tnc\Service\EventDispatcher\Event;
 
+use \ArrayAccess;
+use Tnc\Service\EventDispatcher\Interfaces\Event;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
-use Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
 
-class DefaultEvent extends AbstractEvent implements Normalizable, Denormalizable, \ArrayAccess
+class DefaultEvent implements Event, Normalizable, Denormalizable, ArrayAccess
 {
-    const EXTRA_FIELD = 'extra';
-
     /**
      * @var array
      */
@@ -88,42 +87,24 @@ class DefaultEvent extends AbstractEvent implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(\Tnc\Service\EventDispatcher\Serializer $serializer)
+    public function getTransportToken()
     {
-        $data = $this->data;
-        $data[self::EXTRA_FIELD] = [
-            'name'               => $this->getName(),
-            'group'              => $this->getGroup(),
-            'mode'               => $this->getMode(),
-            'propagationStopped' => $this->propagationStopped
-        ];
-
-        return $data;
+        return mt_rand(1, 999999);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function denormalize(\Tnc\Service\EventDispatcher\Serializer $serializer, array $data)
+    public function normalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer)
     {
-        if (isset($data[self::EXTRA_FIELD])) {
-            $extra = $data[self::EXTRA_FIELD];
-            unset($data[self::EXTRA_FIELD]);
+        return $this->data;
+    }
 
-            if (isset($extra['name'])) {
-                $this->name = $extra['name'];
-            }
-            if (isset($extra['group'])) {
-                $this->group = $extra['group'];
-            }
-            if (isset($extra['mode'])) {
-                $this->mode = $extra['mode'];
-            }
-            if (isset($extra['propagationStopped'])) {
-                $this->propagationStopped = $extra['propagationStopped'];
-            }
-        }
-
+    /**
+     * {@inheritdoc}
+     */
+    public function denormalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer, array $data)
+    {
         $this->data = $data;
     }
 }

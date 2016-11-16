@@ -10,12 +10,12 @@
 
 namespace Tnc\Service\EventDispatcher\Tests\Mock;
 
-use Tnc\Service\EventDispatcher\Event\AbstractEvent;
+use Tnc\Service\EventDispatcher\Interfaces\Event;
 use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityDenormalizable;
 use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityNormalizable;
 
-class MockActivityEvent extends AbstractEvent implements ActivityNormalizable, ActivityDenormalizable
+class MockActivityEvent implements Event, ActivityNormalizable, ActivityDenormalizable
 {
     /**
      * @var Activity
@@ -30,6 +30,11 @@ class MockActivityEvent extends AbstractEvent implements ActivityNormalizable, A
     public function getActivity()
     {
         return $this->activity;
+    }
+
+    public function getTransportToken()
+    {
+        return '';
     }
 
     public function normalizeActivity()

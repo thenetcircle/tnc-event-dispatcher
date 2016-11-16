@@ -10,7 +10,7 @@
 
 namespace Tnc\Service\EventDispatcher\Backend;
 
-use Tnc\Service\EventDispatcher\Backend;
+use Tnc\Service\EventDispatcher\Interfaces\Backend;
 use Tnc\Service\EventDispatcher\Exception;
 use Tnc\Service\EventDispatcher\Event\Internal\ErrorEvent;
 use Tnc\Service\EventDispatcher\Event\Internal\DeliveryEvent;

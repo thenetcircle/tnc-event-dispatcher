@@ -2,13 +2,13 @@
 
 namespace Tnc\Service\EventDispatcher\Tests;
 
-use Tnc\Service\EventDispatcher\Backend;
-use Tnc\Service\EventDispatcher\ChannelDetective;
+use Tnc\Service\EventDispatcher\Interfaces\Backend;
+use Tnc\Service\EventDispatcher\Interfaces\ChannelDetective;
 use Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
-use Tnc\Service\EventDispatcher\Event;
+use Tnc\Service\EventDispatcher\Interfaces\Event;
 use Tnc\Service\EventDispatcher\Pipeline;
-use Tnc\Service\EventDispatcher\Serializer;
-use Tnc\Service\EventDispatcher\EventWrapper;
+use Tnc\Service\EventDispatcher\Interfaces\Serializer;
+use Tnc\Service\EventDispatcher\Event\EventWrapper;
 
 class PipelineTest extends \PHPUnit_Framework_TestCase
 {
@@ -33,7 +33,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
     private $timeout = 2000;
 
     /**
-     * @var EventWrapper
+     * @var \Tnc\Service\EventDispatcher\Event\EventWrapper
      */
     private $eventWrapper;
     private $serializedEventWrapper;

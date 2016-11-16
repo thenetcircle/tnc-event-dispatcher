@@ -22,7 +22,7 @@ if (!defined('COMPOSER_AUTOLOAD_FILE')) {
 require COMPOSER_AUTOLOAD_FILE;
 
 use \Tnc\Service\EventDispatcher\Consumer;
-use \Tnc\Service\EventDispatcher\EventWrapper;
+use Tnc\Service\EventDispatcher\Event\EventWrapper;
 use \Tnc\Service\EventDispatcher\Exception\NoDataException;
 use \Tnc\Service\EventDispatcher\Exception\TimeoutException;
 use \Tnc\Service\EventDispatcher\Exception\FatalException;
@@ -62,7 +62,7 @@ $job = function (Process $process) use ($brokers) {
         }
 
         try {
-            /** @var EventWrapper $eventWrapper */
+            /** @var \Tnc\Service\EventDispatcher\Event\EventWrapper $eventWrapper */
             list($eventWrapper, $receipt) = $pipeline->pop(500000, $listeningChannels);
             $acceptedJobs++;
 

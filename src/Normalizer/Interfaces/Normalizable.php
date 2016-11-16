@@ -2,7 +2,7 @@
 
 namespace Tnc\Service\EventDispatcher\Normalizer\Interfaces;
 
-use Tnc\Service\EventDispatcher\Serializer;
+use Tnc\Service\EventDispatcher\Interfaces\Serializer;
 
 /**
  * Normalizable
@@ -16,11 +16,11 @@ interface Normalizable
     /**
      * Normalize instance to array representation.
      *
-     * @param \Tnc\Service\EventDispatcher\Serializer $serializer
+     * @param \Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer
      *
      * @return array
      *
      * @throws \Tnc\Service\EventDispatcher\Exception\InvalidArgumentException
      */
-    public function normalize(\Tnc\Service\EventDispatcher\Serializer $serializer);
+    public function normalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer);
 }

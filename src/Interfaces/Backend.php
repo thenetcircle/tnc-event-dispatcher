@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher;
+namespace Tnc\Service\EventDispatcher\Interfaces;
 
 use Tnc\Service\EventDispatcher\Exception;
 

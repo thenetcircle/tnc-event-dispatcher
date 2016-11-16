@@ -11,7 +11,10 @@
 namespace Tnc\Service\EventDispatcher;
 
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
+use Tnc\Service\EventDispatcher\Event\EventWrapper;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
+use Tnc\Service\EventDispatcher\Interfaces\Event;
+use Tnc\Service\EventDispatcher\Interfaces\ExternalDispatcher;
 
 class Dispatcher
 {
@@ -66,22 +69,19 @@ class Dispatcher
             $event = $this->defaultEvent;
         }
 
-        $event->setName($name);
-        $event->setMode($mode);
-
         switch ($mode) {
 
             case self::MODE_SYNC:
-                $this->externalDispatcher->dispatch($name, $event);
+                $this->externalDispatcher->syncDispatch($name, $event);
                 break;
 
             case self::MODE_ASYNC:
-                $this->pipeline->push(new EventWrapper($event));
+                $this->pipeline->push(new EventWrapper($name, $event, $mode));
                 break;
 
             case self::MODE_SYNC_PLUS:
-                $this->externalDispatcher->dispatch($name, $event);
-                $this->pipeline->push(new EventWrapper($event));
+                $this->externalDispatcher->syncDispatch($name, $event);
+                $this->pipeline->push(new EventWrapper($name, $event, $mode));
                 break;
 
             default:

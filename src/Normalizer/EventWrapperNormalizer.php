@@ -2,20 +2,22 @@
 
 namespace Tnc\Service\EventDispatcher\Normalizer;
 
-use Tnc\Service\EventDispatcher\Event;
+use Tnc\Service\EventDispatcher\Interfaces\Event;
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
-use Tnc\Service\EventDispatcher\EventWrapper;
+use Tnc\Service\EventDispatcher\Event\EventWrapper;
 
 class EventWrapperNormalizer extends AbstractNormalizer
 {
+    const EXTRA_FIELD = 'extra';
+
     /**
      * @var string
      */
-    private $wrapperField;
+    private $extraField;
 
-    public function __construct($wrapperField = DefaultEvent::EXTRA_FIELD)
+    public function __construct($extraField = self::EXTRA_FIELD)
     {
-        $this->wrapperField = $wrapperField;
+        $this->extraField = $extraField;
     }
 
     /**
@@ -24,8 +26,11 @@ class EventWrapperNormalizer extends AbstractNormalizer
     public function normalize($object)
     {
         /** @var EventWrapper $object */
-        $data                               = $this->serializer->normalize($object->getEvent());
-        $data[$this->wrapperField]['class'] = $object->getClass();
+        $data                             = $this->serializer->normalize($object->getEvent());
+        $data[$this->extraField]['name']  = $object->getName();
+        $data[$this->extraField]['mode']  = $object->getMode();
+        $data[$this->extraField]['class'] = $object->getClass();
+
         return $data;
     }
 
@@ -34,13 +39,16 @@ class EventWrapperNormalizer extends AbstractNormalizer
      */
     public function denormalize($data, $class)
     {
-        $temp       = $data[$this->wrapperField]['class'];
-        $eventClass = (!empty($temp) && class_exists($temp)) ? $temp : DefaultEvent::class;
+        $class      = $data[$this->extraField]['class'];
+        $eventClass = (!empty($class) && class_exists($class)) ? $class : DefaultEvent::class;
+
+        $name      = $data[$this->extraField]['name'];
+        $mode      = $data[$this->extraField]['mode'];
 
         /** @var Event $event */
         $event      = $this->serializer->denormalize($data, $eventClass);
 
-        return new EventWrapper($event);
+        return new EventWrapper($name, $event, $mode);
     }
 
     /**

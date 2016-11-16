@@ -10,9 +10,9 @@
 
 namespace Tnc\Service\EventDispatcher\Event\Internal;
 
-use Tnc\Service\EventDispatcher\Event\AbstractEvent;
+use Tnc\Service\EventDispatcher\Interfaces\Event;
 
-class ErrorEvent extends AbstractEvent
+class ErrorEvent implements Event
 {
     const ERROR = 'service.event-dispatcher.error';
 
@@ -67,5 +67,13 @@ class ErrorEvent extends AbstractEvent
     public function getSource()
     {
         return $this->source;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTransportToken()
+    {
+        return '';
     }
 }

@@ -10,8 +10,8 @@
 
 namespace Tnc\Service\EventDispatcher\Backend;
 
-use Tnc\Service\EventDispatcher\Backend;
-use Tnc\Service\EventDispatcher\InternalEventProducer;
+use Tnc\Service\EventDispatcher\Interfaces\Backend;
+use Tnc\Service\EventDispatcher\Event\Internal\InternalEventProducer;
 
 abstract class AbstractBackend extends InternalEventProducer implements Backend
 {

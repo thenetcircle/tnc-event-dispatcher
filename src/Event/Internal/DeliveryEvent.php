@@ -10,9 +10,9 @@
 
 namespace Tnc\Service\EventDispatcher\Event\Internal;
 
-use Tnc\Service\EventDispatcher\Event\AbstractEvent;
+use Tnc\Service\EventDispatcher\Interfaces\Event;
 
-class DeliveryEvent extends AbstractEvent
+class DeliveryEvent implements Event
 {
     const SUCCEED = 'service.event-dispatcher.delivery.succeed';
     const FAILED  = 'service.event-dispatcher.delivery.failed';
@@ -83,5 +83,13 @@ class DeliveryEvent extends AbstractEvent
     public function getErrCode()
     {
         return $this->errCode;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTransportToken()
+    {
+        return '';
     }
 }

@@ -2,8 +2,9 @@
 
 namespace Tnc\Service\EventDispatcher\ChannelDetective;
 
-use Tnc\Service\EventDispatcher\ChannelDetective;
-use Tnc\Service\EventDispatcher\Event;
+use Tnc\Service\EventDispatcher\Interfaces\ChannelDetective;
+use Tnc\Service\EventDispatcher\Interfaces\Event;
+use Tnc\Service\EventDispatcher\Event\EventWrapper;
 
 class SimpleChannelDetective implements ChannelDetective
 {
@@ -16,9 +17,9 @@ class SimpleChannelDetective implements ChannelDetective
     /**
      * {@inheritdoc}
      */
-    public function getPushingChannels(Event $event)
+    public function getPushingChannels(EventWrapper $eventWrapper)
     {
-        $eventName = $event->getName();
+        $eventName = $eventWrapper->getName();
 
         foreach ($this->pushingChannelsMapping as $_key => $_value) {
             if (preg_match('/'.$_key.'/i', $eventName)) {
