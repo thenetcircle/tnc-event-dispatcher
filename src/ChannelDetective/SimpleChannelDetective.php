@@ -1,10 +1,10 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\ChannelDetective;
+namespace TNC\Service\EventDispatcher\ChannelDetective;
 
-use Tnc\Service\EventDispatcher\Interfaces\ChannelDetective;
-use Tnc\Service\EventDispatcher\Interfaces\Event;
-use Tnc\Service\EventDispatcher\Event\EventWrapper;
+use TNC\Service\EventDispatcher\Interfaces\ChannelDetective;
+use TNC\Service\EventDispatcher\Interfaces\Event;
+use TNC\Service\EventDispatcher\Event\EventWrapper;
 
 class SimpleChannelDetective implements ChannelDetective
 {

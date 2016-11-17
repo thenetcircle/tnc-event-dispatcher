@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Event;
+namespace TNC\Service\EventDispatcher\Event;
 
 use \ArrayAccess;
-use Tnc\Service\EventDispatcher\Interfaces\Event;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
+use TNC\Service\EventDispatcher\Interfaces\Event;
+use TNC\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
+use TNC\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
 
 class DefaultEvent implements Event, Normalizable, Denormalizable, ArrayAccess
 {
@@ -95,7 +95,7 @@ class DefaultEvent implements Event, Normalizable, Denormalizable, ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function normalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer)
+    public function normalize(\TNC\Service\EventDispatcher\Interfaces\Serializer $serializer)
     {
         return $this->data;
     }
@@ -103,7 +103,7 @@ class DefaultEvent implements Event, Normalizable, Denormalizable, ArrayAccess
     /**
      * {@inheritdoc}
      */
-    public function denormalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer, array $data)
+    public function denormalize(\TNC\Service\EventDispatcher\Interfaces\Serializer $serializer, array $data)
     {
         $this->data = $data;
     }

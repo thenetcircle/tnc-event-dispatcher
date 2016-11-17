@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher;
+namespace TNC\Service\EventDispatcher;
 
 class Consumer
 {

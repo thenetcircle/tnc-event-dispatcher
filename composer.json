@@ -21,12 +21,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Tnc\\Service\\EventDispatcher\\": "src/"
+      "TNC\\Service\\EventDispatcher\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Tnc\\Service\\EventDispatcher\\Tests\\": "tests/"
+      "TNC\\Service\\EventDispatcher\\Tests\\": "tests/"
     }
   }
 }

@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Backend;
+namespace TNC\Service\EventDispatcher\Backend;
 
-use Tnc\Service\EventDispatcher\Interfaces\Backend;
-use Tnc\Service\EventDispatcher\Exception;
-use Tnc\Service\EventDispatcher\Event\Internal\ErrorEvent;
-use Tnc\Service\EventDispatcher\Event\Internal\DeliveryEvent;
+use TNC\Service\EventDispatcher\Interfaces\Backend;
+use TNC\Service\EventDispatcher\Exception;
+use TNC\Service\EventDispatcher\Event\Internal\ErrorEvent;
+use TNC\Service\EventDispatcher\Event\Internal\DeliveryEvent;
 
 class KafkaBackend extends AbstractBackend
 {

@@ -1,17 +1,17 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Tests;
+namespace TNC\Service\EventDispatcher\Tests;
 
-use Tnc\Service\EventDispatcher\Dispatcher;
-use Tnc\Service\EventDispatcher\Event\DefaultEvent;
-use Tnc\Service\EventDispatcher\Interfaces\Backend;
-use Tnc\Service\EventDispatcher\Interfaces\ChannelDetective;
-use Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
-use Tnc\Service\EventDispatcher\Interfaces\Event;
-use Tnc\Service\EventDispatcher\Pipeline;
-use Tnc\Service\EventDispatcher\Interfaces\Serializer;
-use Tnc\Service\EventDispatcher\Event\EventWrapper;
-use Tnc\Service\EventDispatcher\Serializer\DefaultSerializer;
+use TNC\Service\EventDispatcher\Dispatcher;
+use TNC\Service\EventDispatcher\Event\DefaultEvent;
+use TNC\Service\EventDispatcher\Interfaces\Backend;
+use TNC\Service\EventDispatcher\Interfaces\ChannelDetective;
+use TNC\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
+use TNC\Service\EventDispatcher\Interfaces\Event;
+use TNC\Service\EventDispatcher\Pipeline;
+use TNC\Service\EventDispatcher\Interfaces\Serializer;
+use TNC\Service\EventDispatcher\Event\EventWrapper;
+use TNC\Service\EventDispatcher\Serializer\DefaultSerializer;
 
 class PipelineTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,7 +36,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
     private $timeout = 2000;
 
     /**
-     * @var \Tnc\Service\EventDispatcher\Event\EventWrapper
+     * @var \TNC\Service\EventDispatcher\Event\EventWrapper
      */
     private $eventWrapper;
     private $serializedEventWrapper;
@@ -56,7 +56,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
         $this->eventWrapper           = new EventWrapper($eventName, $event, Dispatcher::MODE_ASYNC);
         $this->serializedEventWrapper =
             '{"sender":"user1","receiver":"user2"' .
-            ',"extra":{"name":"message.send","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Event\\\DefaultEvent"}}';
+            ',"extra":{"name":"message.send","mode":"async","class":"TNC\\\Service\\\EventDispatcher\\\Event\\\DefaultEvent"}}';
     }
 
     public function testPush()

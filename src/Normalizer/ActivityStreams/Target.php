@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Normalizer\ActivityStreams;
+namespace TNC\Service\EventDispatcher\Normalizer\ActivityStreams;
 
 class Target extends AbstractObject
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Normalizer;
+namespace TNC\Service\EventDispatcher\Normalizer;
 
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
+use TNC\Service\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
+use TNC\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
 
 class CustomNormalizer extends AbstractNormalizer
 {

@@ -1,15 +1,15 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Serializer;
+namespace TNC\Service\EventDispatcher\Serializer;
 
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Normalizer\ActivityStreamsNormalizer;
-use Tnc\Service\EventDispatcher\Normalizer\CustomNormalizer;
+use TNC\Service\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\Service\EventDispatcher\Normalizer\ActivityStreamsNormalizer;
+use TNC\Service\EventDispatcher\Normalizer\CustomNormalizer;
 
 /**
  * DefaultSerializer
  *
- * @package    Tnc\Service\EventDispatcher
+ * @package    TNC\Service\EventDispatcher
  *
  * @author     The NetCircle
  */
@@ -18,7 +18,7 @@ class DefaultSerializer extends AbstractSerializer
     /**
      * AbstractSerializer constructor.
      *
-     * @param \Tnc\Service\EventDispatcher\Interfaces\Normalizer[] $normalizers
+     * @param \TNC\Service\EventDispatcher\Interfaces\Normalizer[] $normalizers
      */
     public function __construct(array $normalizers = null)
     {

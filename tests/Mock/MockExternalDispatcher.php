@@ -1,9 +1,9 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Tests\Mock;
+namespace TNC\Service\EventDispatcher\Tests\Mock;
 
-use Tnc\Service\EventDispatcher\Interfaces\Event;
-use Tnc\Service\EventDispatcher\Interfaces\ExternalDispatcher;
+use TNC\Service\EventDispatcher\Interfaces\Event;
+use TNC\Service\EventDispatcher\Interfaces\ExternalDispatcher;
 
 class MockExternalDispatcher implements ExternalDispatcher
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Tests\Serializer;
+namespace TNC\Service\EventDispatcher\Tests\Serializer;
 
-use Tnc\Service\EventDispatcher\Dispatcher;
-use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
-use Tnc\Service\EventDispatcher\Tests\Mock\MockActivityEvent;
-use Tnc\Service\EventDispatcher\Event\DefaultEvent;
-use Tnc\Service\EventDispatcher\Interfaces\Serializer;
-use Tnc\Service\EventDispatcher\Event\EventWrapper;
-use Tnc\Service\EventDispatcher\Serializer\DefaultSerializer;
+use TNC\Service\EventDispatcher\Dispatcher;
+use TNC\Service\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
+use TNC\Service\EventDispatcher\Tests\Mock\MockActivityEvent;
+use TNC\Service\EventDispatcher\Event\DefaultEvent;
+use TNC\Service\EventDispatcher\Interfaces\Serializer;
+use TNC\Service\EventDispatcher\Event\EventWrapper;
+use TNC\Service\EventDispatcher\Serializer\DefaultSerializer;
 
 class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 {
@@ -51,7 +51,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
         $this->serializedWrappedEvent = preg_replace(
             '/}$/',
             ',"extra":{"name":"'.$this->eventName.'","mode":"' . $this->mode .
-            '","class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Event\\\\\DefaultEvent"}}',
+            '","class":"TNC\\\\\Service\\\\\EventDispatcher\\\\\Event\\\\\DefaultEvent"}}',
             $this->serializedEvent
         );
 
@@ -79,7 +79,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
         $this->serializedWrappedActivityEvent = preg_replace(
             '/}$/',
             ',"extra":{"name":"'.$this->eventName.'","mode":"' . $this->mode .
-            '","class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Tests\\\\\Mock\\\\\MockActivityEvent"}}',
+            '","class":"TNC\\\\\Service\\\\\EventDispatcher\\\\\Tests\\\\\Mock\\\\\MockActivityEvent"}}',
             $this->serializedActivityEvent
         );
 
@@ -100,7 +100,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
         $this->serializedUnknownEvent = preg_replace(
             '/}$/',
             ',"extra":{"name":"'.$this->eventName.'","mode":"' . $this->mode .
-            '","class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\UnknownEvent"}}',
+            '","class":"TNC\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\UnknownEvent"}}',
             $this->serializedActivityEvent
         );
     }

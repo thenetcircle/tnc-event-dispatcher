@@ -1,11 +1,11 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Normalizer;
+namespace TNC\Service\EventDispatcher\Normalizer;
 
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityNormalizable;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityDenormalizable;
+use TNC\Service\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
+use TNC\Service\EventDispatcher\Normalizer\Interfaces\ActivityNormalizable;
+use TNC\Service\EventDispatcher\Normalizer\Interfaces\ActivityDenormalizable;
 
 class ActivityStreamsNormalizer extends AbstractNormalizer
 {

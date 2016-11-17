@@ -8,12 +8,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Tests\Mock;
+namespace TNC\Service\EventDispatcher\Tests\Mock;
 
-use Tnc\Service\EventDispatcher\Interfaces\Event;
-use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityDenormalizable;
-use Tnc\Service\EventDispatcher\Normalizer\Interfaces\ActivityNormalizable;
+use TNC\Service\EventDispatcher\Interfaces\Event;
+use TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
+use TNC\Service\EventDispatcher\Normalizer\Interfaces\ActivityDenormalizable;
+use TNC\Service\EventDispatcher\Normalizer\Interfaces\ActivityNormalizable;
 
 class MockActivityEvent implements Event, ActivityNormalizable, ActivityDenormalizable
 {
@@ -42,7 +42,7 @@ class MockActivityEvent implements Event, ActivityNormalizable, ActivityDenormal
         return $this->activity;
     }
 
-    public function denormalizeActivity(\Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity)
+    public function denormalizeActivity(\TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity)
     {
         $this->activity = $activity;
     }

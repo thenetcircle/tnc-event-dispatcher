@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Exception;
+namespace TNC\Service\EventDispatcher\Exception;
 
 class InvalidArgumentException extends \Exception
 {

@@ -1,23 +1,23 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Serializer;
+namespace TNC\Service\EventDispatcher\Serializer;
 
-use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Interfaces\Serializer;
-use Tnc\Service\EventDispatcher\Interfaces\Normalizer;
-use Tnc\Service\EventDispatcher\Normalizer\EventWrapperNormalizer;
+use TNC\Service\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\Service\EventDispatcher\Interfaces\Serializer;
+use TNC\Service\EventDispatcher\Interfaces\Normalizer;
+use TNC\Service\EventDispatcher\Normalizer\EventWrapperNormalizer;
 
 /**
  * AbstractSerializer
  *
- * @package    Tnc\Service\EventDispatcher
+ * @package    TNC\Service\EventDispatcher
  *
  * @author     The NetCircle
  */
 abstract class AbstractSerializer implements Serializer
 {
     /**
-     * @var \Tnc\Service\EventDispatcher\Interfaces\Normalizer[]
+     * @var \TNC\Service\EventDispatcher\Interfaces\Normalizer[]
      */
     protected $normalizers = array();
 
@@ -87,7 +87,7 @@ abstract class AbstractSerializer implements Serializer
 
 
     /**
-     * @return \Tnc\Service\EventDispatcher\Interfaces\Normalizer|null
+     * @return \TNC\Service\EventDispatcher\Interfaces\Normalizer|null
      */
     protected function getNormalizer($object)
     {
@@ -104,7 +104,7 @@ abstract class AbstractSerializer implements Serializer
     }
 
     /**
-     * @return \Tnc\Service\EventDispatcher\Interfaces\Normalizer|null
+     * @return \TNC\Service\EventDispatcher\Interfaces\Normalizer|null
      */
     protected function getDenormalizer($data, $class)
     {

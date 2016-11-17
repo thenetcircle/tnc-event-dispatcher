@@ -1,13 +1,13 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Normalizer\Interfaces;
+namespace TNC\Service\EventDispatcher\Normalizer\Interfaces;
 
-use Tnc\Service\EventDispatcher\Interfaces\Serializer;
+use TNC\Service\EventDispatcher\Interfaces\Serializer;
 
 /**
  * Normalizable
  *
- * @package    Tnc\Service\EventDispatcher
+ * @package    TNC\Service\EventDispatcher
  *
  * @author     The NetCircle
  */
@@ -16,11 +16,11 @@ interface Normalizable
     /**
      * Normalize instance to array representation.
      *
-     * @param \Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer
+     * @param \TNC\Service\EventDispatcher\Interfaces\Serializer $serializer
      *
      * @return array
      *
-     * @throws \Tnc\Service\EventDispatcher\Exception\InvalidArgumentException
+     * @throws \TNC\Service\EventDispatcher\Exception\InvalidArgumentException
      */
-    public function normalize(\Tnc\Service\EventDispatcher\Interfaces\Serializer $serializer);
+    public function normalize(\TNC\Service\EventDispatcher\Interfaces\Serializer $serializer);
 }

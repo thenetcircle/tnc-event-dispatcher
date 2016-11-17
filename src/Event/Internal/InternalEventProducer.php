@@ -1,9 +1,9 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Event\Internal;
+namespace TNC\Service\EventDispatcher\Event\Internal;
 
-use Tnc\Service\EventDispatcher\Dispatcher;
-use Tnc\Service\EventDispatcher\Interfaces\Event;
+use TNC\Service\EventDispatcher\Dispatcher;
+use TNC\Service\EventDispatcher\Interfaces\Event;
 
 abstract class InternalEventProducer
 {
@@ -13,7 +13,7 @@ abstract class InternalEventProducer
     protected $internalEventDispatcher;
 
     /**
-     * @param \Tnc\Service\EventDispatcher\Dispatcher $dispatcher
+     * @param \TNC\Service\EventDispatcher\Dispatcher $dispatcher
      */
     public function setInternalEventDispatcher(Dispatcher $dispatcher)
     {
@@ -22,7 +22,7 @@ abstract class InternalEventProducer
 
     /**
      * @param string                                             $name
-     * @param \Tnc\Service\EventDispatcher\Interfaces\Event|null $event
+     * @param \TNC\Service\EventDispatcher\Interfaces\Event|null $event
      */
     protected function dispatchInternalEvent($name, Event $event = null)
     {

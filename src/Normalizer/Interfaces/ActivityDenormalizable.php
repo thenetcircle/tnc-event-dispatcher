@@ -1,13 +1,13 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Normalizer\Interfaces;
+namespace TNC\Service\EventDispatcher\Normalizer\Interfaces;
 
-use Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
+use TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Activity;
 
 /**
  * ActivityDenormalizable
  *
- * @package    Tnc\Service\EventDispatcher
+ * @package    TNC\Service\EventDispatcher
  *
  * @author     The NetCircle
  */
@@ -16,9 +16,9 @@ interface ActivityDenormalizable
     /**
      * Denormalize ActivityStreams representation back to this instance.
      *
-     * @param \Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity
+     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity
      *
-     * @throws \Tnc\Service\EventDispatcher\Exception\InvalidArgumentException
+     * @throws \TNC\Service\EventDispatcher\Exception\InvalidArgumentException
      */
-    public function denormalizeActivity(\Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity);
+    public function denormalizeActivity(\TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity);
 }

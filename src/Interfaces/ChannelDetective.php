@@ -1,13 +1,13 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\Interfaces;
+namespace TNC\Service\EventDispatcher\Interfaces;
 
-use Tnc\Service\EventDispatcher\Event\EventWrapper;
+use TNC\Service\EventDispatcher\Event\EventWrapper;
 
 interface ChannelDetective
 {
     /**
-     * @param \Tnc\Service\EventDispatcher\Event\EventWrapper $eventWrapper
+     * @param \TNC\Service\EventDispatcher\Event\EventWrapper $eventWrapper
      *
      * @return array
      */

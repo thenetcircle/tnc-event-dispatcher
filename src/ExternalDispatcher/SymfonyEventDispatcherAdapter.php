@@ -1,10 +1,10 @@
 <?php
 
-namespace Tnc\Service\EventDispatcher\ExternalDispatcher;
+namespace TNC\Service\EventDispatcher\ExternalDispatcher;
 
 use Symfony\Component\EventDispatcher\EventDispatcher as SymfonyEventDispatcher;
-use Tnc\Service\EventDispatcher\Interfaces\Event;
-use Tnc\Service\EventDispatcher\Interfaces\ExternalDispatcher;
+use TNC\Service\EventDispatcher\Interfaces\Event;
+use TNC\Service\EventDispatcher\Interfaces\ExternalDispatcher;
 
 class SymfonyEventDispatcherAdapter extends SymfonyEventDispatcher implements ExternalDispatcher
 {

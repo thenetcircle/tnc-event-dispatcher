@@ -21,16 +21,16 @@ if (!defined('COMPOSER_AUTOLOAD_FILE')) {
 }
 require COMPOSER_AUTOLOAD_FILE;
 
-use \Tnc\Service\EventDispatcher\Consumer;
-use Tnc\Service\EventDispatcher\Event\EventWrapper;
-use \Tnc\Service\EventDispatcher\Exception\NoDataException;
-use \Tnc\Service\EventDispatcher\Exception\TimeoutException;
-use \Tnc\Service\EventDispatcher\Exception\FatalException;
-use \Tnc\Service\EventDispatcher\Tests\Mock\MockExternalDispatcher;
-use \Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
-use \Tnc\Service\EventDispatcher\Backend\KafkaBackend;
-use \Tnc\Service\EventDispatcher\Pipeline;
-use \Tnc\Service\EventDispatcher\Serializer\DefaultSerializer;
+use \TNC\Service\EventDispatcher\Consumer;
+use \TNC\Service\EventDispatcher\Event\EventWrapper;
+use \TNC\Service\EventDispatcher\Exception\NoDataException;
+use \TNC\Service\EventDispatcher\Exception\TimeoutException;
+use \TNC\Service\EventDispatcher\Exception\FatalException;
+use \TNC\Service\EventDispatcher\Tests\Mock\MockExternalDispatcher;
+use \TNC\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
+use \TNC\Service\EventDispatcher\Backend\KafkaBackend;
+use \TNC\Service\EventDispatcher\Pipeline;
+use \TNC\Service\EventDispatcher\Serializer\DefaultSerializer;
 use \Ko\Process;
 
 if ($argc < 3) {
@@ -62,7 +62,7 @@ $job = function (Process $process) use ($brokers) {
         }
 
         try {
-            /** @var \Tnc\Service\EventDispatcher\Event\EventWrapper $eventWrapper */
+            /** @var \TNC\Service\EventDispatcher\Event\EventWrapper $eventWrapper */
             list($eventWrapper, $receipt) = $pipeline->pop(500000, $listeningChannels);
             $acceptedJobs++;
 
