@@ -5,6 +5,7 @@ namespace Tnc\Service\EventDispatcher\Serializer;
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
 use Tnc\Service\EventDispatcher\Interfaces\Serializer;
 use Tnc\Service\EventDispatcher\Interfaces\Normalizer;
+use Tnc\Service\EventDispatcher\Normalizer\EventWrapperNormalizer;
 
 /**
  * AbstractSerializer
@@ -27,7 +28,7 @@ abstract class AbstractSerializer implements Serializer
      */
     public function __construct(array $normalizers)
     {
-        array_unshift($normalizers, new Normalizer\EventWrapperNormalizer());
+        array_unshift($normalizers, new EventWrapperNormalizer());
 
         foreach ($normalizers as $normalizer) {
             $normalizer->setSerializer($this);

@@ -8,12 +8,14 @@ use Tnc\Service\EventDispatcher\Tests\Mock\MockActivityEvent;
 use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Interfaces\Serializer;
 use Tnc\Service\EventDispatcher\Event\EventWrapper;
+use Tnc\Service\EventDispatcher\Serializer\DefaultSerializer;
 
 class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var DefaultEvent
      */
+    private $eventName;
     private $event;
     private $serializedEvent;
     private $serializedWrappedEvent;
@@ -29,7 +31,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
     private $serializedUnknownEvent;
 
     /**
-     * @var Serializer\DefaultSerializer
+     * @var DefaultSerializer
      */
     private $serializer;
     private $datetime;
@@ -40,26 +42,16 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
     {
         $this->datetime   = (new \DateTime())->format(\DateTime::RFC3339);
         $this->mode       = Dispatcher::MODE_SYNC_PLUS;
-        $this->serializer = new Serializer\DefaultSerializer();
+        $this->serializer = new DefaultSerializer();
 
 
+        $this->eventName = 'testEvent';
         $this->event = new DefaultEvent(['sender' => 'user1', 'receiver' => 'user2']);
-        $this->event->setName('testEvent');
-        $this->event->setMode($this->mode);
-        $this->event->setGroup('group1');
-        $this->serializedEvent
-                                      = '{
-          "sender":"user1",
-          "receiver":"user2",
-          "extra":{
-            "name":"testEvent",
-            "mode":"' . $this->mode . '",
-            "group":"group1",
-            "propagationStopped":false
-          }}';
+        $this->serializedEvent = '{"sender":"user1","receiver":"user2"}';
         $this->serializedWrappedEvent = preg_replace(
-            '/}}$/',
-            ',"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Event\\\\\DefaultEvent"}}',
+            '/}$/',
+            ',"extra":{"name":"'.$this->eventName.'","mode":"' . $this->mode .
+            '","class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Event\\\\\DefaultEvent"}}',
             $this->serializedEvent
         );
 
@@ -74,17 +66,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
                                    ->setId('TestId')
                                    ->getActivity();
         $this->activityEvent = new MockActivityEvent($activity);
-        $this->activityEvent->setName('message.send');
-        $this->activityEvent->setMode($this->mode);
-        $this->activityEvent->setGroup('group1');
-        $activity->setExtra([
-            'name'               => $this->activityEvent->getName(),
-            'group'              => $this->activityEvent->getGroup(),
-            'mode'               => $this->activityEvent->getMode(),
-            'propagationStopped' => false,
-        ]);
-        $this->serializedActivityEvent
-                                              = '{
+        $this->serializedActivityEvent = '{
           "verb": "send",
           "provider":{"id":"DD", "objectType":"community"},
           "actor": {"id":"171", "objectType":"user"},
@@ -92,22 +74,17 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
           "target": {"id":"2281", "objectType":"user"},
           "published":"' . $this->datetime . '",
           "id":"TestId",
-          "version":"1.0",
-          "extra":{
-            "name":"message.send",
-            "mode":"' . $this->mode . '",
-            "group":"group1",
-            "propagationStopped":false
-          }}';
+          "version":"1.0"
+        }';
         $this->serializedWrappedActivityEvent = preg_replace(
-            '/}}$/',
-            ',"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Tests\\\\\Mock\\\\\MockActivityEvent"}}',
+            '/}$/',
+            ',"extra":{"name":"'.$this->eventName.'","mode":"' . $this->mode .
+            '","class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Tests\\\\\Mock\\\\\MockActivityEvent"}}',
             $this->serializedActivityEvent
         );
 
         // unknown event will be transform to DefaultEvent
         $unknownEvent = clone $this->event;
-        $unknownEvent->setName('message.send');
         unset($unknownEvent['sender'], $unknownEvent['receiver']);
 
         $unknownEvent['verb']      = 'send';
@@ -121,8 +98,9 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 
         $this->unknownEvent           = $unknownEvent;
         $this->serializedUnknownEvent = preg_replace(
-            '/}}$/',
-            ',"class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\UnknownEvent"}}',
+            '/}$/',
+            ',"extra":{"name":"'.$this->eventName.'","mode":"' . $this->mode .
+            '","class":"Tnc\\\\\Service\\\\\EventDispatcher\\\\\Test\\\\\UnknownEvent"}}',
             $this->serializedActivityEvent
         );
     }
@@ -146,7 +124,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 
     public function testSerializeWrappedEvent()
     {
-        $eventWrapper = new EventWrapper($this->event, $this->mode);
+        $eventWrapper = new EventWrapper($this->eventName, $this->event, $this->mode);
 
         $this->assertJsonStringEqualsJsonString(
             $this->serializedWrappedEvent,
@@ -156,7 +134,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 
     public function testUnserializeWrappedEvent()
     {
-        $eventWrapper = new EventWrapper($this->event, $this->mode);
+        $eventWrapper = new EventWrapper($this->eventName, $this->event, $this->mode);
 
         $newEventWrapper = $this->serializer->unserialize(
             $this->serializedWrappedEvent,
@@ -187,7 +165,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 
     public function testSerializeWrappedActivityEvent()
     {
-        $eventWrapper = new EventWrapper($this->activityEvent, $this->mode);
+        $eventWrapper = new EventWrapper($this->eventName, $this->activityEvent, $this->mode);
 
         $this->assertJsonStringEqualsJsonString(
             $this->serializedWrappedActivityEvent,
@@ -197,14 +175,12 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 
     public function testUnserializeWrappedActivityEvent()
     {
-        $eventWrapper = new EventWrapper($this->activityEvent, $this->mode);
+        $eventWrapper = new EventWrapper($this->eventName, $this->activityEvent, $this->mode);
 
         $newEventWrapper = $this->serializer->unserialize(
             $this->serializedWrappedActivityEvent,
             get_class($eventWrapper)
         );
-
-        $eventWrapper->getEvent()->getActivity()->addExtra('class', MockActivityEvent::class);
 
         $this->assertEquals($eventWrapper, $newEventWrapper);
         $this->assertEquals($this->activityEvent, $newEventWrapper->getEvent());
@@ -212,7 +188,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 
     public function testUnserializeUnknownEvent()
     {
-        $unknownEvent             = new EventWrapper($this->unknownEvent);
+        $unknownEvent             = new EventWrapper($this->eventName, $this->unknownEvent, $this->mode);
         $unserializedUnknownEvent = $this->serializer->unserialize(
             $this->serializedUnknownEvent,
             EventWrapper::class

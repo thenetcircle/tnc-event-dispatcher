@@ -89,7 +89,7 @@ class DefaultEvent implements Event, Normalizable, Denormalizable, ArrayAccess
      */
     public function getTransportToken()
     {
-        return mt_rand(1, 999999);
+        return '';
     }
 
     /**

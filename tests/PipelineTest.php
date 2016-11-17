@@ -2,6 +2,8 @@
 
 namespace Tnc\Service\EventDispatcher\Tests;
 
+use Tnc\Service\EventDispatcher\Dispatcher;
+use Tnc\Service\EventDispatcher\Event\DefaultEvent;
 use Tnc\Service\EventDispatcher\Interfaces\Backend;
 use Tnc\Service\EventDispatcher\Interfaces\ChannelDetective;
 use Tnc\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
@@ -9,6 +11,7 @@ use Tnc\Service\EventDispatcher\Interfaces\Event;
 use Tnc\Service\EventDispatcher\Pipeline;
 use Tnc\Service\EventDispatcher\Interfaces\Serializer;
 use Tnc\Service\EventDispatcher\Event\EventWrapper;
+use Tnc\Service\EventDispatcher\Serializer\DefaultSerializer;
 
 class PipelineTest extends \PHPUnit_Framework_TestCase
 {
@@ -43,18 +46,17 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
     {
         $this->backend = $this->createMock(Backend::class);
 
-        $serializer         = new Serializer\DefaultSerializer();
+        $serializer         = new DefaultSerializer();
 
         $this->channelDetective   = new SimpleChannelDetective();
         $this->pipeline = new Pipeline($this->backend, $serializer, $this->channelDetective);
 
-        $event = new Event\DefaultEvent(['sender' => 'user1', 'receiver' => 'user2']);
-        $event->setName('message.send');
-        $this->eventWrapper           = new EventWrapper($event);
+        $eventName = 'message.send';
+        $event = new DefaultEvent(['sender' => 'user1', 'receiver' => 'user2']);
+        $this->eventWrapper           = new EventWrapper($eventName, $event, Dispatcher::MODE_ASYNC);
         $this->serializedEventWrapper =
             '{"sender":"user1","receiver":"user2"' .
-            ',"extra":{"name":"message.send","group":null,"mode":null,"propagationStopped":false,'.
-            '"class":"Tnc\\\Service\\\EventDispatcher\\\Event\\\DefaultEvent"}}';
+            ',"extra":{"name":"message.send","mode":"async","class":"Tnc\\\Service\\\EventDispatcher\\\Event\\\DefaultEvent"}}';
     }
 
     public function testPush()
@@ -62,9 +64,9 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
         $this->backend->expects($this->once())
                       ->method('push')
                       ->with(
-                          $this->channelDetective->getPushingChannels($this->eventWrapper->getEvent()),
+                          $this->channelDetective->getPushingChannels($this->eventWrapper),
                           $this->equalTo($this->serializedEventWrapper),
-                          $this->equalTo(null)
+                          $this->anything()
                       );
 
         $this->pipeline->push($this->eventWrapper);

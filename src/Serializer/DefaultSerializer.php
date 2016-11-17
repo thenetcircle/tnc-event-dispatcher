@@ -3,8 +3,8 @@
 namespace Tnc\Service\EventDispatcher\Serializer;
 
 use Tnc\Service\EventDispatcher\Exception\InvalidArgumentException;
-use Tnc\Service\EventDispatcher\Interfaces\Normalizer;
-use Tnc\Service\EventDispatcher\Interfaces\Serializer;
+use Tnc\Service\EventDispatcher\Normalizer\ActivityStreamsNormalizer;
+use Tnc\Service\EventDispatcher\Normalizer\CustomNormalizer;
 
 /**
  * DefaultSerializer
@@ -23,7 +23,7 @@ class DefaultSerializer extends AbstractSerializer
     public function __construct(array $normalizers = null)
     {
         if ($normalizers === null) {
-            $normalizers = [new Normalizer\ActivityStreamsNormalizer(), new Normalizer\CustomNormalizer()];
+            $normalizers = [new ActivityStreamsNormalizer(), new CustomNormalizer()];
         }
 
         parent::__construct($normalizers);

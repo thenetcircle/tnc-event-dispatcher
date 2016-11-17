@@ -44,21 +44,6 @@ class MockActivityEvent implements Event, ActivityNormalizable, ActivityDenormal
 
     public function denormalizeActivity(\Tnc\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity)
     {
-        $extra = $activity->getExtra();
-
-        if (isset($extra['name'])) {
-            $this->name = $extra['name'];
-        }
-        if (isset($extra['group'])) {
-            $this->group = $extra['group'];
-        }
-        if (isset($extra['mode'])) {
-            $this->mode = $extra['mode'];
-        }
-        if (isset($extra['propagationStopped'])) {
-            $this->propagationStopped = $extra['propagationStopped'];
-        }
-
         $this->activity = $activity;
     }
 }

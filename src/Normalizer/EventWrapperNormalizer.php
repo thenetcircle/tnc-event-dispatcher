@@ -44,6 +44,7 @@ class EventWrapperNormalizer extends AbstractNormalizer
 
         $name      = $data[$this->extraField]['name'];
         $mode      = $data[$this->extraField]['mode'];
+        unset($data[$this->extraField]);
 
         /** @var Event $event */
         $event      = $this->serializer->denormalize($data, $eventClass);

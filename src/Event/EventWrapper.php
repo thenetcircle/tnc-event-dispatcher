@@ -88,6 +88,6 @@ class EventWrapper
      */
     public function getTransportToken()
     {
-        return $this->transportToken;
+        return !empty($this->transportToken) ? $this->transportToken : mt_rand(1, 999999);
     }
 }
