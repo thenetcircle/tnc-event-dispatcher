@@ -17,7 +17,8 @@
     "psr/log": "~1.0",
     "phpunit/phpunit": "~5.0",
     "kwn/php-rdkafka-stubs": "~0.0.4",
-    "symfony/event-dispatcher": "~2.3 || ~3.0"
+    "symfony/event-dispatcher": "~2.3 || ~3.0",
+    "misterion/ko-process": "*"
   },
   "autoload": {
     "psr-4": {
