@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Tnc\Service\EventDispatcher\Backend\RedisPubsub;
+namespace TNC\EventDispatcher\Backend\RedisPubsub;
 
-use Tnc\Service\EventDispatcher\Backend\AbstractBackend;
-use Tnc\Service\EventDispatcher\Event\Internal\DeliveryEvent;
-use Tnc\Service\EventDispatcher\Exception;
+use TNC\EventDispatcher\Backend\AbstractBackend;
+use TNC\EventDispatcher\Event\Internal\DeliveryEvent;
+use TNC\EventDispatcher\Exception;
 
 class PHPRedisBackend extends AbstractBackend
 {
@@ -30,7 +30,7 @@ class PHPRedisBackend extends AbstractBackend
      * @param bool $persistent
      * @param float $timeout value in seconds (optional, default is 0 meaning unlimited)
      *
-     * @throws \Tnc\Service\EventDispatcher\Exception\FatalException
+     * @throws \TNC\EventDispatcher\Exception\FatalException
      */
     public function __construct(
         $host,

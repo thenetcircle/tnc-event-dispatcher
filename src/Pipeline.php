@@ -1,15 +1,15 @@
 <?php
 
-namespace TNC\Service\EventDispatcher;
+namespace TNC\EventDispatcher;
 
-use TNC\Service\EventDispatcher\Event\EventWrapper;
-use TNC\Service\EventDispatcher\Event\Internal\DeliveryEvent;
-use TNC\Service\EventDispatcher\Event\Internal\InternalEventProducer;
-use TNC\Service\EventDispatcher\Exception\FatalException;
-use TNC\Service\EventDispatcher\Event\Internal\ErrorEvent;
-use TNC\Service\EventDispatcher\Interfaces\Backend;
-use TNC\Service\EventDispatcher\Interfaces\ChannelDetective;
-use TNC\Service\EventDispatcher\Interfaces\Serializer;
+use TNC\EventDispatcher\Event\EventWrapper;
+use TNC\EventDispatcher\Event\Internal\DeliveryEvent;
+use TNC\EventDispatcher\Event\Internal\InternalEventProducer;
+use TNC\EventDispatcher\Exception\FatalException;
+use TNC\EventDispatcher\Event\Internal\ErrorEvent;
+use TNC\EventDispatcher\Interfaces\Backend;
+use TNC\EventDispatcher\Interfaces\ChannelDetective;
+use TNC\EventDispatcher\Interfaces\Serializer;
 
 class Pipeline extends InternalEventProducer
 {
@@ -42,7 +42,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Event\EventWrapper $eventWrapper
+     * @param \TNC\EventDispatcher\Event\EventWrapper $eventWrapper
      */
     public function push(EventWrapper $eventWrapper)
     {
@@ -81,9 +81,9 @@ class Pipeline extends InternalEventProducer
      *
      * @return array [EventWrapper $eventWrapper, mixed $receipt]
      *
-     * @throws \TNC\Service\EventDispatcher\Exception\FatalException
-     * @throws \TNC\Service\EventDispatcher\Exception\TimeoutException
-     * @throws \TNC\Service\EventDispatcher\Exception\NoDataException
+     * @throws \TNC\EventDispatcher\Exception\FatalException
+     * @throws \TNC\EventDispatcher\Exception\TimeoutException
+     * @throws \TNC\EventDispatcher\Exception\NoDataException
      */
     public function pop($timeout = 5000, $channels = null)
     {
@@ -124,7 +124,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @return \TNC\Service\EventDispatcher\Interfaces\Backend
+     * @return \TNC\EventDispatcher\Interfaces\Backend
      */
     public function getBackend()
     {
@@ -132,7 +132,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @return \TNC\Service\EventDispatcher\Interfaces\Serializer
+     * @return \TNC\EventDispatcher\Interfaces\Serializer
      */
     public function getSerializer()
     {
@@ -140,7 +140,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @return \TNC\Service\EventDispatcher\Interfaces\ChannelDetective
+     * @return \TNC\EventDispatcher\Interfaces\ChannelDetective
      */
     public function getChannelDetective()
     {

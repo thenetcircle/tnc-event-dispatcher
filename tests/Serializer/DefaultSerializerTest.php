@@ -1,14 +1,14 @@
 <?php
 
-namespace TNC\Service\EventDispatcher\Tests\Serializer;
+namespace TNC\EventDispatcher\Tests\Serializer;
 
-use TNC\Service\EventDispatcher\Dispatcher;
-use TNC\Service\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
-use TNC\Service\EventDispatcher\Tests\Mock\MockActivityEvent;
-use TNC\Service\EventDispatcher\Event\DefaultEvent;
-use TNC\Service\EventDispatcher\Interfaces\Serializer;
-use TNC\Service\EventDispatcher\Event\EventWrapper;
-use TNC\Service\EventDispatcher\Serializer\DefaultSerializer;
+use TNC\EventDispatcher\Dispatcher;
+use TNC\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
+use TNC\EventDispatcher\Tests\Mock\MockActivityEvent;
+use TNC\EventDispatcher\Event\DefaultEvent;
+use TNC\EventDispatcher\Interfaces\Serializer;
+use TNC\EventDispatcher\Event\EventWrapper;
+use TNC\EventDispatcher\Serializer\DefaultSerializer;
 
 class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 {

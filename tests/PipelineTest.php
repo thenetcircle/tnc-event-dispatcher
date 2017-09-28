@@ -1,17 +1,17 @@
 <?php
 
-namespace TNC\Service\EventDispatcher\Tests;
+namespace TNC\EventDispatcher\Tests;
 
-use TNC\Service\EventDispatcher\Dispatcher;
-use TNC\Service\EventDispatcher\Event\DefaultEvent;
-use TNC\Service\EventDispatcher\Interfaces\Backend;
-use TNC\Service\EventDispatcher\Interfaces\ChannelDetective;
-use TNC\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
-use TNC\Service\EventDispatcher\Interfaces\Event;
-use TNC\Service\EventDispatcher\Pipeline;
-use TNC\Service\EventDispatcher\Interfaces\Serializer;
-use TNC\Service\EventDispatcher\Event\EventWrapper;
-use TNC\Service\EventDispatcher\Serializer\DefaultSerializer;
+use TNC\EventDispatcher\Dispatcher;
+use TNC\EventDispatcher\Event\DefaultEvent;
+use TNC\EventDispatcher\Interfaces\Backend;
+use TNC\EventDispatcher\Interfaces\ChannelDetective;
+use TNC\EventDispatcher\ChannelDetective\SimpleChannelDetective;
+use TNC\EventDispatcher\Interfaces\Event;
+use TNC\EventDispatcher\Pipeline;
+use TNC\EventDispatcher\Interfaces\Serializer;
+use TNC\EventDispatcher\Event\EventWrapper;
+use TNC\EventDispatcher\Serializer\DefaultSerializer;
 
 class PipelineTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,7 +36,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
     private $timeout = 2000;
 
     /**
-     * @var \TNC\Service\EventDispatcher\Event\EventWrapper
+     * @var \TNC\EventDispatcher\Event\EventWrapper
      */
     private $eventWrapper;
     private $serializedEventWrapper;

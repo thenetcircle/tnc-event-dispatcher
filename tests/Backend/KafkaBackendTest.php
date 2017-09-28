@@ -1,15 +1,15 @@
 <?php
 
-namespace TNC\Service\EventDispatcher\Tests\Backend;
+namespace TNC\EventDispatcher\Tests\Backend;
 
-use TNC\Service\EventDispatcher\Backend\KafkaBackend;
-use TNC\Service\EventDispatcher\ChannelDetective\SimpleChannelDetective;
-use TNC\Service\EventDispatcher\Dispatcher;
-use TNC\Service\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
-use TNC\Service\EventDispatcher\Tests\Mock\MockActivityEvent;
-use TNC\Service\EventDispatcher\Tests\Mock\MockExternalDispatcher;
-use TNC\Service\EventDispatcher\Pipeline;
-use TNC\Service\EventDispatcher\Serializer\DefaultSerializer;
+use TNC\EventDispatcher\Backend\KafkaBackend;
+use TNC\EventDispatcher\ChannelDetective\SimpleChannelDetective;
+use TNC\EventDispatcher\Dispatcher;
+use TNC\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
+use TNC\EventDispatcher\Tests\Mock\MockActivityEvent;
+use TNC\EventDispatcher\Tests\Mock\MockExternalDispatcher;
+use TNC\EventDispatcher\Pipeline;
+use TNC\EventDispatcher\Serializer\DefaultSerializer;
 
 class KafkaBackendTest extends \PHPUnit_Framework_TestCase
 {

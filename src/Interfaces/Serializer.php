@@ -1,8 +1,8 @@
 <?php
 
-namespace TNC\Service\EventDispatcher\Interfaces;
+namespace TNC\EventDispatcher\Interfaces;
 
-use TNC\Service\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\EventDispatcher\Exception\InvalidArgumentException;
 
 interface Serializer
 {

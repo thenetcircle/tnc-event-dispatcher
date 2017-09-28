@@ -1,19 +1,19 @@
 <?php
 
-namespace TNC\Service\EventDispatcher\Normalizer;
+namespace TNC\EventDispatcher\Normalizer;
 
-use TNC\Service\EventDispatcher\Interfaces\Normalizer;
-use TNC\Service\EventDispatcher\Interfaces\Serializer;
+use TNC\EventDispatcher\Interfaces\Normalizer;
+use TNC\EventDispatcher\Interfaces\Serializer;
 
 abstract class AbstractNormalizer implements Normalizer
 {
     /**
-     * @var \TNC\Service\EventDispatcher\Interfaces\Serializer
+     * @var \TNC\EventDispatcher\Interfaces\Serializer
      */
     protected $serializer;
 
     /**
-     * @param \TNC\Service\EventDispatcher\Interfaces\Serializer $serializer
+     * @param \TNC\EventDispatcher\Interfaces\Serializer $serializer
      */
     public function setSerializer(Serializer $serializer)
     {

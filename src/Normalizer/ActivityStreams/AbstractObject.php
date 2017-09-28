@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\Service\EventDispatcher\Normalizer\ActivityStreams;
+namespace TNC\EventDispatcher\Normalizer\ActivityStreams;
 
-use TNC\Service\EventDispatcher\Interfaces\Serializer;
-use TNC\Service\EventDispatcher\Normalizer\Interfaces\Denormalizable;
-use TNC\Service\EventDispatcher\Normalizer\Interfaces\Normalizable;
+use TNC\EventDispatcher\Interfaces\Serializer;
+use TNC\EventDispatcher\Normalizer\Interfaces\Denormalizable;
+use TNC\EventDispatcher\Normalizer\Interfaces\Normalizable;
 
 abstract class AbstractObject implements Normalizable, Denormalizable
 {
@@ -89,7 +89,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Attachment[]
+     * @return \TNC\EventDispatcher\Normalizer\ActivityStreams\Attachment[]
      */
     public function getAttachments()
     {
@@ -97,7 +97,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Attachment[] $attachments
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Attachment[] $attachments
      *
      * @return $this
      */
@@ -109,7 +109,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Attachment $attachment
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Attachment $attachment
      *
      * @return $this
      */
@@ -121,7 +121,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Author
+     * @return \TNC\EventDispatcher\Normalizer\ActivityStreams\Author
      */
     public function getAuthor()
     {
@@ -129,7 +129,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
     
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Author $author
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Author $author
      *
      * @return $this
      */
@@ -367,7 +367,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function normalize(\TNC\Service\EventDispatcher\Interfaces\Serializer $serializer)
+    public function normalize(\TNC\EventDispatcher\Interfaces\Serializer $serializer)
     {
         $vars = get_object_vars($this);
         $data = [];
@@ -399,7 +399,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     /**
      * {@inheritdoc}
      */
-    public function denormalize(\TNC\Service\EventDispatcher\Interfaces\Serializer $serializer, array $data)
+    public function denormalize(\TNC\EventDispatcher\Interfaces\Serializer $serializer, array $data)
     {
         foreach ($data as $_key => $_value) {
             if ($_key === 'attachments') {

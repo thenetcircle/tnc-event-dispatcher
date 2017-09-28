@@ -1,10 +1,10 @@
 <?php
 
-namespace TNC\Service\EventDispatcher\Normalizer;
+namespace TNC\EventDispatcher\Normalizer;
 
-use TNC\Service\EventDispatcher\Interfaces\Event;
-use TNC\Service\EventDispatcher\Event\DefaultEvent;
-use TNC\Service\EventDispatcher\Event\EventWrapper;
+use TNC\EventDispatcher\Interfaces\Event;
+use TNC\EventDispatcher\Event\DefaultEvent;
+use TNC\EventDispatcher\Event\EventWrapper;
 
 class EventWrapperNormalizer extends AbstractNormalizer
 {

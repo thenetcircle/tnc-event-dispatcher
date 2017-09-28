@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\Service\EventDispatcher;
+namespace TNC\EventDispatcher;
 
-use TNC\Service\EventDispatcher\Event\DefaultEvent;
-use TNC\Service\EventDispatcher\Event\EventWrapper;
-use TNC\Service\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\Service\EventDispatcher\Interfaces\Event;
-use TNC\Service\EventDispatcher\Interfaces\ExternalDispatcher;
+use TNC\EventDispatcher\Event\DefaultEvent;
+use TNC\EventDispatcher\Event\EventWrapper;
+use TNC\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\EventDispatcher\Interfaces\Event;
+use TNC\EventDispatcher\Interfaces\ExternalDispatcher;
 
 class Dispatcher
 {

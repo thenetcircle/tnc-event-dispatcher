@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\Service\EventDispatcher\Normalizer\ActivityStreams;
+namespace TNC\EventDispatcher\Normalizer\ActivityStreams;
 
 
 class ActivityBuilder
@@ -29,7 +29,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Activity $activity
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Activity $activity
      *
      * @return static
      */
@@ -47,7 +47,7 @@ class ActivityBuilder
     }
 
     /**
-     * @return \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Activity
+     * @return \TNC\EventDispatcher\Normalizer\ActivityStreams\Activity
      */
     public function getActivity()
     {
@@ -55,7 +55,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Actor $actor
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Actor $actor
      *
      * @return $this
      */
@@ -89,7 +89,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Generator $generator
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Generator $generator
      *
      * @return $this
      */
@@ -123,7 +123,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Obj $object
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Obj $object
      *
      * @return $this
      */
@@ -157,7 +157,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Provider $provider
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Provider $provider
      *
      * @return $this
      */
@@ -179,7 +179,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\Service\EventDispatcher\Normalizer\ActivityStreams\Target $target
+     * @param \TNC\EventDispatcher\Normalizer\ActivityStreams\Target $target
      *
      * @return $this
      */

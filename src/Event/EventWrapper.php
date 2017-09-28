@@ -1,13 +1,13 @@
 <?php
 
-namespace TNC\Service\EventDispatcher\Event;
+namespace TNC\EventDispatcher\Event;
 
-use TNC\Service\EventDispatcher\Interfaces\Event;
+use TNC\EventDispatcher\Interfaces\Event;
 
 /**
  * Class EventWrapper
  *
- * @package TNC\Service\EventDispatcher
+ * @package TNC\EventDispatcher
  */
 class EventWrapper
 {
@@ -17,7 +17,7 @@ class EventWrapper
     protected $name;
 
     /**
-     * @var \TNC\Service\EventDispatcher\Interfaces\Event
+     * @var \TNC\EventDispatcher\Interfaces\Event
      */
     protected $event;
 

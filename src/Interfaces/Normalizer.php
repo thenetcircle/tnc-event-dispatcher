@@ -1,9 +1,9 @@
 <?php
 
-namespace TNC\Service\EventDispatcher\Interfaces;
+namespace TNC\EventDispatcher\Interfaces;
 
-use TNC\Service\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\Service\EventDispatcher\Interfaces\Serializer;
+use TNC\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\EventDispatcher\Interfaces\Serializer;
 
 interface Normalizer
 {

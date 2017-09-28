@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\Service\EventDispatcher\Interfaces;
+namespace TNC\EventDispatcher\Interfaces;
 
-use TNC\Service\EventDispatcher\Exception;
+use TNC\EventDispatcher\Exception;
 
 interface Backend
 {

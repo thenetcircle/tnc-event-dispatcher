@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\Service\EventDispatcher\Backend;
+namespace TNC\EventDispatcher\Backend;
 
-use TNC\Service\EventDispatcher\Interfaces\Backend;
-use TNC\Service\EventDispatcher\Event\Internal\InternalEventProducer;
+use TNC\EventDispatcher\Interfaces\Backend;
+use TNC\EventDispatcher\Event\Internal\InternalEventProducer;
 
 abstract class AbstractBackend extends InternalEventProducer implements Backend
 {

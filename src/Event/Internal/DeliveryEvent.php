@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\Service\EventDispatcher\Event\Internal;
+namespace TNC\EventDispatcher\Event\Internal;
 
-use TNC\Service\EventDispatcher\Interfaces\Event;
+use TNC\EventDispatcher\Interfaces\Event;
 
 class DeliveryEvent implements Event
 {

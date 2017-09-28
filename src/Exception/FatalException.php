@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\Service\EventDispatcher\Exception;
+namespace TNC\EventDispatcher\Exception;
 
 class FatalException extends \Exception
 {
