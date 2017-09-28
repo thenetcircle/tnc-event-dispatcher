@@ -10,12 +10,12 @@
 
 namespace TNC\EventDispatcher\Tests\Mock;
 
-use TNC\EventDispatcher\Interfaces\Event;
+use TNC\EventDispatcher\Interfaces\SerializableEvent;
 use TNC\EventDispatcher\Normalizer\ActivityStreams\Activity;
 use TNC\EventDispatcher\Normalizer\Interfaces\ActivityDenormalizable;
 use TNC\EventDispatcher\Normalizer\Interfaces\ActivityNormalizable;
 
-class MockActivityEvent implements Event, ActivityNormalizable, ActivityDenormalizable
+class MockActivitySerializableEvent implements SerializableEvent, ActivityNormalizable, ActivityDenormalizable
 {
     /**
      * @var Activity

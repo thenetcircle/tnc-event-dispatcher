@@ -3,12 +3,12 @@
 namespace TNC\EventDispatcher;
 
 use TNC\EventDispatcher\Event\EventWrapper;
-use TNC\EventDispatcher\Event\Internal\DeliveryEvent;
+use TNC\EventDispatcher\Event\Internal\DeliverySerializableEvent;
 use TNC\EventDispatcher\Event\Internal\InternalEventProducer;
 use TNC\EventDispatcher\Exception\FatalException;
-use TNC\EventDispatcher\Event\Internal\ErrorEvent;
+use TNC\EventDispatcher\Event\Internal\ErrorSerializableEvent;
 use TNC\EventDispatcher\Interfaces\Backend;
-use TNC\EventDispatcher\Interfaces\ChannelDetective;
+use TNC\EventDispatcher\Interfaces\ChannelResolver;
 use TNC\EventDispatcher\Interfaces\Serializer;
 
 class Pipeline extends InternalEventProducer
@@ -24,18 +24,18 @@ class Pipeline extends InternalEventProducer
     private $serializer;
 
     /**
-     * @var ChannelDetective
+     * @var ChannelResolver
      */
     private $channelDetective;
 
     /**
      * PersistentQueue constructor.
      *
-     * @param Backend    $backend
-     * @param Serializer $serializer
-     * @param ChannelDetective $channelDetective
+     * @param Backend         $backend
+     * @param Serializer      $serializer
+     * @param ChannelResolver $channelDetective
      */
-    public function __construct(Backend $backend, Serializer $serializer, ChannelDetective $channelDetective) {
+    public function __construct(Backend $backend, Serializer $serializer, ChannelResolver $channelDetective) {
         $this->backend          = $backend;
         $this->serializer       = $serializer;
         $this->channelDetective = $channelDetective;
@@ -54,8 +54,8 @@ class Pipeline extends InternalEventProducer
 
             if (empty($message)) {
                 $this->dispatchInternalEvent(
-                    DeliveryEvent::FAILED,
-                    new DeliveryEvent(implode(',', $channels), serialize($eventWrapper), $key)
+                    DeliverySerializableEvent::FAILED,
+                    new DeliverySerializableEvent(implode(',', $channels), serialize($eventWrapper), $key)
                 );
                 return;
             }
@@ -63,14 +63,14 @@ class Pipeline extends InternalEventProducer
             $this->backend->push($channels, $message, $key);
 
             $this->dispatchInternalEvent(
-                DeliveryEvent::SUCCEED,
-                new DeliveryEvent(implode(',', $channels), $message, $key)
+                DeliverySerializableEvent::SUCCEED,
+                new DeliverySerializableEvent(implode(',', $channels), $message, $key)
             );
 
         } catch (\Exception $e) {
             $this->dispatchInternalEvent(
-                ErrorEvent::ERROR,
-                new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::push}')
+                ErrorSerializableEvent::ERROR,
+                new ErrorSerializableEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::push}')
             );
         }
     }
@@ -100,8 +100,8 @@ class Pipeline extends InternalEventProducer
             return array($eventWrapper, $receipt);
         } catch (FatalException $e) {
             $this->dispatchInternalEvent(
-                ErrorEvent::ERROR,
-                new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::pop}')
+                ErrorSerializableEvent::ERROR,
+                new ErrorSerializableEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::pop}')
             );
 
             throw $e;
@@ -117,8 +117,8 @@ class Pipeline extends InternalEventProducer
             $this->backend->ack($receipt);
         } catch (\Exception $e) {
             $this->dispatchInternalEvent(
-                ErrorEvent::ERROR,
-                new ErrorEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::ack}')
+                ErrorSerializableEvent::ERROR,
+                new ErrorSerializableEvent($e->getCode(), $e->getMessage(), '{PersistentPipeline::ack}')
             );
         }
     }
@@ -140,7 +140,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @return \TNC\EventDispatcher\Interfaces\ChannelDetective
+     * @return \TNC\EventDispatcher\Interfaces\ChannelResolver
      */
     public function getChannelDetective()
     {

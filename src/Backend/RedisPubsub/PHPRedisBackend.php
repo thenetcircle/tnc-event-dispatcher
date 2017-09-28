@@ -11,7 +11,7 @@
 namespace TNC\EventDispatcher\Backend\RedisPubsub;
 
 use TNC\EventDispatcher\Backend\AbstractBackend;
-use TNC\EventDispatcher\Event\Internal\DeliveryEvent;
+use TNC\EventDispatcher\Event\Internal\DeliverySerializableEvent;
 use TNC\EventDispatcher\Exception;
 
 class PHPRedisBackend extends AbstractBackend
@@ -82,8 +82,8 @@ class PHPRedisBackend extends AbstractBackend
             $received = $this->redisManager->publish($_channel, $message);
             if ($received <= 0) {
                 $this->dispatchInternalEvent(
-                    DeliveryEvent::FAILED,
-                    new DeliveryEvent($_channel, $message, $key, 0)
+                    DeliverySerializableEvent::FAILED,
+                    new DeliverySerializableEvent($_channel, $message, $key, 0)
                 );
             }
         }

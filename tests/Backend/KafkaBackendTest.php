@@ -6,7 +6,7 @@ use TNC\EventDispatcher\Backend\KafkaBackend;
 use TNC\EventDispatcher\ChannelDetective\SimpleChannelDetective;
 use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
-use TNC\EventDispatcher\Tests\Mock\MockActivityEvent;
+use TNC\EventDispatcher\Tests\Mock\MockActivitySerializableEvent;
 use TNC\EventDispatcher\Tests\Mock\MockExternalDispatcher;
 use TNC\EventDispatcher\Pipeline;
 use TNC\EventDispatcher\Serializer\DefaultSerializer;
@@ -30,7 +30,7 @@ class KafkaBackendTest extends \PHPUnit_Framework_TestCase
         $dispatcher = new Dispatcher($externalDispatcher, $pipeline);
 
         for ($i = 0; $i < 100; $i++) {
-            $event = new MockActivityEvent(
+            $event = new MockActivitySerializableEvent(
                 ActivityBuilder::createActivity()->setProviderByParams('test', 'KafkaBackend')
                                                  ->setActorByParams('user', mt_rand(100000, 999999))
                                                  ->setObjectByParams('message', 15)

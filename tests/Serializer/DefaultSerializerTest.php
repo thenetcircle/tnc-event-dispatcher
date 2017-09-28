@@ -4,7 +4,7 @@ namespace TNC\EventDispatcher\Tests\Serializer;
 
 use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
-use TNC\EventDispatcher\Tests\Mock\MockActivityEvent;
+use TNC\EventDispatcher\Tests\Mock\MockActivitySerializableEvent;
 use TNC\EventDispatcher\Event\DefaultEvent;
 use TNC\EventDispatcher\Interfaces\Serializer;
 use TNC\EventDispatcher\Event\EventWrapper;
@@ -21,7 +21,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
     private $serializedWrappedEvent;
 
     /**
-     * @var MockActivityEvent
+     * @var MockActivitySerializableEvent
      */
     private $activityEvent;
     private $serializedActivityEvent;
@@ -65,7 +65,7 @@ class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
                                    ->setPublished($this->datetime)
                                    ->setId('TestId')
                                    ->getActivity();
-        $this->activityEvent = new MockActivityEvent($activity);
+        $this->activityEvent = new MockActivitySerializableEvent($activity);
         $this->serializedActivityEvent = '{
           "verb": "send",
           "provider":{"id":"DD", "objectType":"community"},

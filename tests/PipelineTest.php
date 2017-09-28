@@ -5,9 +5,9 @@ namespace TNC\EventDispatcher\Tests;
 use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\Event\DefaultEvent;
 use TNC\EventDispatcher\Interfaces\Backend;
-use TNC\EventDispatcher\Interfaces\ChannelDetective;
+use TNC\EventDispatcher\Interfaces\ChannelResolver;
 use TNC\EventDispatcher\ChannelDetective\SimpleChannelDetective;
-use TNC\EventDispatcher\Interfaces\Event;
+use TNC\EventDispatcher\Interfaces\SerializableEvent;
 use TNC\EventDispatcher\Pipeline;
 use TNC\EventDispatcher\Interfaces\Serializer;
 use TNC\EventDispatcher\Event\EventWrapper;
@@ -21,7 +21,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
     private $backend;
 
     /**
-     * @var ChannelDetective
+     * @var ChannelResolver
      */
     private $channelDetective;
 

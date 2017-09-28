@@ -4,7 +4,8 @@ namespace TNC\EventDispatcher\Serializer;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
 use TNC\EventDispatcher\Interfaces\Serializer;
-use TNC\EventDispatcher\Interfaces\Normalizer;
+use TNC\EventDispatcher\Serializer\Encoder\Encoder;
+use \TNC\EventDispatcher\Serializer\Normalizer\Normalizer;
 use TNC\EventDispatcher\Normalizer\EventWrapperNormalizer;
 
 /**
@@ -17,16 +18,22 @@ use TNC\EventDispatcher\Normalizer\EventWrapperNormalizer;
 abstract class AbstractSerializer implements Serializer
 {
     /**
-     * @var \TNC\EventDispatcher\Interfaces\Normalizer[]
+     * @var \TNC\EventDispatcher\Serializer\Normalizer\Normalizer[]
      */
     protected $normalizers = array();
+
+    /**
+     * @var \TNC\EventDispatcher\Serializer\Encoder\Encoder
+     */
+    protected $encoder = null;
 
     /**
      * AbstractSerializer constructor.
      *
      * @param Normalizer[] $normalizers
+     * @param Encoder      $encoder
      */
-    public function __construct(array $normalizers)
+    public function __construct(array $normalizers, $encoder)
     {
         array_unshift($normalizers, new EventWrapperNormalizer());
 
@@ -35,6 +42,7 @@ abstract class AbstractSerializer implements Serializer
         }
 
         $this->normalizers = $normalizers;
+        $this->encoder = $encoder;
     }
 
     /**
@@ -50,17 +58,21 @@ abstract class AbstractSerializer implements Serializer
     /**
      * {@inheritdoc}
      */
-    public function unserialize($content, $class)
+    public function unserialize($data, $class)
     {
-        $data = $this->decode($content);
+        $data = $this->decode($data);
 
         return $this->denormalize($data, $class);
     }
 
     /**
-     * {@inheritdoc}
+     * @param object $object
+     *
+     * @return array
+     *
+     * @throws InvalidArgumentException
      */
-    public function normalize($object)
+    protected function normalize($object)
     {
         if (null === ($normalizer = $this->getNormalizer($object))) {
             throw new InvalidArgumentException(
@@ -72,9 +84,14 @@ abstract class AbstractSerializer implements Serializer
     }
 
     /**
-     * {@inheritdoc}
+     * @param array  $data
+     * @param string $class
+     *
+     * @return object
+     *
+     * @throws InvalidArgumentException
      */
-    public function denormalize($data, $class)
+    protected function denormalize($data, $class)
     {
         if (null === ($normalizer = $this->getDenormalizer($data, $class))) {
             throw new InvalidArgumentException(
@@ -85,9 +102,29 @@ abstract class AbstractSerializer implements Serializer
         return $normalizer->denormalize($data, $class);
     }
 
+    /**
+     * @param array $data
+     *
+     * @return string
+     */
+    protected function encode($data) {
+        return $this->encoder->encode($data);
+    }
 
     /**
-     * @return \TNC\EventDispatcher\Interfaces\Normalizer|null
+     * @param string $content
+     *
+     * @return array
+     *
+     * @throws InvalidArgumentException
+     */
+    protected function decode($content) {
+        return $this->encoder->decode($content);
+    }
+
+
+    /**
+     * @return \TNC\EventDispatcher\Serializer\Normalizer\Normalizer|null
      */
     protected function getNormalizer($object)
     {
@@ -104,7 +141,7 @@ abstract class AbstractSerializer implements Serializer
     }
 
     /**
-     * @return \TNC\EventDispatcher\Interfaces\Normalizer|null
+     * @return \TNC\EventDispatcher\Serializer\Normalizer\Normalizer|null
      */
     protected function getDenormalizer($data, $class)
     {

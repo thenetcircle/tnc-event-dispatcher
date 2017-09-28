@@ -15,8 +15,8 @@ interface ExternalDispatcher
     /**
      * Dispatches an event to all listeners
      *
-     * @param string     $eventName The name of the event
-     * @param Event|null $event
+     * @param string                 $eventName The name of the event
+     * @param SerializableEvent|null $event
      */
-    public function syncDispatch($eventName, Event $event = null);
+    public function syncDispatch($eventName, SerializableEvent $event = null);
 }
