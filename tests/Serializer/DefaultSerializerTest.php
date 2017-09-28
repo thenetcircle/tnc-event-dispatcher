@@ -8,7 +8,7 @@ use TNC\EventDispatcher\Tests\Mock\MockActivitySerializableEvent;
 use TNC\EventDispatcher\Event\DefaultEvent;
 use TNC\EventDispatcher\Interfaces\Serializer;
 use TNC\EventDispatcher\Event\EventWrapper;
-use TNC\EventDispatcher\Serializer\DefaultSerializer;
+use TNC\EventDispatcher\Serialization\DefaultSerializer;
 
 class DefaultSerializerTest extends \PHPUnit_Framework_TestCase
 {

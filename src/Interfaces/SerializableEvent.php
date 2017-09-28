@@ -10,10 +10,11 @@
 
 namespace TNC\EventDispatcher\Interfaces;
 
+use TNC\EventDispatcher\Exception\TransportableEvent;
 use TNC\EventDispatcher\Exception\UnserializeFailedException;
 use TNC\EventDispatcher\Exception\SerializeFailedException;
 
-interface SerializableEvent
+interface SerializableEvent extends TransportableEvent
 {
     /**
      * Serializes Event to be String

@@ -1,6 +1,6 @@
 <?php
 
-namespace TNC\EventDispatcher\Serializer\Normalizer\Interfaces;
+namespace TNC\EventDispatcher\Serialization\Normalizer\Interfaces;
 
 use TNC\EventDispatcher\Interfaces\Serializer;
 

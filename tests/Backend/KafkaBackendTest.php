@@ -9,7 +9,7 @@ use TNC\EventDispatcher\Normalizer\ActivityStreams\ActivityBuilder;
 use TNC\EventDispatcher\Tests\Mock\MockActivitySerializableEvent;
 use TNC\EventDispatcher\Tests\Mock\MockExternalDispatcher;
 use TNC\EventDispatcher\Pipeline;
-use TNC\EventDispatcher\Serializer\DefaultSerializer;
+use TNC\EventDispatcher\Serialization\DefaultSerializer;
 
 class KafkaBackendTest extends \PHPUnit_Framework_TestCase
 {

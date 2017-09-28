@@ -1,14 +1,28 @@
 <?php
 
-namespace TNC\EventDispatcher\Serializer\Normalizer;
+namespace TNC\EventDispatcher\Serialization\Normalizer;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Activity;
-use TNC\EventDispatcher\Serializer\Normalizer\Interfaces\ActivityNormalizable;
-use TNC\EventDispatcher\Serializer\Normalizer\Interfaces\ActivityDenormalizable;
+use TNC\EventDispatcher\Utils\ActivityStreams\Activity;
+use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\ActivityNormalizable;
+use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\ActivityDenormalizable;
+use \TNC\EventDispatcher\Interfaces\Serializer;
 
-class ActivityStreamsNormalizer extends AbstractNormalizer
+class ActivityStreamsNormalizerInterface implements NormalizerInterface
 {
+    /**
+     * @var \TNC\EventDispatcher\Interfaces\Serializer
+     */
+    protected $serializer;
+
+    /**
+     * @param \TNC\EventDispatcher\Interfaces\Serializer $serializer
+     */
+    public function setSerializer(Serializer $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
     /**
      * {@inheritdoc}
      */

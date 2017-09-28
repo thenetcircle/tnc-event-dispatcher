@@ -1,14 +1,20 @@
 <?php
 
-namespace TNC\EventDispatcher\Serializer\Normalizer;
+namespace TNC\EventDispatcher\Serialization\Normalizer;
 
 use TNC\EventDispatcher\Interfaces\SerializableEvent;
 use TNC\EventDispatcher\Event\DefaultEvent;
 use TNC\EventDispatcher\Event\EventWrapper;
+use \TNC\EventDispatcher\Interfaces\Serializer;
 
-class EventWrapperNormalizer extends AbstractNormalizer
+class EventWrapperNormalizerInterface implements NormalizerInterface
 {
     const EXTRA_FIELD = 'extra';
+
+    /**
+     * @var \TNC\EventDispatcher\Interfaces\Serializer
+     */
+    protected $serializer;
 
     /**
      * @var string
@@ -18,6 +24,14 @@ class EventWrapperNormalizer extends AbstractNormalizer
     public function __construct($extraField = self::EXTRA_FIELD)
     {
         $this->extraField = $extraField;
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Interfaces\Serializer $serializer
+     */
+    public function setSerializer(Serializer $serializer)
+    {
+        $this->serializer = $serializer;
     }
 
     /**

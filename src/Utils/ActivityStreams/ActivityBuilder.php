@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams;
+namespace TNC\EventDispatcher\Utils\ActivityStreams;
 
 
 class ActivityBuilder
@@ -29,7 +29,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Activity $activity
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Activity $activity
      *
      * @return static
      */
@@ -47,7 +47,7 @@ class ActivityBuilder
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Activity
+     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Activity
      */
     public function getActivity()
     {
@@ -55,7 +55,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Actor $actor
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Actor $actor
      *
      * @return $this
      */
@@ -89,7 +89,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Generator $generator
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Generator $generator
      *
      * @return $this
      */
@@ -123,7 +123,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Obj $object
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Obj $object
      *
      * @return $this
      */
@@ -157,7 +157,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Provider $provider
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Provider $provider
      *
      * @return $this
      */
@@ -179,7 +179,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Target $target
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Target $target
      *
      * @return $this
      */

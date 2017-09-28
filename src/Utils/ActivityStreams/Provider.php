@@ -8,8 +8,8 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams;
+namespace TNC\EventDispatcher\Utils\ActivityStreams;
 
-class Attachment extends AbstractObject
+class Provider extends AbstractObject
 {
 }

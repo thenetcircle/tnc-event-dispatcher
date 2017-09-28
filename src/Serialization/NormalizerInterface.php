@@ -1,11 +1,11 @@
 <?php
 
-namespace TNC\EventDispatcher\Serializer\Normalizer;
+namespace TNC\EventDispatcher\Serialization\Normalizer;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
 use TNC\EventDispatcher\Interfaces\Serializer;
 
-interface Normalizer
+interface NormalizerInterface
 {
     /**
      * @param Serializer $serializer

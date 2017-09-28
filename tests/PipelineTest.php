@@ -11,7 +11,7 @@ use TNC\EventDispatcher\Interfaces\SerializableEvent;
 use TNC\EventDispatcher\Pipeline;
 use TNC\EventDispatcher\Interfaces\Serializer;
 use TNC\EventDispatcher\Event\EventWrapper;
-use TNC\EventDispatcher\Serializer\DefaultSerializer;
+use TNC\EventDispatcher\Serialization\DefaultSerializer;
 
 class PipelineTest extends \PHPUnit_Framework_TestCase
 {

@@ -1,12 +1,9 @@
 <?php
 
-namespace TNC\EventDispatcher\Serializer;
+namespace TNC\EventDispatcher\Serialization;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Interfaces\Serializer;
-use TNC\EventDispatcher\Serializer\Encoder\Encoder;
-use \TNC\EventDispatcher\Serializer\Normalizer\Normalizer;
-use TNC\EventDispatcher\Normalizer\EventWrapperNormalizer;
+use \TNC\EventDispatcher\Serialization\Normalizer\NormalizerInterface;
 
 /**
  * AbstractSerializer
@@ -15,52 +12,50 @@ use TNC\EventDispatcher\Normalizer\EventWrapperNormalizer;
  *
  * @author     The NetCircle
  */
-abstract class AbstractSerializer implements Serializer
+class Serializer
 {
-    /**
-     * @var \TNC\EventDispatcher\Serializer\Normalizer\Normalizer[]
-     */
-    protected $normalizers = array();
-
-    /**
-     * @var \TNC\EventDispatcher\Serializer\Encoder\Encoder
-     */
-    protected $encoder = null;
+    protected $supportedNormalizers = array();
+    protected $formatter            = null;
 
     /**
      * AbstractSerializer constructor.
      *
-     * @param Normalizer[] $normalizers
-     * @param Encoder      $encoder
+     * @param \TNC\EventDispatcher\Serialization\Normalizer\NormalizerInterface[] $supportedNormalizers
+     * @param \TNC\EventDispatcher\Serialization\Encoder\FormatterInterface       $formatter
      */
-    public function __construct(array $normalizers, $encoder)
+    public function __construct(array $supportedNormalizers, $formatter)
     {
-        array_unshift($normalizers, new EventWrapperNormalizer());
+        array_unshift($supportedNormalizers, new EventWrapperNormalizer());
 
-        foreach ($normalizers as $normalizer) {
-            $normalizer->setSerializer($this);
-        }
-
-        $this->normalizers = $normalizers;
-        $this->encoder = $encoder;
+        $this->supportedNormalizers = $supportedNormalizers;
+        $this->formatter            = $formatter;
     }
 
     /**
-     * {@inheritdoc}
+     * @param object $object
+     *
+     * @return string
+     *
+     * @throws InvalidArgumentException
      */
     public function serialize($object)
     {
         $data = $this->normalize($object);
 
-        return $this->encode($data);
+        return $this->format($data);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $data
+     * @param string $class
+     *
+     * @return object
+     *
+     * @throws InvalidArgumentException
      */
     public function unserialize($data, $class)
     {
-        $data = $this->decode($data);
+        $data = $this->unformat($data);
 
         return $this->denormalize($data, $class);
     }
@@ -107,8 +102,8 @@ abstract class AbstractSerializer implements Serializer
      *
      * @return string
      */
-    protected function encode($data) {
-        return $this->encoder->encode($data);
+    protected function format($data) {
+        return $this->formatter->format($data);
     }
 
     /**
@@ -118,19 +113,19 @@ abstract class AbstractSerializer implements Serializer
      *
      * @throws InvalidArgumentException
      */
-    protected function decode($content) {
-        return $this->encoder->decode($content);
+    protected function unformat($content) {
+        return $this->formatter->unformat($content);
     }
 
 
     /**
-     * @return \TNC\EventDispatcher\Serializer\Normalizer\Normalizer|null
+     * @return \TNC\EventDispatcher\Serialization\Normalizer\NormalizerInterface|null
      */
     protected function getNormalizer($object)
     {
-        foreach ($this->normalizers as $normalizer) {
+        foreach ($this->supportedNormalizers as $normalizer) {
             if (
-                $normalizer instanceof Normalizer
+                $normalizer instanceof NormalizerInterface
                 && $normalizer->supportsNormalization($object)
             ) {
                 return $normalizer;
@@ -141,13 +136,13 @@ abstract class AbstractSerializer implements Serializer
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serializer\Normalizer\Normalizer|null
+     * @return \TNC\EventDispatcher\Serialization\Normalizer\NormalizerInterface|null
      */
     protected function getDenormalizer($data, $class)
     {
-        foreach ($this->normalizers as $normalizer) {
+        foreach ($this->supportedNormalizers as $normalizer) {
             if (
-                $normalizer instanceof Normalizer
+                $normalizer instanceof NormalizerInterface
                 && $normalizer->supportsDenormalization($data, $class)
             ) {
                 return $normalizer;

@@ -1,13 +1,27 @@
 <?php
 
-namespace TNC\EventDispatcher\Serializer\Normalizer;
+namespace TNC\EventDispatcher\Serialization\Normalizer;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Serializer\Normalizer\Interfaces\Normalizable;
-use TNC\EventDispatcher\Serializer\Normalizer\Interfaces\Denormalizable;
+use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Normalizable;
+use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Denormalizable;
+use \TNC\EventDispatcher\Interfaces\Serializer;
 
-class CustomNormalizer extends AbstractNormalizer
+class CustomNormalizerInterface implements NormalizerInterface
 {
+    /**
+     * @var \TNC\EventDispatcher\Interfaces\Serializer
+     */
+    protected $serializer;
+
+    /**
+     * @param \TNC\EventDispatcher\Interfaces\Serializer $serializer
+     */
+    public function setSerializer(Serializer $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
     /**
      * {@inheritdoc}
      */

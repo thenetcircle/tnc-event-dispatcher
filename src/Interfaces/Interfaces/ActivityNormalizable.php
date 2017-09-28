@@ -1,6 +1,6 @@
 <?php
 
-namespace TNC\EventDispatcher\Serializer\Normalizer\Interfaces;
+namespace TNC\EventDispatcher\Serialization\Normalizer\Interfaces;
 
 
 /**
@@ -15,7 +15,7 @@ interface ActivityNormalizable
     /**
      * Normalize instance to ActivityStreams representation.
      *
-     * @return \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Activity
+     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Activity
      *
      * @throws \TNC\EventDispatcher\Exception\InvalidArgumentException
      */

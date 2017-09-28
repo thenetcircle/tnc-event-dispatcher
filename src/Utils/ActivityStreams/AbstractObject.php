@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams;
+namespace TNC\EventDispatcher\Utils\ActivityStreams;
 
 use TNC\EventDispatcher\Interfaces\Serializer;
-use TNC\EventDispatcher\Serializer\Normalizer\Interfaces\Denormalizable;
-use TNC\EventDispatcher\Serializer\Normalizer\Interfaces\Normalizable;
+use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Denormalizable;
+use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Normalizable;
 
 abstract class AbstractObject implements Normalizable, Denormalizable
 {
@@ -89,7 +89,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Attachment[]
+     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Attachment[]
      */
     public function getAttachments()
     {
@@ -97,7 +97,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Attachment[] $attachments
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Attachment[] $attachments
      *
      * @return $this
      */
@@ -109,7 +109,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Attachment $attachment
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Attachment $attachment
      *
      * @return $this
      */
@@ -121,7 +121,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Author
+     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Author
      */
     public function getAuthor()
     {
@@ -129,7 +129,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
     
     /**
-     * @param \TNC\EventDispatcher\Serializer\Normalizer\ActivityStreams\Author $author
+     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Author $author
      *
      * @return $this
      */
