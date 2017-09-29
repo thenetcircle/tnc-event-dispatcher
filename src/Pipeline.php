@@ -7,14 +7,14 @@ use TNC\EventDispatcher\Event\Internal\DeliverySerializableEvent;
 use TNC\EventDispatcher\Event\Internal\InternalEventProducer;
 use TNC\EventDispatcher\Exception\FatalException;
 use TNC\EventDispatcher\Event\Internal\ErrorSerializableEvent;
-use TNC\EventDispatcher\Interfaces\Backend;
+use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\ChannelResolver;
 use TNC\EventDispatcher\Interfaces\Serializer;
 
 class Pipeline extends InternalEventProducer
 {
     /**
-     * @var Backend;
+     * @var EndPoint;
      */
     private $backend;
 
@@ -31,11 +31,11 @@ class Pipeline extends InternalEventProducer
     /**
      * PersistentQueue constructor.
      *
-     * @param Backend         $backend
+     * @param EndPoint        $backend
      * @param Serializer      $serializer
      * @param ChannelResolver $channelDetective
      */
-    public function __construct(Backend $backend, Serializer $serializer, ChannelResolver $channelDetective) {
+    public function __construct(EndPoint $backend, Serializer $serializer, ChannelResolver $channelDetective) {
         $this->backend          = $backend;
         $this->serializer       = $serializer;
         $this->channelDetective = $channelDetective;
@@ -60,7 +60,7 @@ class Pipeline extends InternalEventProducer
                 return;
             }
 
-            $this->backend->push($channels, $message, $key);
+            $this->backend->send($channels, $message, $key);
 
             $this->dispatchInternalEvent(
                 DeliverySerializableEvent::SUCCEED,
@@ -124,7 +124,7 @@ class Pipeline extends InternalEventProducer
     }
 
     /**
-     * @return \TNC\EventDispatcher\Interfaces\Backend
+     * @return \TNC\EventDispatcher\Interfaces\EndPoint
      */
     public function getBackend()
     {

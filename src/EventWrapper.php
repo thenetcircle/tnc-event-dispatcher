@@ -1,6 +1,6 @@
 <?php
 
-namespace TNC\EventDispatcher\Event;
+namespace TNC\EventDispatcher;
 
 use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;

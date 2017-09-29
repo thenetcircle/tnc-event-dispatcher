@@ -4,7 +4,7 @@ namespace TNC\EventDispatcher\Tests;
 
 use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\Event\DefaultEvent;
-use TNC\EventDispatcher\Interfaces\Backend;
+use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\ChannelResolver;
 use TNC\EventDispatcher\ChannelDetective\SimpleChannelDetective;
 use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
@@ -44,7 +44,7 @@ class PipelineTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->backend = $this->createMock(Backend::class);
+        $this->backend = $this->createMock(EndPoint::class);
 
         $serializer         = new DefaultSerializer();
 

@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Backend;
+namespace TNC\EventDispatcher\EndPoints;
 
-use TNC\EventDispatcher\Interfaces\Backend;
+use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Event\Internal\InternalEventProducer;
 
-abstract class AbstractBackend extends InternalEventProducer implements Backend
+abstract class AbstractEndPoint extends InternalEventProducer implements EndPoint
 {
 }

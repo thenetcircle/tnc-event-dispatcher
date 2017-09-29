@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Backend\RedisPubsub;
+namespace TNC\EventDispatcher\EndPoints\Redis;
 
-use TNC\EventDispatcher\Backend\AbstractBackend;
+use TNC\EventDispatcher\EndPoints\AbstractEndPoint;
 use TNC\EventDispatcher\Event\Internal\DeliverySerializableEvent;
 use TNC\EventDispatcher\Exception;
 
-class PHPRedisBackend extends AbstractBackend
+class PHPRedisEndPoint extends AbstractEndPoint
 {
     /**
      * @var \Redis
@@ -76,7 +76,7 @@ class PHPRedisBackend extends AbstractBackend
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function push($channels, $message, $key = null)
+    public function send($channels, $message, $key = null)
     {
         foreach($channels as $_channel) {
             $received = $this->redisManager->publish($_channel, $message);
