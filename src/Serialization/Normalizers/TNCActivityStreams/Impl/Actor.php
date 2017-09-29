@@ -10,6 +10,15 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 
-class Actor extends AbstractObject
+class Actor
 {
+    /**
+     * @var string
+     */
+    public $id = "";
+
+    /**
+     * @var string
+     */
+    public $type = "";
 }

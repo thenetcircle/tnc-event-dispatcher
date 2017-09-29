@@ -10,6 +10,15 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 
-class Obj extends AbstractObject
+class Obj
 {
+    /**
+     * @var string
+     */
+    public $type = "";
+
+    /**
+     * @var array
+     */
+    public $context = [];
 }

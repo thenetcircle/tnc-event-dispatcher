@@ -8,16 +8,21 @@ use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Serialization\Normalizer\AbstractNormalizer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\AbstractObject;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Attachment;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Author;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj;
 
 class TNCActivityStreamsNormalizer extends AbstractNormalizer
 {
+    /**
+     * @var null|\TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder
+     */
     protected $activityBuilder = null;
 
     public function __construct()
     {
-        $this->activityBuilder = TNCActivityBuilder::createActivity();
+        $this->activityBuilder = new TNCActivityBuilder();
     }
 
     /**
@@ -80,19 +85,26 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
     }
 
     protected function normalizeActivity(Activity $activity) {
-        $vars = get_object_vars($this);
         $data = [];
 
-        foreach ($vars as $_key => $_value) {
-            if (!empty($_value)) {
-                if (is_object($_value)) {
-                    $data[$_key] = $this->serializer->normalize($_value);
-                }
-                elseif (is_array($_value)) {
-                    $data[$_key] = $_value;
-                }
-                else {
-                    $data[$_key] = (string)$_value;
+        $properties = get_object_vars($activity);
+        foreach ($properties as $key => $value) {
+            if (!empty($value)) {
+                switch(true) {
+                    case is_object($value):
+                        if ($key == 'actor') {
+
+                        }
+                        elseif ($key == 'object') {
+
+                        }
+                        break;
+
+                    case is_array($value):
+                        $data[$key] = $value;
+                        break;
+                    default:
+                        $data[$key] = (string)$value;
                 }
             }
         }
@@ -101,67 +113,22 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
     }
 
     protected function denormalizeActivity(array $data) {
-        $classMapping = [
-          'actor'     => Actor::class,
-          'generator' => Generator::class,
-          'object'    => Obj::class,
-          'provider'  => Provider::class,
-          'target'    => Target::class,
-        ];
+        $activity = new Activity();
 
-        foreach ($data as $_key => $_value) {
-            if (array_key_exists($_key, $classMapping)) {
-                $this->{$_key} = $this->serializer->denormalize($_value, $classMapping[$_key]);
-            }
-            else {
-                $this->{$_key} = $_value;
-            }
-        }
-    }
 
-    protected function normalizeActivityObject(AbstractObject $activityObject) {
-        $vars = get_object_vars($this);
-        $data = [];
-
-        foreach ($vars as $_key => $_value) {
-            if (!empty($_value)) {
-                if ($_key === 'attachments') {
-                    $attachments = [];
-                    foreach ($_value as $_attachment) {
-                        array_push($attachments, $this->serializer->normalize($_attachment));
-                    }
-                    $data[$_key] = $attachments;
-                }
-                elseif (is_object($_value)) {
-                    $data[$_key] = $this->serializer->normalize($_value);
-                }
-                elseif (is_array($_value)) {
-                    $data[$_key] = $_value;
-                }
-                else {
-                    $data[$_key] = (string)$_value;
-                }
+        foreach ($data as $key => $value) {
+            switch (true) {
+                case $key == 'actor':
+                    break;
+                case $key == 'object':
+                    break;
+                case $key == 'context':
+                    break;
+                default:
+                    $activity->{$key} = $value;
             }
         }
 
-        return $data;
-    }
-
-    protected function denormalizeActivityObject(array $data) {
-        foreach ($data as $_key => $_value) {
-            if ($_key === 'attachments') {
-                $attachments = [];
-                foreach ($_value as $_attachment) {
-                    array_push($attachments, $this->serializer->denormalize($_attachment, Attachment::class));
-                }
-                $this->attachments = $attachments;
-            }
-            elseif ($_key === 'author') {
-                $this->author = $this->serializer->denormalize($_value, Author::class);
-            }
-            else {
-                $this->{$_key} = $_value;
-            }
-        }
+        return $activity;
     }
 }
