@@ -3,7 +3,7 @@
 namespace TNC\EventDispatcher\Event\Internal;
 
 use TNC\EventDispatcher\Dispatcher;
-use TNC\EventDispatcher\Interfaces\SerializableEvent;
+use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 
 abstract class InternalEventProducer
 {
@@ -21,10 +21,10 @@ abstract class InternalEventProducer
     }
 
     /**
-     * @param string                                                 $name
-     * @param \TNC\EventDispatcher\Interfaces\SerializableEvent|null $event
+     * @param string                                                       $name
+     * @param \TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent|null $event
      */
-    protected function dispatchInternalEvent($name, SerializableEvent $event = null)
+    protected function dispatchInternalEvent($name, TNCActivityStreamsEvent $event = null)
     {
         if ($this->internalEventDispatcher) {
             try {

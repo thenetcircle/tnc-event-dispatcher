@@ -8,11 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Utils\ActivityStreams;
-
-use TNC\EventDispatcher\Interfaces\Serializer;
-use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Denormalizable;
-use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Normalizable;
+namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 
 
 /**
@@ -27,7 +23,7 @@ use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Normalizable;
  *
  * @author  Service Team
  */
-class Activity implements Normalizable, Denormalizable
+class Activity
 {
     /**
      * @var Actor
@@ -112,7 +108,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Actor
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor
      */
     public function getActor()
     {
@@ -120,7 +116,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Actor $actor
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor $actor
      *
      * @return $this
      */
@@ -152,7 +148,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Generator
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Generator
      */
     public function getGenerator()
     {
@@ -160,7 +156,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Generator $generator
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Generator $generator
      *
      * @return $this
      */
@@ -192,7 +188,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Obj
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj
      */
     public function getObject()
     {
@@ -200,7 +196,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Obj $object
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj $object
      *
      * @return $this
      */
@@ -232,7 +228,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Provider
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Provider
      */
     public function getProvider()
     {
@@ -240,7 +236,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Provider $provider
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Provider $provider
      *
      * @return $this
      */
@@ -252,7 +248,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Target
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Target
      */
     public function getTarget()
     {
@@ -260,7 +256,7 @@ class Activity implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Target $target
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Target $target
      *
      * @return $this
      */
@@ -405,53 +401,5 @@ class Activity implements Normalizable, Denormalizable
     public function getVersion()
     {
         return $this->version;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function normalize(\TNC\EventDispatcher\Interfaces\Serializer $serializer)
-    {
-        $vars = get_object_vars($this);
-        $data = [];
-
-        foreach ($vars as $_key => $_value) {
-            if (!empty($_value)) {
-                if (is_object($_value)) {
-                    $data[$_key] = $serializer->normalize($_value);
-                }
-                elseif (is_array($_value)) {
-                    $data[$_key] = $_value;
-                }
-                else {
-                    $data[$_key] = (string)$_value;
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function denormalize(\TNC\EventDispatcher\Interfaces\Serializer $serializer, array $data)
-    {
-        $classMapping = [
-            'actor'     => Actor::class,
-            'generator' => Generator::class,
-            'object'    => Obj::class,
-            'provider'  => Provider::class,
-            'target'    => Target::class,
-        ];
-
-        foreach ($data as $_key => $_value) {
-            if (array_key_exists($_key, $classMapping)) {
-                $this->{$_key} = $serializer->denormalize($_value, $classMapping[$_key]);
-            }
-            else {
-                $this->{$_key} = $_value;
-            }
-        }
     }
 }

@@ -7,7 +7,7 @@ use TNC\EventDispatcher\Event\DefaultEvent;
 use TNC\EventDispatcher\Interfaces\Backend;
 use TNC\EventDispatcher\Interfaces\ChannelResolver;
 use TNC\EventDispatcher\ChannelDetective\SimpleChannelDetective;
-use TNC\EventDispatcher\Interfaces\SerializableEvent;
+use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Pipeline;
 use TNC\EventDispatcher\Interfaces\Serializer;
 use TNC\EventDispatcher\Event\EventWrapper;

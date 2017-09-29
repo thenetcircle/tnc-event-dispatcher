@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class UnserializeFailedException extends \Exception
+class UnformatException extends \Exception
 {
 }

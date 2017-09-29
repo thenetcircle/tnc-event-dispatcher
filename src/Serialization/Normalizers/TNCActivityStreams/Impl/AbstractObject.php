@@ -8,13 +8,9 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Utils\ActivityStreams;
+namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 
-use TNC\EventDispatcher\Interfaces\Serializer;
-use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Denormalizable;
-use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Normalizable;
-
-abstract class AbstractObject implements Normalizable, Denormalizable
+abstract class AbstractObject
 {
     /**
      * @var Attachment[]
@@ -89,7 +85,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Attachment[]
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Attachment[]
      */
     public function getAttachments()
     {
@@ -97,7 +93,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Attachment[] $attachments
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Attachment[] $attachments
      *
      * @return $this
      */
@@ -109,7 +105,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Attachment $attachment
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Attachment $attachment
      *
      * @return $this
      */
@@ -121,7 +117,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
 
     /**
-     * @return \TNC\EventDispatcher\Utils\ActivityStreams\Author
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Author
      */
     public function getAuthor()
     {
@@ -129,7 +125,7 @@ abstract class AbstractObject implements Normalizable, Denormalizable
     }
     
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Author $author
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Author $author
      *
      * @return $this
      */
@@ -362,59 +358,5 @@ abstract class AbstractObject implements Normalizable, Denormalizable
         $this->url = $url;
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function normalize(\TNC\EventDispatcher\Interfaces\Serializer $serializer)
-    {
-        $vars = get_object_vars($this);
-        $data = [];
-
-        foreach ($vars as $_key => $_value) {
-            if (!empty($_value)) {
-                if ($_key === 'attachments') {
-                    $attachments = [];
-                    foreach ($_value as $_attachment) {
-                        array_push($attachments, $serializer->normalize($_attachment));
-                    }
-                    $data[$_key] = $attachments;
-                }
-                elseif (is_object($_value)) {
-                    $data[$_key] = $serializer->normalize($_value);
-                }
-                elseif (is_array($_value)) {
-                    $data[$_key] = $_value;
-                }
-                else {
-                    $data[$_key] = (string)$_value;
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function denormalize(\TNC\EventDispatcher\Interfaces\Serializer $serializer, array $data)
-    {
-        foreach ($data as $_key => $_value) {
-            if ($_key === 'attachments') {
-                $attachments = [];
-                foreach ($_value as $_attachment) {
-                    array_push($attachments, $serializer->denormalize($_attachment, Attachment::class));
-                }
-                $this->attachments = $attachments;
-            }
-            elseif ($_key === 'author') {
-                $this->author = $serializer->denormalize($_value, Author::class);
-            }
-            else {
-                $this->{$_key} = $_value;
-            }
-        }
     }
 }

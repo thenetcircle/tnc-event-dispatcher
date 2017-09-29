@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Utils\ActivityStreams;
+namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 
 
-class ActivityBuilder
+class TNCActivityBuilder
 {
     /**
      * @var Activity
@@ -29,7 +29,7 @@ class ActivityBuilder
     }
 
     /**
-     * @param \TNC\EventDispatcher\Utils\ActivityStreams\Activity $activity
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity
      *
      * @return static
      */

@@ -8,8 +8,8 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Utils\ActivityStreams;
+namespace TNC\EventDispatcher\Exception;
 
-class Generator extends AbstractObject
+class NormalizeException extends \Exception
 {
 }

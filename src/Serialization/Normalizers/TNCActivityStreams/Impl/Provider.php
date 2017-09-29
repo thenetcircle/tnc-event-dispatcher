@@ -8,8 +8,8 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Exception;
+namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 
-class UnformattableException extends \Exception
+class Provider extends AbstractObject
 {
 }

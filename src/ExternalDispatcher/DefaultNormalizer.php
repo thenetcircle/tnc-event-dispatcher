@@ -7,21 +7,8 @@ use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Normalizable;
 use TNC\EventDispatcher\Serialization\Normalizer\Interfaces\Denormalizable;
 use \TNC\EventDispatcher\Interfaces\Serializer;
 
-class CustomNormalizerInterface implements NormalizerInterface
+class DefaultNormalizer extends AbstractNormalizer
 {
-    /**
-     * @var \TNC\EventDispatcher\Interfaces\Serializer
-     */
-    protected $serializer;
-
-    /**
-     * @param \TNC\EventDispatcher\Interfaces\Serializer $serializer
-     */
-    public function setSerializer(Serializer $serializer)
-    {
-        $this->serializer = $serializer;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -34,15 +21,15 @@ class CustomNormalizerInterface implements NormalizerInterface
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class)
+    public function denormalize($data, $className)
     {
-        if (!class_exists($class)) {
-            throw new InvalidArgumentException(sprintf('Class %s does not existed.', $class));
+        if (!class_exists($className)) {
+            throw new InvalidArgumentException(sprintf('Class %s does not existed.', $className));
         }
 
-        $reflectionClass = new \ReflectionClass($class);
+        $reflectionClass = new \ReflectionClass($className);
         if (!$reflectionClass->isSubclassOf(Denormalizable::class)) {
-            throw new InvalidArgumentException(sprintf('Class %s not normalizable.', $class));
+            throw new InvalidArgumentException(sprintf('Class %s not normalizable.', $className));
         }
 
         /** @var Denormalizable $object */
@@ -62,12 +49,12 @@ class CustomNormalizerInterface implements NormalizerInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $class)
+    public function supportsDenormalization($data, $className)
     {
-        if (!class_exists($class)) {
+        if (!class_exists($className)) {
             return false;
         }
 
-        return is_subclass_of($class, Denormalizable::class);
+        return is_subclass_of($className, Denormalizable::class);
     }
 }

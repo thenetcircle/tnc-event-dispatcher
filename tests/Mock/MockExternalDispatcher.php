@@ -2,7 +2,7 @@
 
 namespace TNC\EventDispatcher\Tests\Mock;
 
-use TNC\EventDispatcher\Interfaces\SerializableEvent;
+use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Interfaces\ExternalDispatcher;
 
 class MockExternalDispatcher implements ExternalDispatcher
@@ -10,7 +10,7 @@ class MockExternalDispatcher implements ExternalDispatcher
     /**
      * {@inheritdoc}
      */
-    public function syncDispatch($eventName, SerializableEvent $event = null)
+    public function syncDispatch($eventName, TNCActivityStreamsEvent $event = null)
     {
         return $event;
     }

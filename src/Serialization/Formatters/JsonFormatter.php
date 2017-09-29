@@ -2,9 +2,9 @@
 
 namespace TNC\EventDispatcher\Serialization\Encoder;
 
-use TNC\EventDispatcher\Exception\UnformattableException;
+use TNC\EventDispatcher\Exception\UnformatException;
 
-class JsonFormatter implements FormatterInterface
+class JsonFormatter implements Formatter
 {
     /**
      * {@inheritdoc}
@@ -20,7 +20,7 @@ class JsonFormatter implements FormatterInterface
     public function unformat($formattedData)
     {
         if (null === ($data = json_decode($formattedData, true))) {
-            throw new UnformattableException(sprintf('String %s can not be decoded.', $formattedData));
+            throw new UnformatException(sprintf('String %s can not be decoded.', $formattedData));
         }
 
         return $data;

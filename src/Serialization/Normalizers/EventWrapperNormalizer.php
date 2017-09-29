@@ -2,19 +2,12 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizer;
 
-use TNC\EventDispatcher\Interfaces\SerializableEvent;
-use TNC\EventDispatcher\Event\DefaultEvent;
+use TNC\EventDispatcher\Exception\DenormalizeException;
 use TNC\EventDispatcher\Event\EventWrapper;
-use \TNC\EventDispatcher\Interfaces\Serializer;
 
-class EventWrapperNormalizerInterface implements NormalizerInterface
+class EventWrapperNormalizer extends AbstractNormalizer
 {
     const EXTRA_FIELD = 'extra';
-
-    /**
-     * @var \TNC\EventDispatcher\Interfaces\Serializer
-     */
-    protected $serializer;
 
     /**
      * @var string
@@ -27,14 +20,6 @@ class EventWrapperNormalizerInterface implements NormalizerInterface
     }
 
     /**
-     * @param \TNC\EventDispatcher\Interfaces\Serializer $serializer
-     */
-    public function setSerializer(Serializer $serializer)
-    {
-        $this->serializer = $serializer;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function normalize($object)
@@ -43,7 +28,7 @@ class EventWrapperNormalizerInterface implements NormalizerInterface
         $data                             = $this->serializer->normalize($object->getEvent());
         $data[$this->extraField]['name']  = $object->getName();
         $data[$this->extraField]['mode']  = $object->getMode();
-        $data[$this->extraField]['class'] = $object->getClass();
+        $data[$this->extraField]['class'] = $object->getClassName();
 
         return $data;
     }
@@ -51,17 +36,20 @@ class EventWrapperNormalizerInterface implements NormalizerInterface
     /**
      * {@inheritdoc}
      */
-    public function denormalize($data, $class)
+    public function denormalize($data, $className)
     {
-        $class      = $data[$this->extraField]['class'];
-        $eventClass = (!empty($class) && class_exists($class)) ? $class : DefaultEvent::class;
+        $className  = $data[$this->extraField]['class'];
+
+        if (empty($className) || !class_exists($className)) {
+            throw new DenormalizeException(sprintf("Class %s does not exists.", $className));
+        }
 
         $name      = $data[$this->extraField]['name'];
         $mode      = $data[$this->extraField]['mode'];
         unset($data[$this->extraField]);
 
-        /** @var SerializableEvent $event */
-        $event      = $this->serializer->denormalize($data, $eventClass);
+        /** @var \TNC\EventDispatcher\Interfaces\TransportableEvent $event */
+        $event     = $this->serializer->denormalize($data, $className);
 
         return new EventWrapper($name, $event, $mode);
     }
@@ -77,12 +65,12 @@ class EventWrapperNormalizerInterface implements NormalizerInterface
     /**
      * {@inheritdoc}
      */
-    public function supportsDenormalization($data, $class)
+    public function supportsDenormalization($data, $className)
     {
-        if (!class_exists($class)) {
+        if (!class_exists($className)) {
             return false;
         }
 
-        return $class == EventWrapper::class;
+        return $className == EventWrapper::class;
     }
 }

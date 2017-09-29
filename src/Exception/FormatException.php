@@ -8,8 +8,8 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Utils\ActivityStreams;
+namespace TNC\EventDispatcher\Exception;
 
-class Author extends AbstractObject
+class FormatException extends \Exception
 {
 }

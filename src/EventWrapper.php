@@ -2,7 +2,8 @@
 
 namespace TNC\EventDispatcher\Event;
 
-use TNC\EventDispatcher\Interfaces\SerializableEvent;
+use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
+use TNC\EventDispatcher\Interfaces\TransportableEvent;
 
 /**
  * Class EventWrapper
@@ -17,7 +18,7 @@ class EventWrapper
     protected $name;
 
     /**
-     * @var \TNC\EventDispatcher\Interfaces\SerializableEvent
+     * @var \TNC\EventDispatcher\Interfaces\TransportableEvent
      */
     protected $event;
 
@@ -29,26 +30,20 @@ class EventWrapper
     /**
      * @var string
      */
-    protected $class;
-
-    /**
-     * @var string
-     */
-    protected $transportToken;
+    protected $className;
 
 
     /**
-     * @param string            $name
-     * @param SerializableEvent $event
-     * @param string            $mode
+     * @param string                                             $name
+     * @param \TNC\EventDispatcher\Interfaces\TransportableEvent $event
+     * @param string                                             $mode
      */
-    public function __construct($name, SerializableEvent $event, $mode)
+    public function __construct($name, TransportableEvent $event, $mode)
     {
         $this->name  = $name;
         $this->event = $event;
         $this->mode  = $mode;
-        $this->class = get_class($event);
-        $this->transportToken = $event->getTransportToken();
+        $this->className = get_class($event);
     }
 
     /**
@@ -60,7 +55,7 @@ class EventWrapper
     }
 
     /**
-     * @return SerializableEvent
+     * @return \TNC\EventDispatcher\Interfaces\TransportableEvent
      */
     public function getEvent()
     {
@@ -78,16 +73,8 @@ class EventWrapper
     /**
      * @return string
      */
-    public function getClass()
+    public function getClassName()
     {
-        return $this->class;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTransportToken()
-    {
-        return !empty($this->transportToken) ? $this->transportToken : mt_rand(1, 999999);
+        return $this->className;
     }
 }

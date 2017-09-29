@@ -13,7 +13,7 @@ namespace TNC\EventDispatcher;
 use TNC\EventDispatcher\Event\DefaultEvent;
 use TNC\EventDispatcher\Event\EventWrapper;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Interfaces\SerializableEvent;
+use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Interfaces\ExternalDispatcher;
 
 class Dispatcher
@@ -31,18 +31,18 @@ class Dispatcher
      */
     private $pipeline;
     /**
-     * @var SerializableEvent
+     * @var TNCActivityStreamsEvent
      */
     private $defaultEvent;
 
     /**
      * Dispatcher constructor.
      *
-     * @param ExternalDispatcher $externalDispatcher
-     * @param Pipeline           $pipeline
-     * @param SerializableEvent  $defaultEvent
+     * @param ExternalDispatcher      $externalDispatcher
+     * @param Pipeline                $pipeline
+     * @param TNCActivityStreamsEvent $defaultEvent
      */
-    public function __construct(ExternalDispatcher $externalDispatcher, Pipeline $pipeline, SerializableEvent $defaultEvent = null)
+    public function __construct(ExternalDispatcher $externalDispatcher, Pipeline $pipeline, TNCActivityStreamsEvent $defaultEvent = null)
     {
         $this->externalDispatcher = $externalDispatcher;
         $this->pipeline           = $pipeline;
@@ -53,17 +53,17 @@ class Dispatcher
     /**
      * Dispatches an event to all listeners by synchronous or asynchronous way
      *
-     * @param string                 $name
-     * @param SerializableEvent|null $event
-     * @param string                 $mode
+     * @param string                       $name
+     * @param TNCActivityStreamsEvent|null $event
+     * @param string                       $mode
      *
-     * @return SerializableEvent
+     * @return TNCActivityStreamsEvent
      *
      * @throws Exception\InvalidArgumentException
      * @throws Exception\FatalException
      * @throws Exception\TimeoutException
      */
-    public function dispatch($name, SerializableEvent $event = null, $mode = self::MODE_SYNC_PLUS)
+    public function dispatch($name, TNCActivityStreamsEvent $event = null, $mode = self::MODE_SYNC_PLUS)
     {
         if ($event === null) {
             $event = $this->defaultEvent;

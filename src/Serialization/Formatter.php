@@ -2,25 +2,30 @@
 
 namespace TNC\EventDispatcher\Serialization\Encoder;
 
-use TNC\EventDispatcher\Exception\UnformattableException;
+use TNC\EventDispatcher\Exception\FormatException;
+use TNC\EventDispatcher\Exception\UnformatException;
 
-interface FormatterInterface
+interface Formatter
 {
     /**
+     * Formats a semi-result
+     *
      * @param array $data
      *
      * @return string formatted data
      *
-     * @throws UnformattableException
+     * @throws FormatException
      */
     public function format($data);
 
     /**
+     * Unformats a result to be a semi-result
+     *
      * @param string $formattedData
      *
      * @return array data
      *
-     * @throws UnformattableException
+     * @throws UnformatException
      */
     public function unformat($formattedData);
 }

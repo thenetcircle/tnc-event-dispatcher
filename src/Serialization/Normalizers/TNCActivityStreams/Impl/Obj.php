@@ -8,8 +8,8 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Utils\ActivityStreams;
+namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 
-class Actor extends AbstractObject
+class Obj extends AbstractObject
 {
 }

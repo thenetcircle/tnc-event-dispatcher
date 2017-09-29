@@ -1,5 +1,5 @@
 <?php
 
-namespace TNC\EventDispatcher\Exception;
+namespace TNC\EventDispatcher\Interfaces;
 
 interface TransportableEvent {}

@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class SerializeFailedException extends \Exception
+class DenormalizeException extends \Exception
 {
 }
