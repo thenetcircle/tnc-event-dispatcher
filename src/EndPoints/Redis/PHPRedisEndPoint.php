@@ -12,7 +12,9 @@ namespace TNC\EventDispatcher\EndPoints\Redis;
 
 use TNC\EventDispatcher\EndPoints\AbstractEndPoint;
 use TNC\EventDispatcher\Event\Internal\DeliverySerializableEvent;
-use TNC\EventDispatcher\Exception;
+use TNC\EventDispatcher\WrappedEvent;
+use TNC\EventDispatcher\Exception\InitializeException;
+use TNC\EventDispatcher\Exception\TimeoutException;
 
 class PHPRedisEndPoint extends AbstractEndPoint
 {
@@ -22,25 +24,29 @@ class PHPRedisEndPoint extends AbstractEndPoint
     protected $redisManager = null;
 
     /**
+     * @var \TNC\EventDispatcher\EndPoints\Redis\ChannelResolver
+     */
+    protected $channelResolver = null;
+
+    /**
      * PHPRedisBackend constructor.
      *
+     * @param \TNC\EventDispatcher\EndPoints\Redis\ChannelResolver $channelResolver
      * @param string $host can be a host, or the path to a unix domain
      * @param int $port
      * @param int $db
-     * @param bool $persistent
      * @param float $timeout value in seconds (optional, default is 0 meaning unlimited)
+     * @param bool $persistent
      *
-     * @throws \TNC\EventDispatcher\Exception\FatalException
+     * @throws \TNC\EventDispatcher\Exception\InitializeException
      */
     public function __construct(
-        $host,
-        $port = 6379,
-        $db = null,
-        $timeout = 0,
-        $persistent = false
+        ChannelResolver $channelResolver,
+        $host, $port = 6379,
+        $db = null, $timeout = 0, $persistent = false
     ) {
         if (!class_exists('\Redis')) {
-            throw new Exception\FatalException(
+            throw new InitializeException(
                 'Dependency missed, php-redis(https://github.com/phpredis/phpredis).'
             );
         }
@@ -54,7 +60,7 @@ class PHPRedisEndPoint extends AbstractEndPoint
         }
 
         if (!$connected) {
-            throw new Exception\FatalException(
+            throw new InitializeException(
                 'The redis server can not be reached.'
             );
         }
@@ -64,42 +70,26 @@ class PHPRedisEndPoint extends AbstractEndPoint
         }
 
         $this->redisManager = $redisManager;
+        $this->channelResolver = $channelResolver;
     }
 
     /**
-     * Push a message to the specific channel of a pipeline
+     * Sends a new message
      *
-     * @param array       $channels
-     * @param string      $message
-     * @param string|null $key
+     * @param string                            $message
+     * @param \TNC\EventDispatcher\WrappedEvent $event
      *
-     * @throws Exception\FatalException
-     * @throws Exception\TimeoutException
+     * @throws TimeoutException
      */
-    public function send($channels, $message, $key = null)
+    public function send($message, WrappedEvent $event)
     {
-        foreach($channels as $_channel) {
-            $received = $this->redisManager->publish($_channel, $message);
-            if ($received <= 0) {
-                $this->dispatchInternalEvent(
-                    DeliverySerializableEvent::FAILED,
-                    new DeliverySerializableEvent($_channel, $message, $key, 0)
-                );
-            }
+        $channel = $this->channelResolver->getChannel($event);
+        $received = $this->redisManager->publish($channel, $message);
+        if ($received <= 0) {
+            $this->dispatchInternalEvent(
+                DeliverySerializableEvent::FAILED,
+                new DeliverySerializableEvent($channel, $message, $key, 0)
+            );
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function pop($channels, $timeout)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ack($receipt)
-    {
     }
 }

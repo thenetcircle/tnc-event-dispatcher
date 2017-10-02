@@ -10,9 +10,21 @@
 
 namespace TNC\EventDispatcher\EndPoints;
 
+use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
-use TNC\EventDispatcher\Event\Internal\InternalEventProducer;
 
-abstract class AbstractEndPoint extends InternalEventProducer implements EndPoint
+abstract class AbstractEndPoint implements EndPoint
 {
+    /**
+     * @var \TNC\EventDispatcher\Dispatcher
+     */
+    protected $dispatcher;
+
+    /**
+     * @param \TNC\EventDispatcher\Dispatcher $dispatcher
+     */
+    public function setDispatcher(Dispatcher $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
 }

@@ -1,110 +1,102 @@
 <?php
 
-/*
- * This file is part of the Tnc package.
- *
- * (c) Service Team
- *
- * file that was distributed with this source code.
- */
-
 namespace TNC\EventDispatcher;
 
-use TNC\EventDispatcher\Event\DefaultEvent;
-use TNC\EventDispatcher\Event\EventWrapper;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use TNC\EventDispatcher\Exception\NormalizeException;
+use TNC\EventDispatcher\Exception\TimeoutException;
+use TNC\EventDispatcher\Interfaces\EndPoint;
+use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
-use TNC\EventDispatcher\Interfaces\ExternalDispatcher;
 
-class Dispatcher
+class Dispatcher extends EventDispatcher
 {
-    CONST MODE_SYNC      = 'sync';
-    CONST MODE_SYNC_PLUS = 'sync_plus';
-    CONST MODE_ASYNC     = 'async';
+    /**
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
-     * @var ExternalDispatcher
+     * @var EndPoint
      */
-    private $externalDispatcher;
-    /**
-     * @var Pipeline
-     */
-    private $pipeline;
-    /**
-     * @var TNCActivityStreamsEvent
-     */
-    private $defaultEvent;
+    private $endPoint;
 
     /**
-     * Dispatcher constructor.
-     *
-     * @param ExternalDispatcher      $externalDispatcher
-     * @param Pipeline                $pipeline
-     * @param TNCActivityStreamsEvent $defaultEvent
+     * @param \TNC\EventDispatcher\Serializer          $serializer
+     * @param \TNC\EventDispatcher\Interfaces\EndPoint $endPoint
      */
-    public function __construct(ExternalDispatcher $externalDispatcher, Pipeline $pipeline, TNCActivityStreamsEvent $defaultEvent = null)
+    public function __construct(Serializer $serializer, EndPoint $endPoint)
     {
-        $this->externalDispatcher = $externalDispatcher;
-        $this->pipeline           = $pipeline;
-        $this->pipeline->setInternalEventDispatcher($this);
-        $this->defaultEvent       = $defaultEvent === null ? new DefaultEvent() : $defaultEvent;
+        $this->serializer = $serializer;
+        $this->endPoint = $endPoint;
+        $this->endPoint->setDispatcher($this);
     }
 
     /**
-     * Dispatches an event to all listeners by synchronous or asynchronous way
+     * Dispatches an event to all listeners.
+     * If it's a TransportableEvent and with non SYNC transport mode,
+     * It will be send to predefined EndPoint.
      *
-     * @param string                       $name
-     * @param TNCActivityStreamsEvent|null $event
-     * @param string                       $mode
+     * @param string $eventName The name of the event to dispatch. The name of
+     *                          the event is the name of the method that is
+     *                          invoked on listeners.
+     * @param Event  $event     The event to pass to the event handlers/listeners
+     *                          If not supplied, an empty Event instance is created.
      *
-     * @return TNCActivityStreamsEvent
      *
-     * @throws Exception\InvalidArgumentException
-     * @throws Exception\FatalException
-     * @throws Exception\TimeoutException
+     * @return Event
+     *
+     * @throws InvalidArgumentException
      */
-    public function dispatch($name, TNCActivityStreamsEvent $event = null, $mode = self::MODE_SYNC_PLUS)
+    public function dispatch($eventName, Event $event = null)
     {
-        if ($event === null) {
-            $event = $this->defaultEvent;
-        }
+        if (
+            $event !== null &&
+            ($event instanceof TransportableEvent) &&
+            $event->getTransportMode() !== TransportableEvent::TRANSPORT_MODE_SYNC
+        ) {
 
-        switch ($mode) {
+            switch ($event->getTransportMode()) {
 
-            case self::MODE_SYNC:
-                $this->externalDispatcher->syncDispatch($name, $event);
-                break;
+                case TransportableEvent::TRANSPORT_MODE_ASYNC:
+                    $this->doAsyncDispatch($eventName, $event);
+                    return $event;
 
-            case self::MODE_ASYNC:
-                $this->pipeline->push(new EventWrapper($name, $event, $mode));
-                break;
+                case TransportableEvent::TRANSPORT_MODE_SYNC_PLUS:
+                    $this->doAsyncDispatch($eventName, $event);
+                    return parent::dispatch($eventName, $event);
 
-            case self::MODE_SYNC_PLUS:
-                $this->externalDispatcher->syncDispatch($name, $event);
-                $this->pipeline->push(new EventWrapper($name, $event, $mode));
-                break;
+                default:
+                    throw new InvalidArgumentException('Unsupported transport mode.');
 
-            default:
-                throw new InvalidArgumentException('{Dispatcher} Unsupported dispatching mode.');
+            }
 
         }
-
-        return $event;
+        else {
+            return parent::dispatch($eventName, $event);
+        }
     }
 
     /**
-     * @return ExternalDispatcher
+     * Transports a TransportableEvent to the EndPoint
+     *
+     * @param string                                             $eventName
+     * @param \TNC\EventDispatcher\Interfaces\TransportableEvent $event
      */
-    public function getExternalDispatcher()
+    public function doAsyncDispatch($eventName, TransportableEvent $event)
     {
-        return $this->externalDispatcher;
-    }
+        $wrappedEvent = new WrappedEvent($eventName, $event, $event->getTransportMode());
+        try {
+            $message = $this->serializer->serialize($wrappedEvent);
+            $this->endPoint->send($message, $wrappedEvent);
+        }
+        // TODO: spearate serializer exception and endpoint exception
+        catch (NormalizeException $e) {
 
-    /**
-     * @return Pipeline
-     */
-    public function getPipeline()
-    {
-        return $this->pipeline;
+        }
+        catch (TimeoutException $e) {
+
+        }
     }
 }

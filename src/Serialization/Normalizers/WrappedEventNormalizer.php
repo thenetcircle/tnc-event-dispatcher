@@ -3,9 +3,9 @@
 namespace TNC\EventDispatcher\Serialization\Normalizer;
 
 use TNC\EventDispatcher\Exception\DenormalizeException;
-use TNC\EventDispatcher\Event\EventWrapper;
+use TNC\EventDispatcher\WrappedEvent;
 
-class EventWrapperNormalizer extends AbstractNormalizer
+class WrappedEventNormalizer extends AbstractNormalizer
 {
     const EXTRA_FIELD = 'extra';
 
@@ -24,10 +24,10 @@ class EventWrapperNormalizer extends AbstractNormalizer
      */
     public function normalize($object)
     {
-        /** @var EventWrapper $object */
+        /** @var WrappedEvent $object */
         $data                             = $this->serializer->normalize($object->getEvent());
-        $data[$this->extraField]['name']  = $object->getName();
-        $data[$this->extraField]['mode']  = $object->getMode();
+        $data[$this->extraField]['name']  = $object->getEventName();
+        $data[$this->extraField]['mode']  = $object->getTransportMode();
         $data[$this->extraField]['class'] = $object->getClassName();
 
         return $data;
@@ -51,7 +51,7 @@ class EventWrapperNormalizer extends AbstractNormalizer
         /** @var \TNC\EventDispatcher\Interfaces\TransportableEvent $event */
         $event     = $this->serializer->denormalize($data, $className);
 
-        return new EventWrapper($name, $event, $mode);
+        return new WrappedEvent($name, $event, $mode);
     }
 
     /**
@@ -59,7 +59,7 @@ class EventWrapperNormalizer extends AbstractNormalizer
      */
     public function supportsNormalization($object)
     {
-        return ($object instanceof EventWrapper);
+        return ($object instanceof WrappedEvent);
     }
 
     /**
@@ -71,6 +71,6 @@ class EventWrapperNormalizer extends AbstractNormalizer
             return false;
         }
 
-        return $className == EventWrapper::class;
+        return $className == WrappedEvent::class;
     }
 }

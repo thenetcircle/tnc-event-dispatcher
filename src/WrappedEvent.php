@@ -10,12 +10,12 @@ use TNC\EventDispatcher\Interfaces\TransportableEvent;
  *
  * @package TNC\EventDispatcher
  */
-class EventWrapper
+class WrappedEvent
 {
     /**
      * @var string
      */
-    protected $name;
+    protected $eventName;
 
     /**
      * @var \TNC\EventDispatcher\Interfaces\TransportableEvent
@@ -25,7 +25,7 @@ class EventWrapper
     /**
      * @var string
      */
-    protected $mode;
+    protected $transportMode;
 
     /**
      * @var string
@@ -34,24 +34,24 @@ class EventWrapper
 
 
     /**
-     * @param string                                             $name
+     * @param string                                             $eventName
      * @param \TNC\EventDispatcher\Interfaces\TransportableEvent $event
-     * @param string                                             $mode
+     * @param string                                             $transportMode
      */
-    public function __construct($name, TransportableEvent $event, $mode)
+    public function __construct($eventName, TransportableEvent $event, $transportMode)
     {
-        $this->name  = $name;
-        $this->event = $event;
-        $this->mode  = $mode;
-        $this->className = get_class($event);
+        $this->eventName     = $eventName;
+        $this->event         = $event;
+        $this->transportMode = $transportMode;
+        $this->className     = get_class($event);
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getEventName()
     {
-        return $this->name;
+        return $this->eventName;
     }
 
     /**
@@ -65,9 +65,9 @@ class EventWrapper
     /**
      * @return string
      */
-    public function getMode()
+    public function getTransportMode()
     {
-        return $this->mode;
+        return $this->transportMode;
     }
 
     /**

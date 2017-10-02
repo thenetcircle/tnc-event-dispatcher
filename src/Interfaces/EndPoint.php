@@ -10,7 +10,8 @@
 
 namespace TNC\EventDispatcher\Interfaces;
 
-use TNC\EventDispatcher\EventWrapper;
+use TNC\EventDispatcher\Dispatcher;
+use TNC\EventDispatcher\WrappedEvent;
 use TNC\EventDispatcher\Exception\TimeoutException;
 
 interface EndPoint
@@ -18,10 +19,17 @@ interface EndPoint
     /**
      * Sends a new message
      *
-     * @param \TNC\EventDispatcher\EventWrapper $event
      * @param string                            $message
+     * @param \TNC\EventDispatcher\WrappedEvent $event
      *
      * @throws TimeoutException
      */
-    public function send(EventWrapper $event, $message);
+    public function send($message, WrappedEvent $event);
+
+    /**
+     * Sets current Dispatcher instance
+     *
+     * @param \TNC\EventDispatcher\Dispatcher $dispatcher
+     */
+    public function setDispatcher(Dispatcher $dispatcher);
 }

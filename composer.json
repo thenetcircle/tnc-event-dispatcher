@@ -3,7 +3,8 @@
   "description": "A alternative async EventDispatcher",
   "type": "library",
   "require": {
-    "symfony/event-dispatcher": "~2.3 || ~3.0"
+    "symfony/event-dispatcher": "~2.3 || ~3.0",
+    "guzzlehttp/guzzle": "~6.0"
   },
   "require-dev": {
     "psr/log": "~1.0",
