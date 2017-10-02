@@ -16,13 +16,15 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests\Serializer;
+namespace TNC\EventDispatcher\Tests;
 
 use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;
+use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
+use TNC\EventDispatcher\Serializer;
 
 class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
 {
@@ -113,6 +115,40 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
 
         self::assertEquals(true, $this->normalizer->supportsDenormalization($expectedData, TestEvent::class));
         self::assertEquals($testEvent, $this->normalizer->denormalize($expectedData, TestEvent::class));
+    }
+
+    public function testWithSerializer()
+    {
+        $serializer = new Serializer(
+          [$this->normalizer],
+          new JsonFormatter()
+        );
+
+        $builder = new TNCActivityBuilder();
+        $builder->setId("id");
+        $builder->setVerb("testVerb");
+        $builder->setActor('actorId');
+        $builder->setObject('testObject');
+        $builder->setPublished('testPublished');
+        $activity = $builder->getActivity();
+        $testEvent = new TestEvent($activity);
+
+        $expectedData = json_encode([
+          'version'   => '1.0',
+          'id'        => 'id',
+          'verb'      => 'testVerb',
+          'published' => 'testPublished',
+          'actor'     => [
+            'id'   => 'actorId'
+          ],
+          'object'    => [
+            'type'    => 'testObject'
+          ]
+        ]);
+
+        $data = $serializer->serialize($testEvent);
+        self::assertJson($expectedData, $data);
+        self::assertEquals($testEvent, $serializer->unserialize($expectedData, TestEvent::class));
     }
 
 }
