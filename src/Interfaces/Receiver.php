@@ -11,8 +11,6 @@
 namespace TNC\EventDispatcher\Interfaces;
 
 use TNC\EventDispatcher\Dispatcher;
-use TNC\EventDispatcher\Exception\TimeoutException;
-use TNC\EventDispatcher\Exception\NoDataException;
 
 interface Receiver
 {
@@ -20,23 +18,4 @@ interface Receiver
      * @param \TNC\EventDispatcher\Dispatcher $dispatcher
      */
     public function setDispatcher(Dispatcher $dispatcher);
-
-    /**
-     * Reads next message
-     *
-     * @param int   $timeout milliseconds
-     *
-     * @return array [$message, $receipt]
-     *
-     * @throws TimeoutException
-     * @throws NoDataException
-     */
-    /* public function next($timeout); */
-
-    /**
-     * Acknowledges a message after processed.
-     *
-     * @param mixed $receipt
-     */
-    /* public function ack($receipt); */
 }

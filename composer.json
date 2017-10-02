@@ -3,12 +3,15 @@
   "description": "A alternative async EventDispatcher",
   "type": "library",
   "require": {
-    "symfony/event-dispatcher": "~2.3 || ~3.0",
-    "guzzlehttp/guzzle": "~6.0"
+    "symfony/event-dispatcher": "~2.3 || ~3.0"
   },
   "require-dev": {
     "psr/log": "~1.0",
-    "phpunit/phpunit": "~5.0"
+    "phpunit/phpunit": "~5.0",
+    "guzzlehttp/guzzle": "~6.0"
+  },
+  "suggest": {
+    "guzzlehttp/guzzle": "Supports EventBusEndPoint."
   },
   "autoload": {
     "psr-4": {

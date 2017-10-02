@@ -20,11 +20,9 @@ interface EndPoint
      * Sends a new message
      *
      * @param string                            $message
-     * @param \TNC\EventDispatcher\WrappedEvent $event
-     *
-     * @throws TimeoutException
+     * @param \TNC\EventDispatcher\WrappedEvent $wrappedEvent
      */
-    public function send($message, WrappedEvent $event);
+    public function send($message, WrappedEvent $wrappedEvent);
 
     /**
      * Sets current Dispatcher instance

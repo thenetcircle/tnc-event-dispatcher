@@ -47,7 +47,7 @@ class PHPRedisEndPoint extends AbstractEndPoint
     ) {
         if (!class_exists('\Redis')) {
             throw new InitializeException(
-                'Dependency missed, php-redis(https://github.com/phpredis/phpredis).'
+                'Dependency not found, PHPRedisEndPoint depends on php-redis(https://github.com/phpredis/phpredis).'
             );
         }
 
@@ -77,19 +77,21 @@ class PHPRedisEndPoint extends AbstractEndPoint
      * Sends a new message
      *
      * @param string                            $message
-     * @param \TNC\EventDispatcher\WrappedEvent $event
-     *
-     * @throws TimeoutException
+     * @param \TNC\EventDispatcher\WrappedEvent $wrappedEvent
      */
-    public function send($message, WrappedEvent $event)
+    public function send($message, WrappedEvent $wrappedEvent)
     {
-        $channel = $this->channelResolver->getChannel($event);
+        $channel = $this->channelResolver->getChannel($wrappedEvent);
         $received = $this->redisManager->publish($channel, $message);
         if ($received <= 0) {
-            $this->dispatchInternalEvent(
-                DeliverySerializableEvent::FAILED,
-                new DeliverySerializableEvent($channel, $message, $key, 0)
+            $this->dispatchFailureEvent(
+              $message,
+              $wrappedEvent,
+              new \Exception("No one received the message.")
             );
+        }
+        else {
+            $this->dispatchSuccessEvent($message, $wrappedEvent);
         }
     }
 }

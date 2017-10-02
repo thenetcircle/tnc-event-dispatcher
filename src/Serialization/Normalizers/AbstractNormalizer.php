@@ -9,7 +9,7 @@ abstract class AbstractNormalizer implements Normalizer
     /**
      * @var \TNC\EventDispatcher\Serializer
      */
-    protected $serializer;
+    protected $serializer = null;
 
     /**
      * @param \TNC\EventDispatcher\Serializer $serializer
