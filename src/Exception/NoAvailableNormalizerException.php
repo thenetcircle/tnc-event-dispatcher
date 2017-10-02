@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class NoAvailableNormalizerException extends \Exception
+class NoAvailableNormalizerException extends EventDispatcherException
 {
 }

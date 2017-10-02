@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class NormalizeException extends \Exception
+class NormalizeException extends EventDispatcherException
 {
 }

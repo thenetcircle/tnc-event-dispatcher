@@ -1,6 +1,6 @@
 <?php
 
-namespace TNC\EventDispatcher\Receiver;
+namespace TNC\EventDispatcher\Receivers;
 
 use Psr\Http\Message\RequestInterface;
 

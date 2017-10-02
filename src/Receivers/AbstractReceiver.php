@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Receiver;
+namespace TNC\EventDispatcher\Receivers;
 
 use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\Interfaces\Receiver;

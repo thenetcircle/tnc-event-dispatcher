@@ -1,9 +1,8 @@
 <?php
 
-namespace TNC\EventDispatcher\Serialization\Normalizer;
+namespace TNC\EventDispatcher\Serialization;
 
 use TNC\EventDispatcher\Exception\DenormalizeException;
-use TNC\EventDispatcher\Exception\InvalidArgumentException;
 use TNC\EventDispatcher\Exception\NormalizeException;
 use TNC\EventDispatcher\Serializer;
 

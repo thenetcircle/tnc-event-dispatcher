@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class InitializeException extends \Exception
+class InitializeException extends EventDispatcherException
 {
 }

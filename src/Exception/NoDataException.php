@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class NoDataException extends \Exception
+class NoDataException extends EventDispatcherException
 {
 }

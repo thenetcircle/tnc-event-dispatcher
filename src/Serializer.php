@@ -7,8 +7,7 @@ use TNC\EventDispatcher\Exception\FormatException;
 use TNC\EventDispatcher\Exception\NoAvailableNormalizerException;
 use TNC\EventDispatcher\Exception\NormalizeException;
 use TNC\EventDispatcher\Exception\UnformatException;
-use TNC\EventDispatcher\Serialization\Normalizer\EventDispatcherNormalizer;
-use TNC\EventDispatcher\Serialization\Normalizer\Normalizer;
+use TNC\EventDispatcher\Serialization\Normalizer;
 
 /**
  * AbstractSerializer
@@ -25,8 +24,8 @@ class Serializer
     /**
      * AbstractSerializer constructor.
      *
-     * @param \TNC\EventDispatcher\Serialization\Normalizer\Normalizer[] $supportedNormalizers
-     * @param \TNC\EventDispatcher\Serialization\Encoder\Formatter       $formatter
+     * @param \TNC\EventDispatcher\Serialization\Normalizer[] $supportedNormalizers
+     * @param \TNC\EventDispatcher\Serialization\Formatter       $formatter
      */
     public function __construct(array $supportedNormalizers, $formatter)
     {
@@ -136,7 +135,7 @@ class Serializer
     /**
      * Prepends a new supported Normalizer
      *
-     * @param \TNC\EventDispatcher\Serialization\Normalizer\Normalizer $normalizer
+     * @param \TNC\EventDispatcher\Serialization\Normalizer $normalizer
      *
      * @return $this
      */
@@ -148,7 +147,7 @@ class Serializer
     /**
      * Appends a new supported Normalizer
      *
-     * @param \TNC\EventDispatcher\Serialization\Normalizer\Normalizer $normalizer
+     * @param \TNC\EventDispatcher\Serialization\Normalizer $normalizer
      *
      * @return $this
      */
@@ -159,7 +158,7 @@ class Serializer
 
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizer\Normalizer|null
+     * @return \TNC\EventDispatcher\Serialization\Normalizer|null
      */
     protected function getNormalizer($object)
     {
@@ -176,7 +175,7 @@ class Serializer
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizer\Normalizer|null
+     * @return \TNC\EventDispatcher\Serialization\Normalizer|null
      */
     protected function getDenormalizer($data, $className)
     {

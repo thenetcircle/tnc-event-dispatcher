@@ -11,8 +11,8 @@
 namespace TNC\EventDispatcher\EndPoints;
 
 use TNC\EventDispatcher\Dispatcher;
-use TNC\EventDispatcher\Event\Internal\TransportFailureEvent;
-use TNC\EventDispatcher\Event\Internal\TransportSuccessEvent;
+use TNC\EventDispatcher\Event\InternalEvents\TransportFailureEvent;
+use TNC\EventDispatcher\Event\InternalEvents\TransportSuccessEvent;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\WrappedEvent;
 

@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class InvalidArgumentException extends \Exception
+class InvalidArgumentException extends EventDispatcherException
 {
 }

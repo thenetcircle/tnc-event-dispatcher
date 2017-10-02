@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class FormatException extends \Exception
+class FormatException extends EventDispatcherException
 {
 }

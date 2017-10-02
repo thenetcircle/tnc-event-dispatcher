@@ -1,6 +1,6 @@
 <?php
 
-namespace TNC\EventDispatcher\Serialization\Normalizer;
+namespace TNC\EventDispatcher\Serialization\Normalizers;
 
 use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\Exception\DenormalizeException;

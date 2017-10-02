@@ -1,6 +1,6 @@
 <?php
 
-namespace TNC\EventDispatcher\Serialization\Encoder;
+namespace TNC\EventDispatcher\Serialization;
 
 use TNC\EventDispatcher\Exception\FormatException;
 use TNC\EventDispatcher\Exception\UnformatException;

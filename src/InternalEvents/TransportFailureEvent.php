@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TNC\EventDispatcher\Event\Internal;
+namespace TNC\EventDispatcher\Event\InternalEvents;
 
 use Symfony\Component\EventDispatcher\Event;
 use TNC\EventDispatcher\WrappedEvent;

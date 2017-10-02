@@ -1,7 +1,8 @@
 <?php
 
-namespace TNC\EventDispatcher\Serialization\Normalizer;
+namespace TNC\EventDispatcher\Serialization\Normalizers;
 
+use TNC\EventDispatcher\Serialization\Normalizer;
 use \TNC\EventDispatcher\Serializer;
 
 abstract class AbstractNormalizer implements Normalizer

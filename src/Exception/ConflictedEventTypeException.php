@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class ConflictedEventTypeException extends \Exception
+class ConflictedEventTypeException extends EventDispatcherException
 {
 }

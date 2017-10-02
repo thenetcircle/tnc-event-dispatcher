@@ -1,8 +1,9 @@
 <?php
 
-namespace TNC\EventDispatcher\Serialization\Encoder;
+namespace TNC\EventDispatcher\Serialization\Formatters;
 
 use TNC\EventDispatcher\Exception\UnformatException;
+use TNC\EventDispatcher\Serialization\Formatter;
 
 class JsonFormatter implements Formatter
 {

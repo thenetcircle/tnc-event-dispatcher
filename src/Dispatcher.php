@@ -8,7 +8,7 @@ use TNC\EventDispatcher\Exception\ConflictedEventTypeException;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Serialization\Normalizer\EventDispatcherNormalizer;
+use TNC\EventDispatcher\Serialization\Normalizers\EventDispatcherNormalizer;
 
 class Dispatcher extends EventDispatcher
 {

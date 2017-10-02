@@ -5,13 +5,8 @@ namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 use TNC\EventDispatcher\Exception\DenormalizeException;
 use TNC\EventDispatcher\Exception\NormalizeException;
 use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
-use TNC\EventDispatcher\Serialization\Normalizer\AbstractNormalizer;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\AbstractObject;
+use TNC\EventDispatcher\Serialization\Normalizers\AbstractNormalizer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Attachment;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Author;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj;
 
 class TNCActivityStreamsNormalizer extends AbstractNormalizer
 {
