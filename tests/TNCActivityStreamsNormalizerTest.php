@@ -38,6 +38,11 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
         $this->normalizer = new TNCActivityStreamsNormalizer();
     }
 
+    public function tearDown()
+    {
+        $this->normalizer = null;
+    }
+
     public function testNormalizeAndDenormalize()
     {
         $builder = new TNCActivityBuilder();

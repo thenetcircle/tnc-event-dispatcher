@@ -18,16 +18,35 @@
 
 namespace TNC\EventDispatcher\Tests;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\Tests\AbstractEventDispatcherTest;
+use TNC\EventDispatcher\Exception\ConflictedEventTypeException;
 use TNC\EventDispatcher\Interfaces\EndPoint;
+use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\Serializer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
 use TNC\EventDispatcher\Dispatcher;
-use TNC\EventDispatcher\WrappedEvent;
 
 class DispatcherTest extends AbstractEventDispatcherTest
 {
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
+
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->dispatcher = $this->createEventDispatcher();
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+        $this->dispatcher = null;
+    }
+
     protected function createEventDispatcher()
     {
         $serializer = new Serializer(
@@ -35,24 +54,56 @@ class DispatcherTest extends AbstractEventDispatcherTest
           new JsonFormatter()
         );
 
-        return new Dispatcher($serializer, new EndPointMock());
+        $endPointMock = $this->getMockBuilder(EndPoint::class)->getMock();
+
+        return new Dispatcher($serializer, $endPointMock);
+    }
+
+    // TODO: no type hint Listeners, no parameter Listeners
+    public function testListeningTransportableEvents()
+    {
+        $this->dispatcher->addListener('testEvent1', new CallableClass());
+        self::assertEquals(TestEvent1::class, $this->dispatcher->getTransportableEventClassName('testEvent1'));
+
+        $this->dispatcher->addListener('testEvent2', [new TestEventListener(), 'listeningMethodA']);
+        self::assertEquals(TestEvent2::class, $this->dispatcher->getTransportableEventClassName('testEvent2'));
+
+        $this->dispatcher->addSubscriber(new TestEventSubscriber());
+        self::assertEquals(TestEvent3::class, $this->dispatcher->getTransportableEventClassName('testEvent3'));
+        self::assertEquals(TestEvent4::class, $this->dispatcher->getTransportableEventClassName('testEvent4'));
+
+        $this->expectException(ConflictedEventTypeException::class);
+        $this->dispatcher->addListener('testEvent2', new CallableClass());
     }
 }
 
-class EndPointMock implements EndPoint {
-    /**
-     * {@inheritdoc}
-     */
-    public function send($message, WrappedEvent $wrappedEvent)
+abstract class AbstractTestEvent implements TransportableEvent {
+    public function getTransportMode() { return TransportableEvent::TRANSPORT_MODE_ASYNC; }
+}
+class TestEvent1 extends AbstractTestEvent {}
+class TestEvent2 extends AbstractTestEvent {}
+class TestEvent3 extends AbstractTestEvent {}
+class TestEvent4 extends AbstractTestEvent {}
+
+class CallableClass
+{
+    public function __invoke(TestEvent1 $event) {}
+}
+
+class TestEventListener
+{
+    public function listeningMuethodA(TestEvent2 $event) {}
+}
+class TestEventSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
     {
-        // TODO: Implement send() method.
+        return [
+            'testEvent3' => 'listeningMethod3',
+            'testEvent4' => 'listeningMethod4'
+        ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setDispatcher(Dispatcher $dispatcher)
-    {
-        // TODO: Implement setDispatcher() method.
-    }
+    public function listeningMethod3(TestEvent3 $event) {}
+    public function listeningMethod4(TestEvent4 $event) {}
 }
