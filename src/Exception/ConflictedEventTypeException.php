@@ -10,6 +10,6 @@
 
 namespace TNC\EventDispatcher\Exception;
 
-class TimeoutException extends \Exception
+class ConflictedEventTypeException extends \Exception
 {
 }

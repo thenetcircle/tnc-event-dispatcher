@@ -5,10 +5,7 @@ namespace TNC\EventDispatcher\EndPoints;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
-use TNC\EventDispatcher\Event\Internal\TransportFailureEvent;
-use TNC\EventDispatcher\Event\Internal\TransportSuccessEvent;
 use TNC\EventDispatcher\Exception\InitializeException;
-use TNC\EventDispatcher\Exception\TimeoutException;
 use TNC\EventDispatcher\WrappedEvent;
 
 class EventBusEndPoint extends AbstractEndPoint

@@ -4,11 +4,11 @@ namespace TNC\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use TNC\EventDispatcher\Exception\NormalizeException;
-use TNC\EventDispatcher\Exception\TimeoutException;
+use TNC\EventDispatcher\Exception\ConflictedEventTypeException;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\EventDispatcher\Serialization\Normalizer\EventDispatcherNormalizer;
 
 class Dispatcher extends EventDispatcher
 {
@@ -23,20 +23,27 @@ class Dispatcher extends EventDispatcher
     private $endPoint;
 
     /**
+     * TransportableEvents are being listened
+     *
+     * @var array
+     */
+    private $listeningTransportableEvents = [];
+
+    /**
      * @param \TNC\EventDispatcher\Serializer          $serializer
      * @param \TNC\EventDispatcher\Interfaces\EndPoint $endPoint
      */
     public function __construct(Serializer $serializer, EndPoint $endPoint)
     {
         $this->serializer = $serializer;
+        $this->serializer->prependNormalizer(new EventDispatcherNormalizer($this));
         $this->endPoint = $endPoint;
         $this->endPoint->setDispatcher($this);
     }
 
     /**
      * Dispatches an event to all listeners.
-     * If it's a TransportableEvent and with non SYNC transport mode,
-     * It will be send to predefined EndPoint.
+     * A TransportableEvent with non SYNC transport mode will be send to predefined EndPoint.
      *
      * @param string $eventName The name of the event to dispatch. The name of
      *                          the event is the name of the method that is
@@ -79,24 +86,67 @@ class Dispatcher extends EventDispatcher
     }
 
     /**
+     * Dispatches a async received message
+     *
+     * @param string $message
+     */
+    public function dispatchMessage($message) {
+        /** @var WrappedEvent $wrappedEvent */
+        $wrappedEvent = $this->serializer->denormalize($message, WrappedEvent::class);
+        if ($wrappedEvent->getTransportMode() == TransportableEvent::TRANSPORT_MODE_ASYNC) {
+            $this->dispatch($wrappedEvent->getEventName(), $wrappedEvent->getEvent());
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addListener($eventName, $listener, $priority = 0)
+    {
+        // Only supports that one event name matching one kind of event
+        $rfParameter  = new \ReflectionParameter($listener, 0);
+        $rfEventClass = $rfParameter->getClass();
+        if ($rfEventClass->implementsInterface(TransportableEvent::class)) {
+            if (isset($this->listeningTransportableEvents[$eventName])) {
+                if ($rfEventClass->getName() != $this->listeningTransportableEvents[$eventName]) {
+                    throw new ConflictedEventTypeException(sprintf(
+                      'Event %s has been listened by other listeners with type %s, Can not be defined with type %s again.',
+                      $eventName,
+                      $this->listeningTransportableEvents[$eventName],
+                      $rfEventClass->getName()
+                    ));
+                }
+            }
+            else {
+                $this->listeningTransportableEvents[$eventName] = $rfEventClass->getName();
+            }
+        }
+
+        parent::addListener($eventName, $listener, $priority);
+    }
+
+    /**
+     * Gets class name of the event $eventName
+     *
+     * @param $eventName
+     *
+     * @return string|null event class name
+     */
+    public function getTransportableEventClassName($eventName) {
+        return isset($this->listeningTransportableEvents[$eventName]) ?
+          $this->listeningTransportableEvents[$eventName] : null;
+    }
+
+    /**
      * Transports a TransportableEvent to the EndPoint
      *
      * @param string                                             $eventName
      * @param \TNC\EventDispatcher\Interfaces\TransportableEvent $event
      */
-    public function doAsyncDispatch($eventName, TransportableEvent $event)
+    protected function doAsyncDispatch($eventName, TransportableEvent $event)
     {
         $wrappedEvent = new WrappedEvent($eventName, $event, $event->getTransportMode());
-        try {
-            $message = $this->serializer->serialize($wrappedEvent);
-            $this->endPoint->send($message, $wrappedEvent);
-        }
-        // TODO: spearate serializer exception and endpoint exception
-        catch (NormalizeException $e) {
-
-        }
-        catch (TimeoutException $e) {
-
-        }
+        $message = $this->serializer->serialize($wrappedEvent);
+        $this->endPoint->send($message, $wrappedEvent);
     }
 }

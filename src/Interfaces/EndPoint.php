@@ -12,7 +12,6 @@ namespace TNC\EventDispatcher\Interfaces;
 
 use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\WrappedEvent;
-use TNC\EventDispatcher\Exception\TimeoutException;
 
 interface EndPoint
 {

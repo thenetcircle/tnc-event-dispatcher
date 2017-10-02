@@ -11,10 +11,8 @@
 namespace TNC\EventDispatcher\EndPoints\Redis;
 
 use TNC\EventDispatcher\EndPoints\AbstractEndPoint;
-use TNC\EventDispatcher\Event\Internal\DeliverySerializableEvent;
 use TNC\EventDispatcher\WrappedEvent;
 use TNC\EventDispatcher\Exception\InitializeException;
-use TNC\EventDispatcher\Exception\TimeoutException;
 
 class PHPRedisEndPoint extends AbstractEndPoint
 {

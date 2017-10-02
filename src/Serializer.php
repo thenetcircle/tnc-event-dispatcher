@@ -7,7 +7,7 @@ use TNC\EventDispatcher\Exception\FormatException;
 use TNC\EventDispatcher\Exception\NoAvailableNormalizerException;
 use TNC\EventDispatcher\Exception\NormalizeException;
 use TNC\EventDispatcher\Exception\UnformatException;
-use TNC\EventDispatcher\Serialization\Normalizer\WrappedEventNormalizer;
+use TNC\EventDispatcher\Serialization\Normalizer\EventDispatcherNormalizer;
 use TNC\EventDispatcher\Serialization\Normalizer\Normalizer;
 
 /**
@@ -30,8 +30,6 @@ class Serializer
      */
     public function __construct(array $supportedNormalizers, $formatter)
     {
-        array_unshift($supportedNormalizers, new WrappedEventNormalizer());
-
         $this->supportedNormalizers = $supportedNormalizers;
         $this->formatter            = $formatter;
     }
@@ -180,12 +178,12 @@ class Serializer
     /**
      * @return \TNC\EventDispatcher\Serialization\Normalizer\Normalizer|null
      */
-    protected function getDenormalizer($data, $class)
+    protected function getDenormalizer($data, $className)
     {
         foreach ($this->supportedNormalizers as $normalizer) {
             if (
                 $normalizer instanceof Normalizer
-                && $normalizer->supportsDenormalization($data, $class)
+                && $normalizer->supportsDenormalization($data, $className)
             ) {
                 return $normalizer;
             }
