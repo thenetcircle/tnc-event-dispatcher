@@ -23,6 +23,8 @@ use TNC\EventDispatcher\Exception\NormalizeException;
 use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\AbstractNormalizer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj;
 
 class TNCActivityStreamsNormalizer extends AbstractNormalizer
 {
@@ -72,6 +74,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
         /** @var TNCActivityStreamsEvent $object */
         $object = $reflectionClass->newInstanceWithoutConstructor();
         $object->denormalize($activity);
+
         return $object;
     }
 
@@ -95,45 +98,66 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
         return is_subclass_of($className, TNCActivityStreamsEvent::class);
     }
 
-    protected function normalizeActivity(Activity $activity) {
+    protected function normalizeActivity(Activity $activity)
+    {
+        return $this->getNonEmptyObjectVars($activity);
+    }
+
+    protected function getNonEmptyObjectVars($object)
+    {
         $data = [];
+        $vars = get_object_vars($object);
+        foreach ($vars as $key => $value) {
+            if (
+              (is_string($value) && $value == '') ||
+              (is_array($value) && count($value) === 0) ||
+              is_null($value)
+            ){
+                continue;
+            }
 
-        $properties = get_object_vars($activity);
-        foreach ($properties as $key => $value) {
-            if (!empty($value)) {
-                switch(true) {
-                    case is_object($value):
-                        if ($key == 'actor') {
+            switch (true) {
 
-                        }
-                        elseif ($key == 'object') {
+                case is_object($value):
+                    $_data = $this->getNonEmptyObjectVars($value);
+                    if (count($_data) > 0) {
+                        $data[$key] = $_data;
+                    }
+                    break;
 
-                        }
-                        break;
+                case is_array($value):
+                    $data[$key] = $value;
+                    break;
 
-                    case is_array($value):
-                        $data[$key] = $value;
-                        break;
-                    default:
-                        $data[$key] = (string)$value;
-                }
+                default:
+                    $data[$key] = (string)$value;
+
             }
         }
 
         return $data;
     }
 
-    protected function denormalizeActivity(array $data) {
+    protected function denormalizeActivity(array $data)
+    {
         $activity = new Activity();
-
 
         foreach ($data as $key => $value) {
             switch (true) {
                 case $key == 'actor':
+                    if (is_array($value)) {
+                        $activity->actor = new Actor($value['id'], isset($value['type']) ? $value['type'] : '');
+                    }
                     break;
                 case $key == 'object':
+                    if (is_array($value)) {
+                        $activity->object = new Obj($value['type'], isset($value['context']) ? $value['context'] : []);
+                    }
                     break;
                 case $key == 'context':
+                    if (is_array($value)) {
+                        $activity->context = $value;
+                    }
                     break;
                 default:
                     $activity->{$key} = $value;

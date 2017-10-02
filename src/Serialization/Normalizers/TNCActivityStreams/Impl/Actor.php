@@ -21,12 +21,22 @@ namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 class Actor
 {
     /**
+     * Identifier
+     *
      * @var string
      */
-    public $id = "";
+    public $id = '';
 
     /**
+     * Identifier Type
+     *
      * @var string
      */
-    public $type = "";
+    public $type = '';
+
+    public function __construct($id, $type = '')
+    {
+        $this->id = $id;
+        $this->type = $type;
+    }
 }

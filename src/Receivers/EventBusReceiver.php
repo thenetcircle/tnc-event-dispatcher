@@ -20,7 +20,7 @@ namespace TNC\EventDispatcher\Receivers;
 
 use Psr\Http\Message\RequestInterface;
 
-class HttpReceiver extends AbstractReceiver
+class EventBusReceiver extends AbstractReceiver
 {
     public function newRequest(RequestInterface $request) {
         $body =  $request->getBody()->getContents();

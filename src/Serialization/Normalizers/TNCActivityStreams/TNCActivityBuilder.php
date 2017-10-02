@@ -19,6 +19,8 @@
 namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj;
 
 class TNCActivityBuilder
 {
@@ -64,24 +66,26 @@ class TNCActivityBuilder
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor $actor
+     * @param string $id   Identifier of actor
+     * @param string $type Type of the Identifier
      *
      * @return $this
      */
-    public function setActor($actor)
+    public function setActor($id, $type = '')
     {
-        $this->activity->actor = $actor;
+        $this->activity->actor = new Actor($id, $type);
         return $this;
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj $object
+     * @param string $type Type of the object
+     * @param array  $context
      *
      * @return $this
      */
-    public function setObject($object)
+    public function setObject($type, array $context = [])
     {
-        $this->activity->object = $object;
+        $this->activity->object = new Obj($type, $context);
         return $this;
     }
 

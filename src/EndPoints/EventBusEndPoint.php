@@ -40,6 +40,8 @@ class EventBusEndPoint extends AbstractEndPoint
      * @param array  $requestOptions @see http://docs.guzzlephp.org/en/stable/request-options.html
      *
      * @throws \TNC\EventDispatcher\Exception\InitializeException
+     *
+     * // TODO: add fallbacker
      */
     public function __construct($uri, $timeout = 3, array $requestOptions = [])
     {

@@ -14,7 +14,7 @@
   },
   "suggest": {
     "guzzlehttp/guzzle": "EventBusEndPoint requires it.",
-    "psr/http-message": "HttpReceiver requires it."
+    "psr/http-message": "EventBusReceiver requires it."
   },
   "autoload": {
     "psr-4": {
