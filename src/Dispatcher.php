@@ -18,6 +18,8 @@
 
 namespace TNC\EventDispatcher;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use TNC\EventDispatcher\Exception\ConflictedEventTypeException;
@@ -39,6 +41,11 @@ class Dispatcher extends EventDispatcher
     private $endPoint;
 
     /**
+     * @var \Psr\Log\LoggerInterface|null
+     */
+    private $logger = null;
+
+    /**
      * TransportableEvents are being listened
      *
      * @var array
@@ -48,13 +55,15 @@ class Dispatcher extends EventDispatcher
     /**
      * @param \TNC\EventDispatcher\Serializer          $serializer
      * @param \TNC\EventDispatcher\Interfaces\EndPoint $endPoint
+     * @param \Psr\Log\LoggerInterface|null            $logger
      */
-    public function __construct(Serializer $serializer, EndPoint $endPoint)
+    public function __construct(Serializer $serializer, EndPoint $endPoint, LoggerInterface $logger = null)
     {
         $this->serializer = $serializer;
         $this->serializer->prependNormalizer(new EventDispatcherNormalizer($this));
         $this->endPoint = $endPoint;
         $this->endPoint->setDispatcher($this);
+        $this->logger = $logger;
     }
 
     /**
@@ -132,7 +141,11 @@ class Dispatcher extends EventDispatcher
                 }
             }
         } catch (\ReflectionException $e) {
-            // TODO: record log
+            $this->log(
+              LogLevel::WARNING,
+              sprintf('Extract ReflectionParameter of Listener failed with error: %s.', $e->getMessage()),
+              ['exception' => $e]
+            );
         }
 
         parent::addListener($eventName, $listener, $priority);
@@ -148,6 +161,15 @@ class Dispatcher extends EventDispatcher
     public function getTransportableEventClassName($eventName)
     {
         return isset($this->listeningTransportableEvents[$eventName]) ? $this->listeningTransportableEvents[$eventName] : null;
+    }
+
+    /**
+     * @see \Psr\Log\LoggerInterface::log()
+     */
+    public function log($level, $message, array $context = array()) {
+        if (!is_null($this->logger)) {
+            $this->logger->log($level, $message, $context);
+        }
     }
 
     /**
