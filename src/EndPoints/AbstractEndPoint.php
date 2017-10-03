@@ -32,11 +32,12 @@ abstract class AbstractEndPoint implements EndPoint
     protected $dispatcher = null;
 
     /**
-     * @param \TNC\EventDispatcher\Dispatcher $dispatcher
+     * {@inheritdoc}
      */
-    public function setDispatcher(Dispatcher $dispatcher)
+    public function withDispatcher(Dispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
+        return $this;
     }
 
     protected function dispatchSuccessEvent($message, WrappedEvent $wrappedEvent) {

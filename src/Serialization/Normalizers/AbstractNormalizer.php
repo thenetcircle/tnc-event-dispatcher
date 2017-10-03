@@ -29,10 +29,11 @@ abstract class AbstractNormalizer implements Normalizer
     protected $serializer = null;
 
     /**
-     * @param \TNC\EventDispatcher\Serializer $serializer
+     * {@inheritdoc}
      */
-    public function setSerializer(Serializer $serializer)
+    public function withSerializer(Serializer $serializer)
     {
         $this->serializer = $serializer;
+        return $this;
     }
 }

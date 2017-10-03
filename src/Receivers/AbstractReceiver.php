@@ -29,10 +29,11 @@ abstract class AbstractReceiver implements Receiver
     protected $dispatcher = null;
 
     /**
-     * @param \TNC\EventDispatcher\Dispatcher $dispatcher
+     * {@inheritdoc}
      */
-    public function setDispatcher(Dispatcher $dispatcher)
+    public function withDispatcher(Dispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
+        return $this;
     }
 }

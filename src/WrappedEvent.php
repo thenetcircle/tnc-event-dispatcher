@@ -18,25 +18,8 @@
 
 namespace TNC\EventDispatcher;
 
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
-
-/**
- * Class EventWrapper
- *
- * @package TNC\EventDispatcher
- */
 class WrappedEvent
 {
-    /**
-     * @var string
-     */
-    protected $eventName;
-
-    /**
-     * @var \TNC\EventDispatcher\Interfaces\TransportableEvent
-     */
-    protected $event;
-
     /**
      * @var string
      */
@@ -45,20 +28,39 @@ class WrappedEvent
     /**
      * @var string
      */
+    protected $eventName;
+
+    /**
+     * @var array
+     */
+    protected $normalizedEvent;
+
+    /**
+     * @var string
+     */
     protected $className;
 
 
     /**
-     * @param string                                             $eventName
-     * @param \TNC\EventDispatcher\Interfaces\TransportableEvent $event
-     * @param string                                             $transportMode
+     * @param string $transportMode
+     * @param string $eventName
+     * @param array  $normalizedEvent
+     * @param string $className
      */
-    public function __construct($eventName, TransportableEvent $event, $transportMode)
+    public function __construct($transportMode, $eventName, $normalizedEvent, $className)
     {
-        $this->eventName     = $eventName;
-        $this->event         = $event;
-        $this->transportMode = $transportMode;
-        $this->className     = get_class($event);
+        $this->transportMode   = $transportMode;
+        $this->eventName       = $eventName;
+        $this->normalizedEvent = $normalizedEvent;
+        $this->className       = $className;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransportMode()
+    {
+        return $this->transportMode;
     }
 
     /**
@@ -70,19 +72,11 @@ class WrappedEvent
     }
 
     /**
-     * @return \TNC\EventDispatcher\Interfaces\TransportableEvent
+     * @return array
      */
-    public function getEvent()
+    public function getNormalizedEvent()
     {
-        return $this->event;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTransportMode()
-    {
-        return $this->transportMode;
+        return $this->normalizedEvent;
     }
 
     /**

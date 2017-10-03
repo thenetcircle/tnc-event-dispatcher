@@ -58,23 +58,6 @@ class DispatcherTest extends AbstractEventDispatcherTest
 
         return new Dispatcher($serializer, $endPointMock);
     }
-
-    // TODO: no type hint Listeners, no parameter Listeners
-    public function testListeningTransportableEvents()
-    {
-        $this->dispatcher->addListener('testEvent1', new CallableClass());
-        self::assertEquals(TestEvent1::class, $this->dispatcher->getTransportableEventClassName('testEvent1'));
-
-        $this->dispatcher->addListener('testEvent2', [new TestEventListener(), 'listeningMuthodA']);
-        self::assertEquals(TestEvent2::class, $this->dispatcher->getTransportableEventClassName('testEvent2'));
-
-        $this->dispatcher->addSubscriber(new TestEventSubscriber());
-        self::assertEquals(TestEvent3::class, $this->dispatcher->getTransportableEventClassName('testEvent3'));
-        self::assertEquals(TestEvent4::class, $this->dispatcher->getTransportableEventClassName('testEvent4'));
-
-        $this->expectException(ConflictedEventTypeException::class);
-        $this->dispatcher->addListener('testEvent2', new CallableClass());
-    }
 }
 
 abstract class AbstractTestEvent implements TransportableEvent {

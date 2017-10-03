@@ -40,12 +40,15 @@ class Serializer
     /**
      * AbstractSerializer constructor.
      *
-     * @param \TNC\EventDispatcher\Serialization\Normalizer[] $supportedNormalizers
+     * @param \TNC\EventDispatcher\Serialization\Normalizer[]    $supportedNormalizers
      * @param \TNC\EventDispatcher\Serialization\Formatter       $formatter
      */
     public function __construct(array $supportedNormalizers, $formatter)
     {
-        $this->supportedNormalizers = $supportedNormalizers;
+        foreach ($supportedNormalizers as $normalizer) {
+            $this->supportedNormalizers[] = $normalizer->withSerializer($this);
+        }
+
         $this->formatter            = $formatter;
     }
 
@@ -156,7 +159,7 @@ class Serializer
      * @return $this
      */
     public function prependNormalizer(Normalizer $normalizer) {
-        array_unshift($this->supportedNormalizers, $normalizer);
+        array_unshift($this->supportedNormalizers, $normalizer->withSerializer($this));
         return $this;
     }
 
@@ -168,7 +171,7 @@ class Serializer
      * @return $this
      */
     public function appendNormalizer(Normalizer $normalizer) {
-        array_push($this->supportedNormalizers, $normalizer);
+        array_push($this->supportedNormalizers, $normalizer->withSerializer($this));
         return $this;
     }
 
@@ -176,7 +179,7 @@ class Serializer
     /**
      * @return \TNC\EventDispatcher\Serialization\Normalizer|null
      */
-    protected function getNormalizer($object)
+    public function getNormalizer($object)
     {
         foreach ($this->supportedNormalizers as $normalizer) {
             if (
@@ -193,7 +196,7 @@ class Serializer
     /**
      * @return \TNC\EventDispatcher\Serialization\Normalizer|null
      */
-    protected function getDenormalizer($data, $className)
+    public function getDenormalizer($data, $className)
     {
         foreach ($this->supportedNormalizers as $normalizer) {
             if (

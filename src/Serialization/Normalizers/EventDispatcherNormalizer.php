@@ -47,18 +47,18 @@ class EventDispatcherNormalizer extends AbstractNormalizer
     /**
      * Normalizes the Object to be a semi-result, Then can be using for Formatter
      *
-     * @param WrappedEvent $wrappedEvent
+     * @param WrappedEvent $metadata
      *
      * @return array
      *
      * @throws NormalizeException
      */
-    public function normalize($wrappedEvent)
+    public function normalize($metadata)
     {
-        $data                             = $this->serializer->normalize($wrappedEvent->getEvent());
-        $data[$this->extraField]['name']  = $wrappedEvent->getEventName();
-        $data[$this->extraField]['mode']  = $wrappedEvent->getTransportMode();
-        $data[$this->extraField]['class'] = $wrappedEvent->getClassName();
+        $data                             = $metadata->getNormalizedEvent();
+        $data[$this->extraField]['name']  = $metadata->getEventName();
+        $data[$this->extraField]['mode']  = $metadata->getTransportMode();
+        $data[$this->extraField]['class'] = $metadata->getClassName();
 
         return $data;
     }
@@ -68,28 +68,14 @@ class EventDispatcherNormalizer extends AbstractNormalizer
      */
     public function denormalize($data, $className)
     {
-        $name      = $data[$this->extraField]['name'];
-
-        // If there is no listeners, Does not continue
-        if (!$this->dispatcher->hasListeners($name)) {
-
-        }
-
-        $mode      = isset($data[$this->extraField]['mode']) ?
+        $eventName      = $data[$this->extraField]['name'];
+        $transportMode      = isset($data[$this->extraField]['mode']) ?
             $data[$this->extraField]['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;
-
-        $className = isset($data[$this->extraField]['class']) ?
-            $data[$this->extraField]['class'] : $this->dispatcher->getTransportableEventClassName($name);
-
-        if (empty($className)) {
-            throw new DenormalizeException(sprintf("No listeners listening on event %s.", $name));
-        }
-
+        $eventClassName = isset($data[$this->extraField]['class']) ? $data[$this->extraField]['class'] : '';
         unset($data[$this->extraField]);
-        /** @var \TNC\EventDispatcher\Interfaces\TransportableEvent $event */
-        $event     = $this->serializer->denormalize($data, $className);
+        $normalizedEvent = $data;
 
-        return new WrappedEvent($name, $event, $mode);
+        return new WrappedEvent($transportMode, $eventName, $normalizedEvent, $eventClassName);
     }
 
     /**

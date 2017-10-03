@@ -16,16 +16,8 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Interfaces;
+namespace TNC\EventDispatcher\Exception;
 
-use TNC\EventDispatcher\Dispatcher;
-
-interface Receiver
+class NoClassException extends EventDispatcherException
 {
-    /**
-     * @param \TNC\EventDispatcher\Dispatcher $dispatcher
-     *
-     * @return \TNC\EventDispatcher\Interfaces\Receiver
-     */
-    public function withDispatcher(Dispatcher $dispatcher);
 }

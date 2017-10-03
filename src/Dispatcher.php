@@ -19,14 +19,12 @@
 namespace TNC\EventDispatcher;
 
 use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use TNC\EventDispatcher\Exception\ConflictedEventTypeException;
+use TNC\EventDispatcher\Exception\NoClassException;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Serialization\Normalizers\EventDispatcherNormalizer;
 
 class Dispatcher extends EventDispatcher
 {
@@ -46,13 +44,6 @@ class Dispatcher extends EventDispatcher
     private $logger = null;
 
     /**
-     * TransportableEvents are being listened
-     *
-     * @var array
-     */
-    private $listeningTransportableEvents = [];
-
-    /**
      * @param \TNC\EventDispatcher\Serializer          $serializer
      * @param \TNC\EventDispatcher\Interfaces\EndPoint $endPoint
      * @param \Psr\Log\LoggerInterface|null            $logger
@@ -60,10 +51,8 @@ class Dispatcher extends EventDispatcher
     public function __construct(Serializer $serializer, EndPoint $endPoint, LoggerInterface $logger = null)
     {
         $this->serializer = $serializer;
-        $this->serializer->prependNormalizer(new EventDispatcherNormalizer($this));
-        $this->endPoint = $endPoint;
-        $this->endPoint->setDispatcher($this);
-        $this->logger = $logger;
+        $this->endPoint   = $endPoint->withDispatcher($this);
+        $this->logger     = $logger;
     }
 
     /**
@@ -88,13 +77,11 @@ class Dispatcher extends EventDispatcher
             switch ($event->getTransportMode()) {
 
                 case TransportableEvent::TRANSPORT_MODE_ASYNC:
-                    $this->doAsyncDispatch($eventName, $event);
-
+                    $this->sendToEndPoint($eventName, $event);
                     return $event;
 
                 case TransportableEvent::TRANSPORT_MODE_SYNC_PLUS:
-                    $this->doAsyncDispatch($eventName, $event);
-
+                    $this->sendToEndPoint($eventName, $event);
                     return parent::dispatch($eventName, $event);
 
                 default:
@@ -108,59 +95,38 @@ class Dispatcher extends EventDispatcher
     }
 
     /**
-     * Dispatches a async received message
+     * Dispatches a async event
      *
      * @param string $message
      */
     public function dispatchMessage($message)
     {
-        /** @var WrappedEvent $wrappedEvent */
-        $wrappedEvent = $this->serializer->denormalize($message, WrappedEvent::class);
-        if ($wrappedEvent->getTransportMode() == TransportableEvent::TRANSPORT_MODE_ASYNC) {
-            $this->dispatch($wrappedEvent->getEventName(), $wrappedEvent->getEvent());
-        }
-    }
+        /** @var WrappedEvent $metadata */
+        $metadata = $this->serializer->unserialize($message, WrappedEvent::class);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function addListener($eventName, $listener, $priority = 0)
-    {
-        try {
-            // Only supports that one event name matching one kind of event
-            $rfParameter  = new \ReflectionParameter($listener, 0);
-            $rfEventClass = $rfParameter->getClass();
-            if ($rfEventClass->implementsInterface(TransportableEvent::class)) {
-                if (isset($this->listeningTransportableEvents[$eventName])) {
-                    if ($rfEventClass->getName() != $this->listeningTransportableEvents[$eventName]) {
-                        throw new ConflictedEventTypeException(sprintf('Event %s has been listened by other listeners with type %s, Can not be defined with type %s again.',
-                          $eventName, $this->listeningTransportableEvents[$eventName], $rfEventClass->getName()));
+        if ($metadata->getTransportMode() == TransportableEvent::TRANSPORT_MODE_ASYNC) {
+
+            $eventName = $metadata->getEventName();
+            $className = $metadata->getClassName();
+
+            if ($listeners = $this->getListeners($eventName)) {
+
+                if (empty($className)) {
+                    $className = $this->extractClassNameFromListeners($listeners);
+                    if (empty($className)) {
+                        throw new NoClassException(sprintf(
+                          "Can not figure out classname of Event %s ",
+                          $eventName
+                        ));
                     }
-                } else {
-                    $this->listeningTransportableEvents[$eventName] = $rfEventClass->getName();
                 }
+
+                $event = $this->serializer->denormalize($metadata->getNormalizedEvent(), $className);
+
+                $this->doDispatch($listeners, $eventName, $event);
             }
-        } catch (\ReflectionException $e) {
-            $this->log(
-              LogLevel::WARNING,
-              sprintf('Extract ReflectionParameter of Listener failed with error: %s.', $e->getMessage()),
-              ['exception' => $e]
-            );
+
         }
-
-        parent::addListener($eventName, $listener, $priority);
-    }
-
-    /**
-     * Gets class name of the event $eventName
-     *
-     * @param $eventName
-     *
-     * @return string|null event class name
-     */
-    public function getTransportableEventClassName($eventName)
-    {
-        return isset($this->listeningTransportableEvents[$eventName]) ? $this->listeningTransportableEvents[$eventName] : null;
     }
 
     /**
@@ -178,10 +144,49 @@ class Dispatcher extends EventDispatcher
      * @param string                                             $eventName
      * @param \TNC\EventDispatcher\Interfaces\TransportableEvent $event
      */
-    protected function doAsyncDispatch($eventName, TransportableEvent $event)
+    protected function sendToEndPoint($eventName, TransportableEvent $event)
     {
-        $wrappedEvent = new WrappedEvent($eventName, $event, $event->getTransportMode());
-        $message      = $this->serializer->serialize($wrappedEvent);
+        $normalizedEvent = $this->serializer->normalize($event);
+        $wrappedEvent = new WrappedEvent(
+          $event->getTransportMode(),
+          $eventName,
+          $normalizedEvent,
+          get_class($event)
+        );
+
+        $message = $this->serializer->serialize($wrappedEvent);
         $this->endPoint->send($message, $wrappedEvent);
+    }
+
+    /**
+     * Extracts classname from Event Listeners
+     *
+     * @param array $listeners
+     *
+     * @return string
+     */
+    protected function extractClassNameFromListeners(array $listeners) {
+        $className = '';
+        $reservedClassName = '';
+
+        // Going to extract Event classname from type hint of Listeners
+        foreach ($listeners as $listener) {
+            try {
+                $rfParameter  = new \ReflectionParameter($listener, 0);
+                $rfEventClass = $rfParameter->getClass();
+                if ($rfEventClass->implementsInterface(TransportableEvent::class)) {
+                    $className = $rfEventClass->getName();
+                    break;
+                }
+                elseif ($rfEventClass->isSubclassOf(Event::class)) {
+                    $reservedClassName = $rfEventClass->getName();
+                }
+            } catch (\ReflectionException $e) {}
+        }
+        if (empty($className) && !empty($reservedClassName)) {
+            $className = $reservedClassName;
+        }
+
+        return $className;
     }
 }

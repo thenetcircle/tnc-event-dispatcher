@@ -35,6 +35,8 @@ interface EndPoint
      * Sets current Dispatcher instance
      *
      * @param \TNC\EventDispatcher\Dispatcher $dispatcher
+     *
+     * @return \TNC\EventDispatcher\Interfaces\EndPoint
      */
-    public function setDispatcher(Dispatcher $dispatcher);
+    public function withDispatcher(Dispatcher $dispatcher);
 }

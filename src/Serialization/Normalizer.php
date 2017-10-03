@@ -70,6 +70,8 @@ interface Normalizer
      * Sets the serializer
      *
      * @param \TNC\EventDispatcher\Serializer $serializer
+     *
+     * @return \TNC\EventDispatcher\Serialization\Normalizer
      */
-    public function setSerializer(Serializer $serializer);
+    public function withSerializer(Serializer $serializer);
 }
