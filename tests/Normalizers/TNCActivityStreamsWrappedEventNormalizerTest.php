@@ -90,7 +90,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
         $expectedWrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
           'message.send',
-          $expectedData,
+          array_merge($normalizedEvent, ['verb' => 'message.send']),
           TransportableEvent::class
         );
         self::assertEquals($expectedWrappedEvent, $this->normalizer->denormalize($expectedData, WrappedEvent::class));
@@ -144,12 +144,6 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
         $unserializedWrappedEvent = $serializer->unserialize($expectedData, WrappedEvent::class);
         $expectedTestEvent = $testEvent;
         $expectedTestEvent->activity->verb = 'message.send';
-        $expectedTestEvent->activity->context = [
-          'metadata' => [
-            'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
-            'class' => TransportableEvent::class
-          ]
-        ];
 
         self::assertEquals($expectedTestEvent, $serializer->denormalize($unserializedWrappedEvent->getNormalizedEvent(),
           TestEvent::class));

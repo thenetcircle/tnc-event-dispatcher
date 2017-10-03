@@ -59,6 +59,8 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
 
         $className  = isset($data['context']['metadata']['class']) ? $data['context']['metadata']['class'] : '';
 
+        if (isset($data['context']['metadata'])) unset($data['context']['metadata']);
+
         $normalizedEvent = $data;
 
         return new WrappedEvent($transportMode, $eventName, $normalizedEvent, $className);
