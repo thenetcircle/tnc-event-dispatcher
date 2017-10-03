@@ -18,8 +18,8 @@
 
 namespace TNC\EventDispatcher\Serialization;
 
-use TNC\EventDispatcher\Exception\DenormalizeException;
-use TNC\EventDispatcher\Exception\NormalizeException;
+use TNC\EventDispatcher\Exceptions\DenormalizeException;
+use TNC\EventDispatcher\Exceptions\NormalizeException;
 use TNC\EventDispatcher\Serializer;
 
 interface Normalizer

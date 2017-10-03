@@ -18,8 +18,8 @@
 
 namespace TNC\EventDispatcher\Serialization;
 
-use TNC\EventDispatcher\Exception\FormatException;
-use TNC\EventDispatcher\Exception\UnformatException;
+use TNC\EventDispatcher\Exceptions\FormatException;
+use TNC\EventDispatcher\Exceptions\UnformatException;
 
 interface Formatter
 {

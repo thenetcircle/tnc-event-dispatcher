@@ -18,7 +18,7 @@
 
 namespace TNC\EventDispatcher\Serialization\Formatters;
 
-use TNC\EventDispatcher\Exception\UnformatException;
+use TNC\EventDispatcher\Exceptions\UnformatException;
 use TNC\EventDispatcher\Serialization\Formatter;
 
 class JsonFormatter implements Formatter

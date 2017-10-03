@@ -18,8 +18,8 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 
-use TNC\EventDispatcher\Exception\DenormalizeException;
-use TNC\EventDispatcher\Exception\NormalizeException;
+use TNC\EventDispatcher\Exceptions\DenormalizeException;
+use TNC\EventDispatcher\Exceptions\NormalizeException;
 use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\AbstractNormalizer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;

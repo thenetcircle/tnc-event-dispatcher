@@ -16,8 +16,8 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Exception;
+namespace TNC\EventDispatcher\Exceptions;
 
-class FormatException extends EventDispatcherException
+class UnformatException extends EventDispatcherException
 {
 }

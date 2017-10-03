@@ -16,8 +16,8 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Exception;
+namespace TNC\EventDispatcher\Exceptions;
 
-class NoAvailableNormalizerException extends EventDispatcherException
+class NormalizeException extends EventDispatcherException
 {
 }

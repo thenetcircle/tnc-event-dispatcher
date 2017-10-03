@@ -21,10 +21,10 @@ namespace TNC\EventDispatcher;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use TNC\EventDispatcher\Exception\NoClassException;
+use TNC\EventDispatcher\Exceptions\NoClassException;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;
-use TNC\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\EventDispatcher\Exceptions\InvalidArgumentException;
 
 class Dispatcher extends EventDispatcher
 {

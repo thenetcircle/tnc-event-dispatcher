@@ -21,7 +21,7 @@ namespace TNC\EventDispatcher\EndPoints;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
-use TNC\EventDispatcher\Exception\InitializeException;
+use TNC\EventDispatcher\Exceptions\InitializeException;
 use TNC\EventDispatcher\WrappedEvent;
 
 class EventBusEndPoint extends AbstractEndPoint
@@ -39,7 +39,7 @@ class EventBusEndPoint extends AbstractEndPoint
      *                               default behavior).
      * @param array  $requestOptions @see http://docs.guzzlephp.org/en/stable/request-options.html
      *
-     * @throws \TNC\EventDispatcher\Exception\InitializeException
+     * @throws \TNC\EventDispatcher\Exceptions\InitializeException
      *
      * // TODO: add fallbacker
      */

@@ -20,7 +20,7 @@ namespace TNC\EventDispatcher\Tests;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\Tests\AbstractEventDispatcherTest;
-use TNC\EventDispatcher\Exception\ConflictedEventTypeException;
+use TNC\EventDispatcher\Exceptions\ConflictedEventTypeException;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\Serializer;

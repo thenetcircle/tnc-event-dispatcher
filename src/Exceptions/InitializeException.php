@@ -16,8 +16,8 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Exception;
+namespace TNC\EventDispatcher\Exceptions;
 
-class ConflictedEventTypeException extends EventDispatcherException
+class InitializeException extends EventDispatcherException
 {
 }

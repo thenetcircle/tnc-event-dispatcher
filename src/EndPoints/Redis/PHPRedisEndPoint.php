@@ -20,7 +20,7 @@ namespace TNC\EventDispatcher\EndPoints\Redis;
 
 use TNC\EventDispatcher\EndPoints\AbstractEndPoint;
 use TNC\EventDispatcher\WrappedEvent;
-use TNC\EventDispatcher\Exception\InitializeException;
+use TNC\EventDispatcher\Exceptions\InitializeException;
 
 class PHPRedisEndPoint extends AbstractEndPoint
 {
@@ -44,7 +44,7 @@ class PHPRedisEndPoint extends AbstractEndPoint
      * @param float $timeout value in seconds (optional, default is 0 meaning unlimited)
      * @param bool $persistent
      *
-     * @throws \TNC\EventDispatcher\Exception\InitializeException
+     * @throws \TNC\EventDispatcher\Exceptions\InitializeException
      */
     public function __construct(
         ChannelResolver $channelResolver,
