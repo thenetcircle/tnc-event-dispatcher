@@ -65,7 +65,7 @@ class DispatcherTest extends AbstractEventDispatcherTest
         $this->dispatcher->addListener('testEvent1', new CallableClass());
         self::assertEquals(TestEvent1::class, $this->dispatcher->getTransportableEventClassName('testEvent1'));
 
-        $this->dispatcher->addListener('testEvent2', [new TestEventListener(), 'listeningMethodA']);
+        $this->dispatcher->addListener('testEvent2', [new TestEventListener(), 'listeningMuthodA']);
         self::assertEquals(TestEvent2::class, $this->dispatcher->getTransportableEventClassName('testEvent2'));
 
         $this->dispatcher->addSubscriber(new TestEventSubscriber());
@@ -92,7 +92,7 @@ class CallableClass
 
 class TestEventListener
 {
-    public function listeningMuethodA(TestEvent2 $event) {}
+    public function listeningMuthodA(TestEvent2 $event) {}
 }
 class TestEventSubscriber implements EventSubscriberInterface
 {
