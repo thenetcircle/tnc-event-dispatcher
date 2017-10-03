@@ -42,6 +42,11 @@ class WrappedEvent
      */
     protected $transportMode;
 
+    /**
+     * @var string
+     */
+    protected $className;
+
 
     /**
      * @param string                                             $eventName
@@ -53,6 +58,7 @@ class WrappedEvent
         $this->eventName     = $eventName;
         $this->event         = $event;
         $this->transportMode = $transportMode;
+        $this->className     = get_class($event);
     }
 
     /**
@@ -77,5 +83,13 @@ class WrappedEvent
     public function getTransportMode()
     {
         return $this->transportMode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClassName()
+    {
+        return $this->className;
     }
 }

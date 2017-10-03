@@ -47,7 +47,7 @@ class EventDispatcherNormalizer extends AbstractNormalizer
     /**
      * Normalizes the Object to be a semi-result, Then can be using for Formatter
      *
-     * @param WrappedEvent $object
+     * @param WrappedEvent $wrappedEvent
      *
      * @return array
      *
@@ -58,6 +58,7 @@ class EventDispatcherNormalizer extends AbstractNormalizer
         $data                             = $this->serializer->normalize($wrappedEvent->getEvent());
         $data[$this->extraField]['name']  = $wrappedEvent->getEventName();
         $data[$this->extraField]['mode']  = $wrappedEvent->getTransportMode();
+        $data[$this->extraField]['class'] = $wrappedEvent->getClassName();
 
         return $data;
     }
@@ -68,14 +69,23 @@ class EventDispatcherNormalizer extends AbstractNormalizer
     public function denormalize($data, $className)
     {
         $name      = $data[$this->extraField]['name'];
-        $mode      = $data[$this->extraField]['mode'] ?: TransportableEvent::TRANSPORT_MODE_ASYNC;
-        unset($data[$this->extraField]);
 
-        $className = $this->dispatcher->getTransportableEventClassName($name);
-        if ($className === null) {
+        // If there is no listeners, Does not continue
+        if (!$this->dispatcher->hasListeners($name)) {
+
+        }
+
+        $mode      = isset($data[$this->extraField]['mode']) ?
+            $data[$this->extraField]['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;
+
+        $className = isset($data[$this->extraField]['class']) ?
+            $data[$this->extraField]['class'] : $this->dispatcher->getTransportableEventClassName($name);
+
+        if (empty($className)) {
             throw new DenormalizeException(sprintf("No listeners listening on event %s.", $name));
         }
 
+        unset($data[$this->extraField]);
         /** @var \TNC\EventDispatcher\Interfaces\TransportableEvent $event */
         $event     = $this->serializer->denormalize($data, $className);
 
