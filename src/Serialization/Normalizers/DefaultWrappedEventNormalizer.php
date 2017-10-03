@@ -18,47 +18,34 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers;
 
-use TNC\EventDispatcher\Dispatcher;
-use TNC\EventDispatcher\Exception\DenormalizeException;
-use TNC\EventDispatcher\Exception\NormalizeException;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\WrappedEvent;
 
-class EventDispatcherNormalizer extends AbstractNormalizer
+class DefaultWrappedEventNormalizer extends AbstractNormalizer
 {
-    const EXTRA_FIELD = 'extra';
-
-    /**
-     * @var \TNC\EventDispatcher\Dispatcher
-     */
-    private $dispatcher;
+    const WRAPPER_FIELD = 'wrapper';
 
     /**
      * @var string
      */
-    private $extraField;
+    private $wrapperField;
 
-    public function __construct(Dispatcher $dispatcher, $extraField = self::EXTRA_FIELD)
+    public function __construct($wrapperField = self::WRAPPER_FIELD)
     {
-        $this->dispatcher = $dispatcher;
-        $this->extraField = $extraField;
+        $this->wrapperField = $wrapperField;
     }
 
     /**
-     * Normalizes the Object to be a semi-result, Then can be using for Formatter
+     * {@inheritdoc}
      *
-     * @param WrappedEvent $metadata
-     *
-     * @return array
-     *
-     * @throws NormalizeException
+     * @param WrappedEvent $wrappedEvent
      */
-    public function normalize($metadata)
+    public function normalize($wrappedEvent)
     {
-        $data                             = $metadata->getNormalizedEvent();
-        $data[$this->extraField]['name']  = $metadata->getEventName();
-        $data[$this->extraField]['mode']  = $metadata->getTransportMode();
-        $data[$this->extraField]['class'] = $metadata->getClassName();
+        $data                               = $wrappedEvent->getNormalizedEvent();
+        $data[$this->wrapperField]['name']  = $wrappedEvent->getEventName();
+        $data[$this->wrapperField]['mode']  = $wrappedEvent->getTransportMode();
+        $data[$this->wrapperField]['class'] = $wrappedEvent->getClassName();
 
         return $data;
     }
@@ -68,11 +55,11 @@ class EventDispatcherNormalizer extends AbstractNormalizer
      */
     public function denormalize($data, $className)
     {
-        $eventName      = $data[$this->extraField]['name'];
-        $transportMode      = isset($data[$this->extraField]['mode']) ?
-            $data[$this->extraField]['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;
-        $eventClassName = isset($data[$this->extraField]['class']) ? $data[$this->extraField]['class'] : '';
-        unset($data[$this->extraField]);
+        $eventName       = $data[$this->wrapperField]['name'];
+        $transportMode   = isset($data[$this->wrapperField]['mode']) ?
+            $data[$this->wrapperField]['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;
+        $eventClassName  = isset($data[$this->wrapperField]['class']) ? $data[$this->wrapperField]['class'] : '';
+        unset($data[$this->wrapperField]);
         $normalizedEvent = $data;
 
         return new WrappedEvent($transportMode, $eventName, $normalizedEvent, $eventClassName);

@@ -58,6 +58,12 @@ class DispatcherTest extends AbstractEventDispatcherTest
 
         return new Dispatcher($serializer, $endPointMock);
     }
+
+    // TODO: no type hint Listeners, no parameter Listeners
+    public function testListeningTransportableEvents()
+    {
+
+    }
 }
 
 abstract class AbstractTestEvent implements TransportableEvent {

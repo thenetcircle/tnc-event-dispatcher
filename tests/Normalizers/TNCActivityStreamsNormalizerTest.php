@@ -16,12 +16,9 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests;
+namespace TNC\EventDispatcher\Tests\Normalizers;
 
-use TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
 use TNC\EventDispatcher\Serializer;
@@ -156,38 +153,4 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
         self::assertEquals($testEvent, $serializer->unserialize($expectedData, TestEvent::class));
     }
 
-}
-
-class TestEvent implements TNCActivityStreamsEvent
-{
-    /**
-     * @var Activity
-     */
-    public $activity = null;
-
-    public function __construct(Activity $activity)
-    {
-        $this->activity = $activity;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function normalize(TNCActivityBuilder $builder)
-    {
-        return $this->activity;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function denormalize(Activity $activity)
-    {
-        $this->activity = $activity;
-    }
-
-    public function getTransportMode()
-    {
-        return TransportableEvent::TRANSPORT_MODE_ASYNC;
-    }
 }
