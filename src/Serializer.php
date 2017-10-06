@@ -18,11 +18,11 @@
 
 namespace TNC\EventDispatcher;
 
-use TNC\EventDispatcher\Exceptions\DenormalizeException;
-use TNC\EventDispatcher\Exceptions\FormatException;
-use TNC\EventDispatcher\Exceptions\NoAvailableNormalizerException;
-use TNC\EventDispatcher\Exceptions\NormalizeException;
-use TNC\EventDispatcher\Exceptions\UnformatException;
+use TNC\EventDispatcher\Exception\DenormalizeException;
+use TNC\EventDispatcher\Exception\FormatException;
+use TNC\EventDispatcher\Exception\NoAvailableNormalizerException;
+use TNC\EventDispatcher\Exception\NormalizeException;
+use TNC\EventDispatcher\Exception\UnformatException;
 use TNC\EventDispatcher\Serialization\Normalizer;
 
 /**
