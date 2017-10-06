@@ -26,9 +26,9 @@ use TNC\EventDispatcher\Interfaces\EndPoint;
 class ContainerAwareDispatcher extends ContainerAwareEventDispatcher
 {
     public function __construct(
-      ContainerInterface $container,
       Serializer $serializer,
       EndPoint $endPoint,
+      ContainerInterface $container,
       LoggerInterface $logger = null
     ) {
         parent::__construct($container);
