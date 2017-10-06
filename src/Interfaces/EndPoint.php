@@ -18,7 +18,6 @@
 
 namespace TNC\EventDispatcher\Interfaces;
 
-use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\WrappedEvent;
 
 interface EndPoint
@@ -34,9 +33,9 @@ interface EndPoint
     /**
      * Sets current Dispatcher instance
      *
-     * @param \TNC\EventDispatcher\Dispatcher $dispatcher
+     * @param \TNC\EventDispatcher\Interfaces\DispatcherInterface $dispatcher
      *
      * @return \TNC\EventDispatcher\Interfaces\EndPoint
      */
-    public function withDispatcher(Dispatcher $dispatcher);
+    public function withDispatcher(DispatcherInterface $dispatcher);
 }

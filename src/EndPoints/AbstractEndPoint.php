@@ -18,23 +18,23 @@
 
 namespace TNC\EventDispatcher\EndPoints;
 
-use TNC\EventDispatcher\Dispatcher;
 use TNC\EventDispatcher\Event\InternalEvents\TransportFailureEvent;
 use TNC\EventDispatcher\Event\InternalEvents\TransportSuccessEvent;
+use TNC\EventDispatcher\Interfaces\DispatcherInterface;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\WrappedEvent;
 
 abstract class AbstractEndPoint implements EndPoint
 {
     /**
-     * @var \TNC\EventDispatcher\Dispatcher
+     * @var \TNC\EventDispatcher\Interfaces\DispatcherInterface
      */
     protected $dispatcher = null;
 
     /**
      * {@inheritdoc}
      */
-    public function withDispatcher(Dispatcher $dispatcher)
+    public function withDispatcher(DispatcherInterface $dispatcher)
     {
         $this->dispatcher = $dispatcher;
         return $this;

@@ -18,20 +18,20 @@
 
 namespace TNC\EventDispatcher\Receivers;
 
-use TNC\EventDispatcher\Dispatcher;
+use TNC\EventDispatcher\Interfaces\DispatcherInterface;
 use TNC\EventDispatcher\Interfaces\Receiver;
 
 abstract class AbstractReceiver implements Receiver
 {
     /**
-     * @var \TNC\EventDispatcher\Dispatcher
+     * @var \TNC\EventDispatcher\Interfaces\DispatcherInterface
      */
     protected $dispatcher = null;
 
     /**
      * {@inheritdoc}
      */
-    public function withDispatcher(Dispatcher $dispatcher)
+    public function withDispatcher(DispatcherInterface $dispatcher)
     {
         $this->dispatcher = $dispatcher;
         return $this;
