@@ -21,9 +21,10 @@ namespace TNC\EventDispatcher;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use TNC\EventDispatcher\Interfaces\DispatcherInterface;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 
-class ContainerAwareDispatcher extends ContainerAwareEventDispatcher
+class ContainerAwareDispatcher extends ContainerAwareEventDispatcher implements DispatcherInterface
 {
     public function __construct(
       ContainerInterface $container,

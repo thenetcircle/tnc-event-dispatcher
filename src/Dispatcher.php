@@ -22,11 +22,12 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use TNC\EventDispatcher\Exception\NoClassException;
+use TNC\EventDispatcher\Interfaces\DispatcherInterface;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\TransportableEvent;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
 
-class Dispatcher extends EventDispatcher
+class Dispatcher extends EventDispatcher implements DispatcherInterface
 {
     /**
      * @param \TNC\EventDispatcher\Serializer          $serializer
