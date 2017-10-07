@@ -25,6 +25,6 @@ class EventBusReceiver extends AbstractReceiver
     public function newRequest(RequestInterface $request) {
         $body =  $request->getBody()->getContents();
         // TODO: trace request processing
-        $this->dispatcher->dispatchMessage($body);
+        $this->dispatcher->dispatchSerializedEvent($body);
     }
 }

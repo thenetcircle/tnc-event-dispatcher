@@ -21,9 +21,9 @@ namespace TNC\EventDispatcher\Interfaces;
 interface Receiver
 {
     /**
-     * @param \TNC\EventDispatcher\Interfaces\DispatcherInterface $dispatcher
+     * @param \TNC\EventDispatcher\Interfaces\Dispatcher $dispatcher
      *
      * @return \TNC\EventDispatcher\Interfaces\Receiver
      */
-    public function withDispatcher(DispatcherInterface $dispatcher);
+    public function withDispatcher(Dispatcher $dispatcher);
 }

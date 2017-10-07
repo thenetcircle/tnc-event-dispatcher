@@ -18,8 +18,8 @@
 
 namespace TNC\EventDispatcher\Tests\Normalizers;
 
-use \TNC\EventDispatcher\Interfaces\TNCActivityStreamsEvent;
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
+use \TNC\EventDispatcher\Interfaces\Event\TNCActivityStreamsEvent;
+use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder;
 

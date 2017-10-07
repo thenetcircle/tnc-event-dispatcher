@@ -21,7 +21,7 @@ namespace TNC\EventDispatcher\Tests;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\Tests\AbstractEventDispatcherTest;
 use TNC\EventDispatcher\Interfaces\EndPoint;
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
+use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer;
 use TNC\EventDispatcher\Serializer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;

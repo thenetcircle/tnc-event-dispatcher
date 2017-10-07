@@ -16,7 +16,7 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Interfaces;
+namespace TNC\EventDispatcher\Interfaces\Event;
 
 interface TransportableEvent
 {

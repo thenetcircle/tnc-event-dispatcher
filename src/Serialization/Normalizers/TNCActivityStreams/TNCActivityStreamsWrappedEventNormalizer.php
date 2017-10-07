@@ -18,7 +18,7 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
+use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\AbstractNormalizer;
 use TNC\EventDispatcher\WrappedEvent;
 

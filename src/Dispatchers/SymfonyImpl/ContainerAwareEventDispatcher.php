@@ -16,27 +16,26 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher;
+namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
-use TNC\EventDispatcher\Interfaces\DispatcherInterface;
+use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher as BaseContainerAwareEventDispatcher;
+use TNC\EventDispatcher\Interfaces\Dispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
+use TNC\EventDispatcher\Serializer;
 
-class ContainerAwareDispatcher extends ContainerAwareEventDispatcher implements DispatcherInterface
+class ContainerAwareEventDispatcher extends BaseContainerAwareEventDispatcher implements Dispatcher
 {
     public function __construct(
-      Serializer $serializer,
-      EndPoint $endPoint,
-      ContainerInterface $container,
-      LoggerInterface $logger = null
+        ContainerInterface $container,
+        Serializer $serializer,
+        EndPoint $endPoint
     ) {
         parent::__construct($container);
         $this->serializer = $serializer;
         $this->endPoint   = $endPoint->withDispatcher($this);
-        $this->logger     = $logger;
     }
 
-    use DispatcherTrait;
+    use EventDispatcherTrait;
 }

@@ -18,7 +18,7 @@
 
 namespace TNC\EventDispatcher\Tests\Normalizers;
 
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
+use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;

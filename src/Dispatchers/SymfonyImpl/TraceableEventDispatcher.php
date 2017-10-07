@@ -16,26 +16,11 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Interfaces;
+namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
-use TNC\EventDispatcher\WrappedEvent;
+use \Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher as BaseTraceableEventDispatcher;
 
-interface EndPoint
+class TraceableEventDispatcher extends BaseTraceableEventDispatcher
 {
-    /**
-     * Sends a new message
-     *
-     * @param string                            $message
-     * @param \TNC\EventDispatcher\WrappedEvent $wrappedEvent
-     */
-    public function send($message, WrappedEvent $wrappedEvent);
-
-    /**
-     * Sets current Dispatcher instance
-     *
-     * @param \TNC\EventDispatcher\Interfaces\Dispatcher $dispatcher
-     *
-     * @return \TNC\EventDispatcher\Interfaces\EndPoint
-     */
-    public function withDispatcher(Dispatcher $dispatcher);
+    use EventDispatcherTrait;
 }

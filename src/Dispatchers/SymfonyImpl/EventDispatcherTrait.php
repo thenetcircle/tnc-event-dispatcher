@@ -16,16 +16,17 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher;
+namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Event;
 use TNC\EventDispatcher\Exception\NoClassException;
 use TNC\EventDispatcher\Interfaces\EndPoint;
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
+use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\EventDispatcher\Serializer;
+use TNC\EventDispatcher\WrappedEvent;
 
-trait DispatcherTrait
+trait EventDispatcherTrait
 {
     /**
      * @var Serializer
@@ -36,11 +37,6 @@ trait DispatcherTrait
      * @var EndPoint
      */
     private $endPoint;
-
-    /**
-     * @var LoggerInterface|null
-     */
-    private $logger = null;
 
     /**
      * Dispatches an event to all listeners.
@@ -84,12 +80,12 @@ trait DispatcherTrait
     /**
      * Dispatches a async event
      *
-     * @param string $message
+     * @param string $serializedEvent
      */
-    public function dispatchMessage($message)
+    public function dispatchSerializedEvent($serializedEvent)
     {
         /** @var WrappedEvent $metadata */
-        $metadata = $this->serializer->unserialize($message, WrappedEvent::class);
+        $metadata = $this->serializer->unserialize($serializedEvent, WrappedEvent::class);
 
         if ($metadata->getTransportMode() == TransportableEvent::TRANSPORT_MODE_ASYNC) {
 
@@ -117,19 +113,34 @@ trait DispatcherTrait
     }
 
     /**
-     * @see \Psr\Log\LoggerInterface::log()
+     * {@inheritdoc}
      */
-    public function log($level, $message, array $context = array()) {
-        if (!is_null($this->logger)) {
-            $this->logger->log($level, $message, $context);
-        }
+    public function dispatchInternalEvent($eventName, $event = null)
+    {
+        return parent::dispatch($eventName, $event);
+    }
+
+    /**
+     * @return \TNC\EventDispatcher\Serializer
+     */
+    public function getSerializer()
+    {
+        return $this->serializer;
+    }
+
+    /**
+     * @return \TNC\EventDispatcher\Interfaces\EndPoint
+     */
+    public function getEndPoint()
+    {
+        return $this->endPoint;
     }
 
     /**
      * Transports a TransportableEvent to the EndPoint
      *
      * @param string                                             $eventName
-     * @param \TNC\EventDispatcher\Interfaces\TransportableEvent $event
+     * @param \TNC\EventDispatcher\Interfaces\Event\TransportableEvent $event
      */
     protected function sendToEndPoint($eventName, TransportableEvent $event)
     {

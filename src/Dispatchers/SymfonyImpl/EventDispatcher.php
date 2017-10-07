@@ -16,30 +16,24 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher;
+namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
-use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use TNC\EventDispatcher\Exception\NoClassException;
-use TNC\EventDispatcher\Interfaces\DispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher as BaseEventDispatcher;
+use TNC\EventDispatcher\Interfaces\Dispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
-use TNC\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\EventDispatcher\Serializer;
 
-class Dispatcher extends EventDispatcher implements DispatcherInterface
+class EventDispatcher extends BaseEventDispatcher implements Dispatcher
 {
     /**
      * @param \TNC\EventDispatcher\Serializer          $serializer
      * @param \TNC\EventDispatcher\Interfaces\EndPoint $endPoint
-     * @param \Psr\Log\LoggerInterface|null            $logger
      */
-    public function __construct(Serializer $serializer, EndPoint $endPoint, LoggerInterface $logger = null)
+    public function __construct(Serializer $serializer, EndPoint $endPoint)
     {
         $this->serializer = $serializer;
         $this->endPoint   = $endPoint->withDispatcher($this);
-        $this->logger     = $logger;
     }
 
-    use DispatcherTrait;
+    use EventDispatcherTrait;
 }

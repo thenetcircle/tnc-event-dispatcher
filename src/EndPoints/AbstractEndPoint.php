@@ -20,37 +20,43 @@ namespace TNC\EventDispatcher\EndPoints;
 
 use TNC\EventDispatcher\Event\InternalEvents\TransportFailureEvent;
 use TNC\EventDispatcher\Event\InternalEvents\TransportSuccessEvent;
-use TNC\EventDispatcher\Interfaces\DispatcherInterface;
+use TNC\EventDispatcher\Interfaces\Dispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\WrappedEvent;
 
 abstract class AbstractEndPoint implements EndPoint
 {
     /**
-     * @var \TNC\EventDispatcher\Interfaces\DispatcherInterface
+     * @var \TNC\EventDispatcher\Interfaces\Dispatcher
      */
     protected $dispatcher = null;
 
     /**
      * {@inheritdoc}
      */
-    public function withDispatcher(DispatcherInterface $dispatcher)
+    public function withDispatcher(Dispatcher $dispatcher)
     {
         $this->dispatcher = $dispatcher;
         return $this;
     }
 
-    protected function dispatchSuccessEvent($message, WrappedEvent $wrappedEvent) {
-        $this->dispatcher->dispatch(
-          TransportSuccessEvent::NAME,
-          new TransportSuccessEvent($message, $wrappedEvent)
-        );
+    protected function dispatchSuccessEvent($message, WrappedEvent $wrappedEvent)
+    {
+        if (null !== $this->dispatcher) {
+            $this->dispatcher->dispatchInternalEvent(
+                TransportSuccessEvent::NAME,
+                new TransportSuccessEvent($message, $wrappedEvent)
+            );
+        }
     }
 
-    protected function dispatchFailureEvent($message, WrappedEvent $wrappedEvent, \Exception $e) {
-        $this->dispatcher->dispatch(
-          TransportFailureEvent::NAME,
-          new TransportFailureEvent($message, $wrappedEvent, $e)
-        );
+    protected function dispatchFailureEvent($message, WrappedEvent $wrappedEvent, \Exception $e)
+    {
+        if (null !== $this->dispatcher) {
+            $this->dispatcher->dispatchInternalEvent(
+                TransportFailureEvent::NAME,
+                new TransportFailureEvent($message, $wrappedEvent, $e)
+            );
+        }
     }
 }

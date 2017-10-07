@@ -18,7 +18,7 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers;
 
-use TNC\EventDispatcher\Interfaces\TransportableEvent;
+use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\WrappedEvent;
 
 class DefaultWrappedEventNormalizer extends AbstractNormalizer

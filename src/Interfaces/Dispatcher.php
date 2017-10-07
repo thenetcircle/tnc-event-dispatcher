@@ -21,7 +21,7 @@ namespace TNC\EventDispatcher\Interfaces;
 use Symfony\Component\EventDispatcher\Event;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
 
-interface DispatcherInterface
+interface Dispatcher
 {
     /**
      * Dispatches an event to all listeners.
@@ -41,14 +41,22 @@ interface DispatcherInterface
     public function dispatch($eventName, Event $event = null);
 
     /**
-     * Dispatches a async event
+     * Dispatches a event which has been serialized already, Usually it comes from a Receiver
      *
-     * @param string $message
+     * @param string $serializedEvent
      */
-    public function dispatchMessage($message);
+    public function dispatchSerializedEvent($serializedEvent);
 
     /**
-     * @see \Psr\Log\LoggerInterface::log()
+     * Dispatches a internal event
+     * @see dispatcher()
+     *
+     * @param string $eventName
+     * @param object $event
+     *
+     * @return object
+     *
+     * @throws InvalidArgumentException
      */
-    public function log($level, $message, array $context = array());
+    public function dispatchInternalEvent($eventName, $event = null);
 }

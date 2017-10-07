@@ -16,7 +16,7 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Interfaces;
+namespace TNC\EventDispatcher\Interfaces\Event;
 
 use TNC\EventDispatcher\Exception\DenormalizeException;
 use TNC\EventDispatcher\Exception\NormalizeException;

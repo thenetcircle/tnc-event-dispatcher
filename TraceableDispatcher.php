@@ -22,17 +22,17 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher;
-use TNC\EventDispatcher\Interfaces\DispatcherInterface;
+use TNC\EventDispatcher\Interfaces\Dispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 
-class TraceableDispatcher extends TraceableEventDispatcher implements DispatcherInterface
+class TraceableDispatcher extends TraceableEventDispatcher implements Dispatcher
 {
     /**
      * Dispatches a async event
      *
      * @param string $message
      */
-    public function dispatchMessage($message)
+    public function dispatchSerializedEvent($message)
     {
     }
 
