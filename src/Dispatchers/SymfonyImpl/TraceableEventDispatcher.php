@@ -18,9 +18,21 @@
 
 namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
+use Psr\Log\LoggerInterface;
 use \Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher as BaseTraceableEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class TraceableEventDispatcher extends BaseTraceableEventDispatcher
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(EventDispatcherInterface $dispatcher, Stopwatch $stopwatch, LoggerInterface $logger = null)
+    {
+        parent::__construct($dispatcher, $stopwatch, $logger);
+    }
+
+    // TODO: add more trace info
     use EventDispatcherTrait;
 }
