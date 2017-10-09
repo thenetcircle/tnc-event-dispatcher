@@ -22,17 +22,37 @@ use Psr\Log\LoggerInterface;
 use \Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher as BaseTraceableEventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Stopwatch\Stopwatch;
+use TNC\EventDispatcher\Interfaces\Dispatcher;
 
-class TraceableEventDispatcher extends BaseTraceableEventDispatcher
+class TraceableEventDispatcher extends BaseTraceableEventDispatcher implements Dispatcher
 {
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
+
     /**
      * {@inheritdoc}
      */
     public function __construct(EventDispatcherInterface $dispatcher, Stopwatch $stopwatch, LoggerInterface $logger = null)
     {
         parent::__construct($dispatcher, $stopwatch, $logger);
+        $this->dispatcher = $dispatcher;
     }
 
-    // TODO: add more trace info
-    use EventDispatcherTrait;
+    /**
+     * {@inheritdoc}
+     */
+    public function dispatchSerializedEvent($serializedEvent)
+    {
+        $this->dispatcher->dispatchSerializedEvent($serializedEvent);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dispatchInternalEvent($eventName, $event = null)
+    {
+        return $this->dispatcher->dispatchInternalEvent($eventName, $event);
+    }
 }

@@ -78,19 +78,21 @@ trait EventDispatcherTrait
     }
 
     /**
-     * Dispatches a async event
+     * Dispatches a event which has been serialized already, Usually it comes from a Receiver
      *
      * @param string $serializedEvent
+     *
+     * @return Event|null
      */
     public function dispatchSerializedEvent($serializedEvent)
     {
-        /** @var WrappedEvent $metadata */
-        $metadata = $this->serializer->unserialize($serializedEvent, WrappedEvent::class);
+        /** @var WrappedEvent $wrappedEvent */
+        $wrappedEvent = $this->serializer->unserialize($serializedEvent, WrappedEvent::class);
 
-        if ($metadata->getTransportMode() == TransportableEvent::TRANSPORT_MODE_ASYNC) {
+        if ($wrappedEvent->getTransportMode() == TransportableEvent::TRANSPORT_MODE_ASYNC) {
 
-            $eventName = $metadata->getEventName();
-            $className = $metadata->getClassName();
+            $eventName = $wrappedEvent->getEventName();
+            $className = $wrappedEvent->getClassName();
 
             if ($listeners = $this->getListeners($eventName)) {
 
@@ -104,16 +106,28 @@ trait EventDispatcherTrait
                     }
                 }
 
-                $event = $this->serializer->denormalize($metadata->getNormalizedEvent(), $className);
+                $event = $this->serializer->denormalize($wrappedEvent->getNormalizedEvent(), $className);
 
                 $this->doDispatch($listeners, $eventName, $event);
+
+                return $event;
             }
 
         }
+
+        return null;
     }
 
     /**
-     * {@inheritdoc}
+     * Dispatches a internal event
+     * @see dispatcher()
+     *
+     * @param string $eventName
+     * @param object $event
+     *
+     * @return object
+     *
+     * @throws InvalidArgumentException
      */
     public function dispatchInternalEvent($eventName, $event = null)
     {

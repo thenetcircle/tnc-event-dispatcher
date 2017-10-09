@@ -20,6 +20,7 @@ namespace TNC\EventDispatcher\Interfaces;
 
 use Symfony\Component\EventDispatcher\Event;
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
+use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 
 interface Dispatcher
 {
@@ -44,6 +45,8 @@ interface Dispatcher
      * Dispatches a event which has been serialized already, Usually it comes from a Receiver
      *
      * @param string $serializedEvent
+     *
+     * @return TransportableEvent|null
      */
     public function dispatchSerializedEvent($serializedEvent);
 
