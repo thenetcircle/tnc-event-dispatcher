@@ -23,19 +23,18 @@ use TNC\EventDispatcher\Exception\NormalizeException;
 use TNC\EventDispatcher\Interfaces\Event\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\AbstractNormalizer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
 
 class TNCActivityStreamsNormalizer extends AbstractNormalizer
 {
     /**
-     * @var null|\TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder
+     * @var null|\TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\ActivityBuilderInterface
      */
     protected $activityBuilder = null;
 
-    public function __construct()
+    public function __construct(ActivityBuilderInterface $activityBuilder = null)
     {
-        $this->activityBuilder = new TNCActivityBuilder();
+        $this->activityBuilder = null === $activityBuilder ? new DefaultActivityBuilder() : $activityBuilder;
     }
 
     /**
@@ -66,12 +65,11 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
      */
     public function denormalize($data, $className)
     {
-        $reflectionClass = new \ReflectionClass($className);
-
         /** @var Activity $activity */
         $activity = $this->denormalizeActivity($data);
 
         /** @var TNCActivityStreamsEvent $object */
+        $reflectionClass = new \ReflectionClass($className);
         $object = $reflectionClass->newInstanceWithoutConstructor();
         $object->denormalize($activity);
 
@@ -98,35 +96,51 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
         return is_subclass_of($className, TNCActivityStreamsEvent::class);
     }
 
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity
+     *
+     * @return array
+     */
     protected function normalizeActivity(Activity $activity)
     {
-        return $this->getNonEmptyObjectVars($activity);
+        return $this->getNonEmptyProperties($activity->getAll());
     }
 
-    protected function getNonEmptyObjectVars($object)
+    /**
+     * @param array $properties
+     *
+     * @return array
+     */
+    protected function getNonEmptyProperties($properties)
     {
         $data = [];
-        $vars = get_object_vars($object);
-        foreach ($vars as $key => $value) {
+
+        foreach ($properties as $key => $value) {
             if (
               (is_string($value) && $value == '') ||
-              (is_array($value) && count($value) === 0) ||
+              (is_array($value)  && count($value) === 0) ||
+              (is_object($value) && !($value instanceof ActivityObject)) ||
               is_null($value)
-            ){
+            ) {
                 continue;
             }
 
             switch (true) {
 
-                case is_object($value):
-                    $_data = $this->getNonEmptyObjectVars($value);
-                    if (count($_data) > 0) {
-                        $data[$key] = $_data;
+                case is_array($value):
+                    if ($key == 'attachments') {
+                        $data[$key] = $this->getNonEmptyProperties($value);
+                    }
+                    else {
+                        $data[$key] = $value;
                     }
                     break;
 
-                case is_array($value):
-                    $data[$key] = $value;
+                case is_object($value):
+                    $_data = $this->getNonEmptyProperties($value->getAll());
+                    if (count($_data) > 0) {
+                        $data[$key] = $_data;
+                    }
                     break;
 
                 default:
@@ -138,32 +152,15 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
         return $data;
     }
 
+    /**
+     * @param array $data
+     *
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+     */
     protected function denormalizeActivity(array $data)
     {
-        $activity = new Activity();
-
-        foreach ($data as $key => $value) {
-            switch (true) {
-                case $key == 'actor':
-                    if (is_array($value)) {
-                        $activity->actor = new Actor($value['id'], isset($value['type']) ? $value['type'] : '');
-                    }
-                    break;
-                case $key == 'object':
-                    if (is_array($value)) {
-                        $activity->object = new Obj($value['type'], isset($value['context']) ? $value['context'] : []);
-                    }
-                    break;
-                case $key == 'context':
-                    if (is_array($value)) {
-                        $activity->context = $value;
-                    }
-                    break;
-                default:
-                    $activity->{$key} = $value;
-            }
-        }
-
-        return $activity;
+        $builder = new DefaultActivityBuilder();
+        $builder->setFromArray($data);
+        return $builder->getActivity();
     }
 }

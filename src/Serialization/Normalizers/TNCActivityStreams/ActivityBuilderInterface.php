@@ -16,8 +16,12 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
+namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 
-class Actor extends ActivityObject
+interface ActivityBuilderInterface
 {
+    /**
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+     */
+    public function getActivity();
 }

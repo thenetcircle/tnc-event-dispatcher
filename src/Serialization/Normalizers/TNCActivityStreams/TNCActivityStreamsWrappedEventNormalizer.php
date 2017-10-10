@@ -18,6 +18,7 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 
+use TNC\EventDispatcher\Exception\DenormalizeException;
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\AbstractNormalizer;
 use TNC\EventDispatcher\WrappedEvent;
@@ -33,15 +34,23 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
         $data['verb'] = $wrappedEvent->getEventName();
 
         $metadata = [
-            'mode' => $wrappedEvent->getTransportMode(),
+          'id'      => 'event-dispatcher-metadata',
+          'content' => [
+            'mode'  => $wrappedEvent->getTransportMode(),
             'class' => $wrappedEvent->getClassName()
+          ]
         ];
 
-        if (isset($data['context']) && is_array($data['context'])) {
-            $data['context']['metadata'] = $metadata;
-        }
-        else {
-            $data['context'] = ['metadata' => $metadata];
+        if (isset($data['provider'])) {
+            if (isset($data['provider']['attachments'])) {
+                $data['provider']['attachments'][] = $metadata;
+            } else {
+                $data['provider']['attachments'] = [$metadata];
+            }
+        } else {
+            $data['provider'] = [
+              'attachments' => [$metadata]
+            ];
         }
 
         return $data;
@@ -52,18 +61,30 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
      */
     public function denormalize($data, $className)
     {
-        $eventName       = $data['verb'];
+        if (!isset($data['verb'])) {
+            throw new DenormalizeException('The field "verb" is required.');
+        }
 
-        $transportMode   = isset($data['context']['metadata']['mode']) ?
-          $data['context']['metadata']['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;
+        $eventName = $data['verb'];
+        $metadata  = [];
 
-        $className  = isset($data['context']['metadata']['class']) ? $data['context']['metadata']['class'] : '';
+        if (
+          isset($data['provider']['attachments']) &&
+          is_array($attachments = $data['provider']['attachments']) &&
+          count($attachments) > 0
+        ) {
+            foreach ($attachments as $attachment) {
+                if (is_array($attachment) && isset($attachment['id']) && $attachment['id'] == 'event-dispatcher-metadata') {
+                    $metadata = $attachment;
+                    break;
+                }
+            }
+        }
 
-        if (isset($data['context']['metadata'])) unset($data['context']['metadata']);
+        $transportMode = isset($metadata['content']['mode']) ? $metadata['content']['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;
+        $className     = isset($metadata['content']['class']) ? $metadata['content']['class'] : '';
 
-        $normalizedEvent = $data;
-
-        return new WrappedEvent($transportMode, $eventName, $normalizedEvent, $className);
+        return new WrappedEvent($transportMode, $eventName, $data, $className);
     }
 
     /**

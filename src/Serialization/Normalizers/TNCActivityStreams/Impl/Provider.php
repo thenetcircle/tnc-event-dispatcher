@@ -18,6 +18,6 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 
-class Actor extends ActivityObject
+class Provider extends ActivityObject
 {
 }

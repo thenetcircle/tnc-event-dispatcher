@@ -18,25 +18,6 @@
 
 namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
 
-class Obj
+class Obj extends ActivityObject
 {
-    /**
-     * Object Type
-     *
-     * @var string
-     */
-    public $type = "";
-
-    /**
-     * Object Context
-     *
-     * @var array
-     */
-    public $context = [];
-
-    public function __construct($type, $context = [])
-    {
-        $this->type = $type;
-        $this->context = $context;
-    }
 }

@@ -16,22 +16,22 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests;
+namespace TNC\EventDispatcher\Tests\Dispatchers;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\EventDispatcher\Tests\AbstractEventDispatcherTest;
+use TNC\EventDispatcher\Dispatchers\SymfonyImpl\EventDispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer;
 use TNC\EventDispatcher\Serializer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
-use TNC\EventDispatcher\Dispatcher;
 
-class DispatcherTest extends AbstractEventDispatcherTest
+class SymfonyEventDispatcherTest extends AbstractEventDispatcherTest
 {
     /**
-     * @var Dispatcher
+     * @var EventDispatcher
      */
     private $dispatcher;
 
@@ -56,14 +56,10 @@ class DispatcherTest extends AbstractEventDispatcherTest
 
         $endPointMock = $this->getMockBuilder(EndPoint::class)->getMock();
 
-        return new Dispatcher($serializer, $endPointMock);
+        return new EventDispatcher($serializer, $endPointMock);
     }
 
-    // TODO: no type hint Listeners, no parameter Listeners
-    public function testListeningTransportableEvents()
-    {
-
-    }
+    // TODO: add more tests and SerializedEvent dispatch
 }
 
 abstract class AbstractTestEvent implements TransportableEvent {

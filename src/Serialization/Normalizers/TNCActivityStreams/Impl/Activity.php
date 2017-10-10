@@ -33,40 +33,233 @@ class Activity
     /**
      * @var string
      */
-    public $version = '1.0';
+    private $version = '1.0';
 
     /**
      * @var string
      */
-    public $id = "";
+    private $id = '';
 
     /**
      * @var string
      */
-    public $verb = "";
+    private $verb = '';
+
+    /**
+     * @var mixed
+     */
+    private $content = '';
 
     /**
      * @var Actor
      */
-    public $actor = null;
+    private $actor = null;
 
     /**
      * @var Obj
      */
-    public $object = null;
+    private $object = null;
+
+    /**
+     * @var Target
+     */
+    private $target = null;
+
+    /**
+     * @var Provider
+     */
+    private $provider = null;
 
     /**
      * @var string
      */
-    public $provider = "";
+    private $published = '';
 
     /**
-     * @var string
+     * @return string
      */
-    public $published = "";
+    public function getVersion()
+    {
+        return $this->version;
+    }
 
     /**
-     * @var array
+     * @param string $version
+     *
+     * @return Activity
      */
-    public $context = [];
+    public function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @return Activity
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getVerb()
+    {
+        return $this->verb;
+    }
+
+    /**
+     * @param string $verb
+     *
+     * @return Activity
+     */
+    public function setVerb($verb)
+    {
+        $this->verb = $verb;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param mixed $content
+     *
+     * @return Activity
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor
+     */
+    public function getActor()
+    {
+        return $this->actor;
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor $actor
+     *
+     * @return Activity
+     */
+    public function setActor($actor)
+    {
+        $this->actor = $actor;
+
+        return $this;
+    }
+
+    /**
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj
+     */
+    public function getObject()
+    {
+        return $this->object;
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj $object
+     *
+     * @return Activity
+     */
+    public function setObject($object)
+    {
+        $this->object = $object;
+
+        return $this;
+    }
+
+    /**
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Target
+     */
+    public function getTarget()
+    {
+        return $this->target;
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Target $target
+     *
+     * @return Activity
+     */
+    public function setTarget($target)
+    {
+        $this->target = $target;
+
+        return $this;
+    }
+
+    /**
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Provider
+     */
+    public function getProvider()
+    {
+        return $this->provider;
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Provider $provider
+     *
+     * @return Activity
+     */
+    public function setProvider($provider)
+    {
+        $this->provider = $provider;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublished()
+    {
+        return $this->published;
+    }
+
+    /**
+     * @param string $published
+     *
+     * @return Activity
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAll()
+    {
+        return get_object_vars($this);
+    }
 }

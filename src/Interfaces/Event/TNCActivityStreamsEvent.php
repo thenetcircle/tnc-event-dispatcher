@@ -20,7 +20,6 @@ namespace TNC\EventDispatcher\Interfaces\Event;
 
 use TNC\EventDispatcher\Exception\DenormalizeException;
 use TNC\EventDispatcher\Exception\NormalizeException;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
 
 interface TNCActivityStreamsEvent extends TransportableEvent
@@ -28,13 +27,13 @@ interface TNCActivityStreamsEvent extends TransportableEvent
     /**
      * Normalizes a Event to be a Activity
      *
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder $builder
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder $builder
      *
      * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
      *
      * @throws NormalizeException
      */
-    public function normalize(TNCActivityBuilder $builder);
+    public function normalize($builder);
 
     /**
      * Denormalizes a Acitivty to be a Event
@@ -43,5 +42,5 @@ interface TNCActivityStreamsEvent extends TransportableEvent
      *
      * @throws DenormalizeException
      */
-    public function denormalize(Activity $activity);
+    public function denormalize($activity);
 }

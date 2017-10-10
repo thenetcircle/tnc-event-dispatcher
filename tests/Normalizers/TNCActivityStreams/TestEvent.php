@@ -16,12 +16,11 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests\Normalizers;
+namespace TNC\EventDispatcher\Tests\Normalizers\TNCActivityStreams;
 
 use \TNC\EventDispatcher\Interfaces\Event\TNCActivityStreamsEvent;
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder;
 
 class TestEvent implements TNCActivityStreamsEvent
 {
@@ -38,7 +37,7 @@ class TestEvent implements TNCActivityStreamsEvent
     /**
      * {@inheritdoc}
      */
-    public function normalize(TNCActivityBuilder $builder)
+    public function normalize($builder)
     {
         return $this->activity;
     }
@@ -46,7 +45,7 @@ class TestEvent implements TNCActivityStreamsEvent
     /**
      * {@inheritdoc}
      */
-    public function denormalize(Activity $activity)
+    public function denormalize($activity)
     {
         $this->activity = $activity;
     }

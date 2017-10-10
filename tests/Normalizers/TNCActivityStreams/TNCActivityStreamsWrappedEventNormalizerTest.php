@@ -16,11 +16,12 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests\Normalizers;
+namespace TNC\EventDispatcher\Tests\Normalizers\TNCActivityStreams;
 
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityBuilder;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer;
 use TNC\EventDispatcher\Serializer;
@@ -33,67 +34,86 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
      */
     public $normalizer;
 
+    /**
+     * @var array
+     */
+    public $testData;
+
+    /**
+     * @var array
+     */
+    public $expectedData;
+
     public function setUp()
     {
         $this->normalizer = new TNCActivityStreamsWrappedEventNormalizer();
+        $this->testData = [
+          'version'   => '1.0',
+          'id'        => 'id',
+          'verb'      => 'verb',
+          'published' => 'published',
+          'content'   => 'content',
+          'actor'     => [
+            'id' => 'providerId',
+            'objectType' => 'providerType'
+          ],
+          'object'    => [
+            'id' => 'providerId',
+            'objectType' => 'providerType'
+          ],
+          'target'    => [
+            'id' => 'providerId',
+            'objectType' => 'providerType'
+          ],
+          'provider'  => [
+            'id' => 'providerId',
+            'objectType' => 'providerType'
+          ]
+        ];
+
+        $this->expectedData = $this->testData;
+        $this->expectedData['verb'] = 'message.send';
+        $this->expectedData['provider']['attachments'] = [
+          [
+            'id' => 'event-dispatcher-metadata',
+            'content' => [
+              'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
+              'class' => TransportableEvent::class
+            ]
+          ]
+        ];
     }
 
     public function tearDown()
     {
         $this->normalizer = null;
+        $this->testData = [];
+        $this->expectedData = [];
     }
 
     public function testNormalizeAndDenormalize()
     {
-        $normalizedEvent = [
-          'id'        => 'id',
-          'provider'  => 'testProvider',
-          'published' => 'testPublished',
-          'context'   => [
-            'ckey1' => 'cvalue1',
-            'ckey2' => 'cvalue2',
-            'ckey4' => 'cvalue4',
-          ],
-          'actor'     => [
-            'id'   => 'actorId',
-            'type' => 'actorType'
-          ],
-          'object'    => [
-            'type'    => 'testObject',
-            'context' => [
-              'key1' => 'value1',
-              'key2' => 'value2'
-            ]
-          ]
-        ];
+        $verb = 'message.send';
 
         $wrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
-          'message.send',
-          $normalizedEvent,
+          $verb,
+          $this->testData,
           TransportableEvent::class
         );
-
-        $expectedData = $normalizedEvent;
-        $expectedData['verb'] = 'message.send';
-        $expectedData['context']['metadata'] = [
-          'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
-          'class' => TransportableEvent::class
-        ];
 
         self::assertEquals(true, $this->normalizer->supportsNormalization($wrappedEvent));
         $data = $this->normalizer->normalize($wrappedEvent);
-        self::assertEquals($expectedData, $data);
-
-        self::assertEquals(true, $this->normalizer->supportsDenormalization($expectedData, WrappedEvent::class));
+        self::assertEquals($this->expectedData, $data);
 
         $expectedWrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
-          'message.send',
-          array_merge($normalizedEvent, ['verb' => 'message.send']),
+          $verb,
+          $data,
           TransportableEvent::class
         );
-        self::assertEquals($expectedWrappedEvent, $this->normalizer->denormalize($expectedData, WrappedEvent::class));
+        self::assertEquals(true, $this->normalizer->supportsDenormalization($data, WrappedEvent::class));
+        self::assertEquals($expectedWrappedEvent, $this->normalizer->denormalize($data, WrappedEvent::class));
     }
 
     public function testWithSerializer()
@@ -102,48 +122,36 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
           [$this->normalizer, new TNCActivityStreamsNormalizer()],
           new JsonFormatter()
         );
+        $verb = 'message.send';
 
-        $builder = new TNCActivityBuilder();
-        $builder->setId("id");
-        $builder->setActor('actorId');
-        $builder->setObject('testObject');
-        $builder->setPublished('testPublished');
-        $activity = $builder->getActivity();
-        $testEvent = new TestEvent($activity);
+        $builder = new DefaultActivityBuilder();
+        $builder->setFromArray($this->testData);
+        $testEvent = new TestEvent($builder->getActivity());
 
         $wrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
-          'message.send',
+          $verb,
           $serializer->normalize($testEvent),
           TransportableEvent::class
         );
 
-        $expectedData = json_encode([
-          'version'   => '1.0',
-          'id'        => 'id',
-          'verb'      => 'message.send',
-          'published' => 'testPublished',
-          'actor'     => [
-            'id'   => 'actorId'
-          ],
-          'object'    => [
-            'type'    => 'testObject'
-          ],
-          'context' => [
-            'metadata' => [
-              'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
-              'class' => TransportableEvent::class
-            ]
-          ]
-        ]);
-
+        $expectedData = json_encode($this->expectedData);
         $data = $serializer->serialize($wrappedEvent);
         self::assertJson($expectedData, $data);
 
         /** @var WrappedEvent $unserializedWrappedEvent */
         $unserializedWrappedEvent = $serializer->unserialize($expectedData, WrappedEvent::class);
+
         $expectedTestEvent = $testEvent;
-        $expectedTestEvent->activity->verb = 'message.send';
+        $expectedTestEvent->activity->setVerb('message.send');
+        $expectedTestEvent->activity->getProvider()->addAttachment(
+          (new ActivityObject())
+            ->setId('event-dispatcher-metadata')
+            ->setContent([
+              'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
+              'class' => TransportableEvent::class
+            ])
+        );
 
         self::assertEquals($expectedTestEvent, $serializer->denormalize($unserializedWrappedEvent->getNormalizedEvent(),
           TestEvent::class));
