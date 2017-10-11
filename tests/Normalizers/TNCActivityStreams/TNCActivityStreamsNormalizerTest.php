@@ -20,6 +20,7 @@ namespace TNC\EventDispatcher\Tests\Normalizers\TNCActivityStreams;
 
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
 use TNC\EventDispatcher\Serializer;
 
@@ -103,6 +104,15 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
 
         self::assertEquals(true, $this->normalizer->supportsDenormalization($expectedData, TestEvent::class));
         self::assertEquals($testEvent, $this->normalizer->denormalize($expectedData, TestEvent::class));
+    }
+
+    public function testNormalizeEmptyActivityObject()
+    {
+        $testEvent = new TestEvent(new Activity());
+        self::assertEquals(['version' => '1.0'], $this->normalizer->normalize($testEvent));
+
+        $testEvent->activity->getProvider(); // which will create a empty ActivityObject implicitly
+        self::assertEquals(['version' => '1.0'], $this->normalizer->normalize($testEvent));
     }
 
     public function testAttachments()

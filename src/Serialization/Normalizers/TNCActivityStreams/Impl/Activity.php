@@ -51,22 +51,22 @@ class Activity
     private $content = '';
 
     /**
-     * @var Actor
+     * @var ActivityObject
      */
     private $actor = null;
 
     /**
-     * @var Obj
+     * @var ActivityObject
      */
     private $object = null;
 
     /**
-     * @var Target
+     * @var ActivityObject
      */
     private $target = null;
 
     /**
-     * @var Provider
+     * @var ActivityObject
      */
     private $provider = null;
 
@@ -74,6 +74,11 @@ class Activity
      * @var string
      */
     private $published = '';
+
+    /**
+     * @var ActivityObject
+     */
+    private $generator = null;
 
     /**
      * @return string
@@ -93,6 +98,14 @@ class Activity
         $this->version = $version;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAll()
+    {
+        return get_object_vars($this);
     }
 
     /**
@@ -156,15 +169,15 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
      */
     public function getActor()
     {
-        return $this->actor;
+        return $this->actor ?: ($this->actor = new ActivityObject());
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor $actor
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $actor
      *
      * @return Activity
      */
@@ -176,15 +189,15 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
      */
     public function getObject()
     {
-        return $this->object;
+        return $this->object ?: ($this->object = new ActivityObject());
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj $object
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $object
      *
      * @return Activity
      */
@@ -196,15 +209,15 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Target
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
      */
     public function getTarget()
     {
-        return $this->target;
+        return $this->target ?: ($this->target = new ActivityObject());
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Target $target
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $target
      *
      * @return Activity
      */
@@ -216,15 +229,15 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Provider
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
      */
     public function getProvider()
     {
-        return $this->provider;
+        return $this->provider ?: ($this->provider = new ActivityObject());
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Provider $provider
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $provider
      *
      * @return Activity
      */
@@ -256,10 +269,22 @@ class Activity
     }
 
     /**
-     * @return array
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
      */
-    public function getAll()
+    public function getGenerator()
     {
-        return get_object_vars($this);
+        return $this->generator ?: ($this->generator = new ActivityObject());
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $generator
+     *
+     * @return Activity
+     */
+    public function setGenerator($generator)
+    {
+        $this->generator = $generator;
+
+        return $this;
     }
 }

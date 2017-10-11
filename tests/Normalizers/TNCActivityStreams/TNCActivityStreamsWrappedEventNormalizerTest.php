@@ -73,14 +73,14 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
 
         $this->expectedData = $this->testData;
         $this->expectedData['verb'] = 'message.send';
-        $this->expectedData['provider']['attachments'] = [
-          [
+        $this->expectedData['generator'] = [
+          'attachments' => [[
             'id' => 'event-dispatcher-metadata',
             'content' => [
               'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
               'class' => TransportableEvent::class
             ]
-          ]
+          ]]
         ];
     }
 
@@ -144,7 +144,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
 
         $expectedTestEvent = $testEvent;
         $expectedTestEvent->activity->setVerb('message.send');
-        $expectedTestEvent->activity->getProvider()->addAttachment(
+        $expectedTestEvent->activity->getGenerator()->addAttachment(
           (new ActivityObject())
             ->setId('event-dispatcher-metadata')
             ->setContent([

@@ -67,10 +67,10 @@ class DefaultActivityBuilderTest extends \PHPUnit_Framework_TestCase
         self::assertEquals('new content', $this->builder->getActivity()->getContent());
 
         # set ActivityObject
-        $testActor = (new Actor())->setId('test actor');
-        $testObject = (new Obj())->setId('test object');
-        $testTarget = (new Target())->setId('test target');
-        $testProvider = (new Provider())->setId('test provider');
+        $testActor = (new ActivityObject())->setId('test actor');
+        $testObject = (new ActivityObject())->setId('test object');
+        $testTarget = (new ActivityObject())->setId('test target');
+        $testProvider = (new ActivityObject())->setId('test provider');
 
         $this->builder->setFromArray([
             'actor' => $testActor,
@@ -125,7 +125,7 @@ class DefaultActivityBuilderTest extends \PHPUnit_Framework_TestCase
         self::assertEquals('message.send', $this->builder->getActivity()->getVerb());
         self::assertEquals('now', $this->builder->getActivity()->getPublished());
 
-        $testActor = (new Actor())->setId('test actor');
+        $testActor = (new ActivityObject())->setId('test actor');
         $this->builder->setActor($testActor);
         self::assertEquals($testActor, $this->builder->getActivity()->getActor());
     }
@@ -182,7 +182,7 @@ class DefaultActivityBuilderTest extends \PHPUnit_Framework_TestCase
         );
 
         # use object directly
-        $testActor = (new Actor())->setId('test actor');
+        $testActor = (new ActivityObject())->setId('test actor');
         $this->builder->setFromArray([
           'actor' => $testActor
         ]);

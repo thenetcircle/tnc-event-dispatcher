@@ -41,6 +41,34 @@ class ActivityObject
     private $attachments = [];
 
     /**
+     * @var mixed
+     */
+    private $summary = '';
+
+    /**
+     * @var string[]
+     */
+    private $downstreamDuplicates = [];
+
+    /**
+     * @var string[]
+     */
+    private $upstreamDuplicates = [];
+
+    /**
+     * @var ActivityObject
+     */
+    private $author = null;
+
+    /**
+     * @return array
+     */
+    public function getAll()
+    {
+        return get_object_vars($this);
+    }
+
+    /**
      * @return string
      */
     public function getId()
@@ -113,7 +141,7 @@ class ActivityObject
      *
      * @return ActivityObject
      */
-    public function setAttachments($attachments)
+    public function setAttachments(array $attachments)
     {
         $this->attachments = $attachments;
 
@@ -125,7 +153,7 @@ class ActivityObject
      *
      * @return ActivityObject
      */
-    public function addAttachment($attachment)
+    public function addAttachment(ActivityObject $attachment)
     {
         $this->attachments[] = $attachment;
 
@@ -133,10 +161,106 @@ class ActivityObject
     }
 
     /**
-     * @return array
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
      */
-    public function getAll()
+    public function getAuthor()
     {
-        return get_object_vars($this);
+        return $this->author ?: ($this->author = new ActivityObject());
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $author
+     *
+     * @return ActivityObject
+     */
+    public function setAuthor($author)
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getDownstreamDuplicates()
+    {
+        return $this->downstreamDuplicates;
+    }
+
+    /**
+     * @param \string[] $downstreamDuplicates
+     *
+     * @return ActivityObject
+     */
+    public function setDownstreamDuplicates($downstreamDuplicates)
+    {
+        $this->downstreamDuplicates = $downstreamDuplicates;
+
+        return $this;
+    }
+
+    /**
+     * @param string $downstreamDuplicate
+     *
+     * @return $this
+     */
+    public function addDownstreamDuplicate($downstreamDuplicate)
+    {
+        $this->downstreamDuplicates[] = $downstreamDuplicate;
+
+        return $this;
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getUpstreamDuplicates()
+    {
+        return $this->upstreamDuplicates;
+    }
+
+    /**
+     * @param \string[] $upstreamDuplicates
+     *
+     * @return ActivityObject
+     */
+    public function setUpstreamDuplicates($upstreamDuplicates)
+    {
+        $this->upstreamDuplicates = $upstreamDuplicates;
+
+        return $this;
+    }
+
+    /**
+     * @param string $upstreamDuplicate
+     *
+     * @return $this
+     */
+    public function addUpstreamDuplicate($upstreamDuplicate)
+    {
+        $this->upstreamDuplicates[] = $upstreamDuplicate;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSummary()
+    {
+        return $this->summary;
+    }
+
+    /**
+     * @param mixed $summary
+     *
+     * @return ActivityObject
+     */
+    public function setSummary($summary)
+    {
+        $this->summary = $summary;
+
+        return $this;
     }
 }

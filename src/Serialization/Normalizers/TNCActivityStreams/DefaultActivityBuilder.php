@@ -70,32 +70,8 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
             }
 
             $method = 'set' . ucfirst($key);
-
-            if (in_array($key, ['actor', 'object', 'target', 'provider'])) {
-
-                $prototype = null;
-
-                # Create ActivityObject
-                switch ($key)
-                {
-                    case 'actor':
-                        $prototype = new Actor();
-                        break;
-                    case 'object':
-                        $prototype = new Obj();
-                        break;
-                    case 'target':
-                        $prototype = new Target();
-                        break;
-                    case 'provider':
-                        $prototype = new Provider();
-                        break;
-                }
-
-                $this->activity->{$method}(
-                  $this->getActivityObjectFromData($value, $prototype)
-                );
-
+            if (in_array($key, ['actor', 'object', 'target', 'provider', 'generator'])) {
+                $this->activity->{$method}($this->getActivityObjectFromData($value));
             }
             else {
                 $this->activity->{$method}($value);

@@ -25,6 +25,8 @@ use TNC\EventDispatcher\WrappedEvent;
 
 class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
 {
+    const CONTAINER_FIELD = 'generator';
+
     /**
      * {@inheritdoc}
      */
@@ -41,14 +43,16 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
           ]
         ];
 
-        if (isset($data['provider'])) {
-            if (isset($data['provider']['attachments'])) {
-                $data['provider']['attachments'][] = $metadata;
+        if (isset($data[self::CONTAINER_FIELD])) {
+
+            if (isset($data[self::CONTAINER_FIELD]['attachments'])) {
+                $data[self::CONTAINER_FIELD]['attachments'][] = $metadata;
             } else {
-                $data['provider']['attachments'] = [$metadata];
+                $data[self::CONTAINER_FIELD]['attachments'] = [$metadata];
             }
+
         } else {
-            $data['provider'] = [
+            $data[self::CONTAINER_FIELD] = [
               'attachments' => [$metadata]
             ];
         }
@@ -69,8 +73,8 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
         $metadata  = [];
 
         if (
-          isset($data['provider']['attachments']) &&
-          is_array($attachments = $data['provider']['attachments']) &&
+          isset($data[self::CONTAINER_FIELD]['attachments']) &&
+          is_array($attachments = $data[self::CONTAINER_FIELD]['attachments']) &&
           count($attachments) > 0
         ) {
             foreach ($attachments as $attachment) {
