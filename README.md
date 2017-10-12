@@ -4,6 +4,8 @@ TNC EventDispatcher is a enhanced version of [Symfony EventDispatcher](https://s
 
 The Workflow like this:
 
+![Workflow](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/uploads/ae847041f3bb46d379c98701f9ada076/EventDispatcher_Diagram.png)
+
 ## Installation
 
 ### Requirements
