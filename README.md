@@ -12,8 +12,8 @@ You may also need to know [Serialization](http://gitlab/service-team/service-eve
 ### Related Projects
 
 - [EventBus](https://github.com/thenetcircle/event-bus) A events distributing system with various different data sources and targets 
-- [EventDispatcher Bundle](http://gitlab/service-team/bundle-eventdispatcher) Symfony Bundle of EventDispatcher
-- [EventDispatcher Demo Project](http://gitlab/service-team/eventdispatcher-demo) A demo project of EventDispatcher Bundle based on Symfony Framework
+- [TNCEventDispatcherBundle](http://gitlab/service-team/bundle-eventdispatcher) Symfony Bundle of EventDispatcher
+- [TNCEventDispatcher-Demo](http://gitlab/service-team/eventdispatcher-demo) A demo project of EventDispatcher Bundle based on Symfony Framework
 
 ## Installation
 
