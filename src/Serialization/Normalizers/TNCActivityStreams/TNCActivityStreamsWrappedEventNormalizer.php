@@ -33,29 +33,21 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
     public function normalize($wrappedEvent)
     {
         $data         = $wrappedEvent->getNormalizedEvent();
-        $data['verb'] = $wrappedEvent->getEventName();
 
-        $metadata = [
-          'id'      => 'event-dispatcher-metadata',
+        $eventName = $wrappedEvent->getEventName();
+        $data['title'] = $eventName;
+        if (strpos($eventName, '.') !== false) {
+            $data['verb'] = substr(strrchr($eventName, '.'), 1);
+        }
+
+        $data['generator'] = [
+          'id'      => 'tnc-event-dispatcher',
+          'objectType' => 'library',
           'content' => [
             'mode'  => $wrappedEvent->getTransportMode(),
             'class' => $wrappedEvent->getClassName()
           ]
         ];
-
-        if (isset($data[self::CONTAINER_FIELD])) {
-
-            if (isset($data[self::CONTAINER_FIELD]['attachments'])) {
-                $data[self::CONTAINER_FIELD]['attachments'][] = $metadata;
-            } else {
-                $data[self::CONTAINER_FIELD]['attachments'] = [$metadata];
-            }
-
-        } else {
-            $data[self::CONTAINER_FIELD] = [
-              'attachments' => [$metadata]
-            ];
-        }
 
         return $data;
     }
@@ -65,28 +57,24 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
      */
     public function denormalize($data, $className)
     {
-        if (!isset($data['verb'])) {
-            throw new DenormalizeException('The field "verb" is required.');
+        if (!isset($data['title'])) {
+            throw new DenormalizeException('The field "title" is required.');
         }
 
-        $eventName = $data['verb'];
+        $eventName = $data['title'];
         $metadata  = [];
 
         if (
-          isset($data[self::CONTAINER_FIELD]['attachments']) &&
-          is_array($attachments = $data[self::CONTAINER_FIELD]['attachments']) &&
-          count($attachments) > 0
+          isset($data['generator']) &&
+          is_array($data['generator']) &&
+          $data['generator']['id'] == 'tnc-event-dispatcher' &&
+          isset($data['generator']['content'])
         ) {
-            foreach ($attachments as $attachment) {
-                if (is_array($attachment) && isset($attachment['id']) && $attachment['id'] == 'event-dispatcher-metadata') {
-                    $metadata = $attachment;
-                    break;
-                }
-            }
+            $metadata = $data['generator']['content'];
         }
 
-        $transportMode = isset($metadata['content']['mode']) ? $metadata['content']['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;
-        $className     = isset($metadata['content']['class']) ? $metadata['content']['class'] : '';
+        $transportMode = isset($metadata['mode']) ? $metadata['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;
+        $className     = isset($metadata['class']) ? $metadata['class'] : '';
 
         return new WrappedEvent($transportMode, $eventName, $data, $className);
     }

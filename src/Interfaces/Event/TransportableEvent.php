@@ -23,16 +23,25 @@ interface TransportableEvent
     CONST TRANSPORT_MODE_SYNC      = 'sync';
     CONST TRANSPORT_MODE_SYNC_PLUS = 'sync_plus';
     CONST TRANSPORT_MODE_ASYNC     = 'async';
+    CONST TRANSPORT_MODE_BOTH      = 'both';
 
     /**
      * Returns transport mode of this event
      *
      * It supports one of these:
+     *
      *  - "sync"      works as same as origin event, the event will be dispatched to listeners directly.
-     *  - "sync_plus" after the event dispatched to local listeners, it will be sent to the EndPoint for other remote
-     *                listeners as well, but it will not be dispatch again if the receiver got it.
-     *  - "async"     the event will be sent to EndPoint only, and after receiver got it, will be dispatched to
+     *
+     *  - "sync_plus" same as "sync" mode, except that after the event has been dispatched to local listeners, i will
+     *                also send to EndPoint for remote listeners, but it will not be dispatched to local listeners
+     *                again.
+     *
+     *  - "async"     the event will be sent to EndPoint only, and after the receiver got it, will be dispatched to
      *                listeners.
+     *
+     *  - "both"      the event will be dispatched to local listeners who are listening on the event name, and then
+     *                send to EndPoint as well, after the receiver got it, will be dispatched to listeners who are
+     *                listening on "$eventName.async"
      *
      * @see \TNC\EventDispatcher\Interfaces\Event\TransportableEvent
      *

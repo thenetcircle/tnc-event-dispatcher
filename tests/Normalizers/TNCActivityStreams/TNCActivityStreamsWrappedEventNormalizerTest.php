@@ -50,7 +50,6 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
         $this->testData = [
           'version'   => '1.0',
           'id'        => 'id',
-          'verb'      => 'verb',
           'published' => 'published',
           'content'   => 'content',
           'actor'     => [
@@ -72,15 +71,15 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
         ];
 
         $this->expectedData = $this->testData;
-        $this->expectedData['verb'] = 'message.send';
+        $this->expectedData['title'] = 'message.send';
+        $this->expectedData['verb'] = 'send';
         $this->expectedData['generator'] = [
-          'attachments' => [[
-            'id' => 'event-dispatcher-metadata',
-            'content' => [
-              'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
-              'class' => TransportableEvent::class
-            ]
-          ]]
+          'id' => 'tnc-event-dispatcher',
+          'objectType' => 'library',
+          'content' => [
+            'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
+            'class' => TransportableEvent::class
+          ]
         ];
     }
 
@@ -93,11 +92,11 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
 
     public function testNormalizeAndDenormalize()
     {
-        $verb = 'message.send';
+        $eventName = 'message.send';
 
         $wrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
-          $verb,
+          $eventName,
           $this->testData,
           TransportableEvent::class
         );
@@ -108,7 +107,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
 
         $expectedWrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
-          $verb,
+          $eventName,
           $data,
           TransportableEvent::class
         );
@@ -122,7 +121,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
           [$this->normalizer, new TNCActivityStreamsNormalizer()],
           new JsonFormatter()
         );
-        $verb = 'message.send';
+        $eventName = 'message.send';
 
         $builder = new DefaultActivityBuilder();
         $builder->setFromArray($this->testData);
@@ -130,7 +129,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
 
         $wrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
-          $verb,
+          $eventName,
           $serializer->normalize($testEvent),
           TransportableEvent::class
         );
@@ -143,10 +142,12 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
         $unserializedWrappedEvent = $serializer->unserialize($expectedData, WrappedEvent::class);
 
         $expectedTestEvent = $testEvent;
-        $expectedTestEvent->activity->setVerb('message.send');
-        $expectedTestEvent->activity->getGenerator()->addAttachment(
+        $expectedTestEvent->activity->setTitle('message.send');
+        $expectedTestEvent->activity->setVerb('send');
+        $expectedTestEvent->activity->setGenerator(
           (new ActivityObject())
-            ->setId('event-dispatcher-metadata')
+            ->setId('tnc-event-dispatcher')
+            ->setObjectType('library')
             ->setContent([
               'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
               'class' => TransportableEvent::class

@@ -55,7 +55,11 @@ trait EventDispatcherTrait
      */
     public function dispatch($eventName, Event $event = null)
     {
-        if ($event !== null && ($event instanceof TransportableEvent) && $event->getTransportMode() !== TransportableEvent::TRANSPORT_MODE_SYNC) {
+        if (
+          $event !== null &&
+          $event instanceof TransportableEvent &&
+          $event->getTransportMode() !== TransportableEvent::TRANSPORT_MODE_SYNC
+        ) {
 
             switch ($event->getTransportMode()) {
 
@@ -64,8 +68,10 @@ trait EventDispatcherTrait
                     return $event;
 
                 case TransportableEvent::TRANSPORT_MODE_SYNC_PLUS:
+                case TransportableEvent::TRANSPORT_MODE_BOTH:
+                    $event = parent::dispatch($eventName, $event);
                     $this->sendToEndPoint($eventName, $event);
-                    return parent::dispatch($eventName, $event);
+                    return $event;
 
                 default:
                     throw new InvalidArgumentException('Unsupported transport mode.');
@@ -88,10 +94,19 @@ trait EventDispatcherTrait
     {
         /** @var WrappedEvent $wrappedEvent */
         $wrappedEvent = $this->serializer->unserialize($serializedEvent, WrappedEvent::class);
+        $transportMode = $wrappedEvent->getTransportMode();
 
-        if ($wrappedEvent->getTransportMode() == TransportableEvent::TRANSPORT_MODE_ASYNC) {
+        if (in_array(
+          $transportMode,
+          [TransportableEvent::TRANSPORT_MODE_ASYNC, TransportableEvent::TRANSPORT_MODE_BOTH]
+        )) {
 
             $eventName = $wrappedEvent->getEventName();
+
+            if ($transportMode == TransportableEvent::TRANSPORT_MODE_BOTH) { // append suffix for both mode
+                $eventName .= '.aync';
+            }
+
             $className = $wrappedEvent->getClassName();
 
             if ($listeners = $this->getListeners($eventName)) {

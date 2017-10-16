@@ -43,6 +43,11 @@ class Activity
     /**
      * @var string
      */
+    private $title = '';
+
+    /**
+     * @var string
+     */
     private $verb = '';
 
     /**
@@ -284,6 +289,26 @@ class Activity
     public function setGenerator($generator)
     {
         $this->generator = $generator;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     *
+     * @return Activity
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
 
         return $this;
     }
