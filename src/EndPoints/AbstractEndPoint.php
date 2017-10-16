@@ -18,8 +18,9 @@
 
 namespace TNC\EventDispatcher\EndPoints;
 
-use TNC\EventDispatcher\Event\InternalEvents\TransportFailureEvent;
-use TNC\EventDispatcher\Event\InternalEvents\TransportSuccessEvent;
+use TNC\EventDispatcher\InternalEvents\InternalEvents;
+use TNC\EventDispatcher\InternalEvents\SendingFailedEvent;
+use TNC\EventDispatcher\InternalEvents\SendingSucceededEvent;
 use TNC\EventDispatcher\Interfaces\Dispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\WrappedEvent;
@@ -44,8 +45,8 @@ abstract class AbstractEndPoint implements EndPoint
     {
         if (null !== $this->dispatcher) {
             $this->dispatcher->dispatchInternalEvent(
-                TransportSuccessEvent::NAME,
-                new TransportSuccessEvent($message, $wrappedEvent)
+                InternalEvents::SENDING_SUCCEEDED,
+                new SendingSucceededEvent($message, $wrappedEvent)
             );
         }
     }
@@ -54,8 +55,8 @@ abstract class AbstractEndPoint implements EndPoint
     {
         if (null !== $this->dispatcher) {
             $this->dispatcher->dispatchInternalEvent(
-                TransportFailureEvent::NAME,
-                new TransportFailureEvent($message, $wrappedEvent, $e)
+                InternalEvents::SENDING_FAILED,
+                new SendingFailedEvent($message, $wrappedEvent, $e)
             );
         }
     }

@@ -19,12 +19,32 @@
 namespace TNC\EventDispatcher\Receivers;
 
 use Psr\Http\Message\RequestInterface;
+use TNC\EventDispatcher\InternalEvents\InternalEvents;
+use TNC\EventDispatcher\InternalEvents\ReceiverDispatchingFailedEvent;
 
 class EventBusReceiver extends AbstractReceiver
 {
-    public function newRequest(RequestInterface $request) {
+    const SUCCESSFUL_RESPONSE = 'ok';
+    const FAILED_RESPONSE     = 'ko';
+
+    public function newRequest(RequestInterface $request)
+    {
         $body =  $request->getBody()->getContents();
-        // TODO: trace request processing
-        $this->dispatcher->dispatchSerializedEvent($body);
+
+        try {
+            $this->dispatchReceivedEvent($body);
+            $this->dispatcher->dispatchSerializedEvent($body);
+            return self::SUCCESSFUL_RESPONSE;
+        }
+        catch (\Exception $e) {
+            if (null !== $this->dispatcher) {
+                $this->dispatcher->dispatchInternalEvent(
+                  InternalEvents::RECEIVER_DISPATCHING_FAILED,
+                  new ReceiverDispatchingFailedEvent($body, $e)
+                );
+            }
+
+            return self::FAILED_RESPONSE;
+        }
     }
 }

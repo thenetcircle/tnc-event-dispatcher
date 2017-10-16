@@ -16,50 +16,60 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Event\InternalEvents;
+namespace TNC\EventDispatcher\InternalEvents;
 
 use Symfony\Component\EventDispatcher\Event;
-use TNC\EventDispatcher\WrappedEvent;
 
-class TransportSuccessEvent extends Event
+class DispatchedEvent extends Event
 {
-    const NAME = 'event-dispatcher.transport.success';
+    /**
+     * @var string
+     */
+    protected $eventName;
+
+    /**
+     * @var Event
+     */
+    protected $event;
 
     /**
      * @var string
      */
-    protected $message;
+    protected $transportMode;
 
     /**
-     * @var WrappedEvent
+     * @param $eventName
+     * @param $event
+     * @param $transportMode
      */
-    protected $wrappedEvent;
-
-    /**
-     * TransportSuccessEvent constructor.
-     *
-     * @param string                            $message
-     * @param \TNC\EventDispatcher\WrappedEvent $wrappedEvent
-     */
-    public function __construct($message, WrappedEvent $wrappedEvent)
+    public function __construct($eventName, $event, $transportMode)
     {
-        $this->message = $message;
-        $this->wrappedEvent = $wrappedEvent;
+        $this->eventName = $eventName;
+        $this->event = $event;
+        $this->transportMode = $transportMode;
     }
 
     /**
      * @return string
      */
-    public function getMessage()
+    public function getEventName()
     {
-        return $this->message;
+        return $this->eventName;
     }
 
     /**
-     * @return \TNC\EventDispatcher\WrappedEvent
+     * @return \Symfony\Component\EventDispatcher\Event
      */
-    public function getWrappedEvent()
+    public function getEvent()
     {
-        return $this->wrappedEvent;
+        return $this->event;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransportMode()
+    {
+        return $this->transportMode;
     }
 }

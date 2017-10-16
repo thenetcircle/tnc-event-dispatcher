@@ -18,6 +18,8 @@
 
 namespace TNC\EventDispatcher\Receivers;
 
+use TNC\EventDispatcher\InternalEvents\InternalEvents;
+use TNC\EventDispatcher\InternalEvents\ReceivedEvent;
 use TNC\EventDispatcher\Interfaces\Dispatcher;
 use TNC\EventDispatcher\Interfaces\Receiver;
 
@@ -35,5 +37,15 @@ abstract class AbstractReceiver implements Receiver
     {
         $this->dispatcher = $dispatcher;
         return $this;
+    }
+
+    protected function dispatchReceivedEvent($data)
+    {
+        if (null !== $this->dispatcher) {
+            $this->dispatcher->dispatchInternalEvent(
+              InternalEvents::RECEIVED,
+              new ReceivedEvent($data)
+            );
+        }
     }
 }

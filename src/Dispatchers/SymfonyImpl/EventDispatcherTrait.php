@@ -19,6 +19,9 @@
 namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
 use Symfony\Component\EventDispatcher\Event;
+use TNC\EventDispatcher\InternalEvents\DispatchedEvent;
+use TNC\EventDispatcher\InternalEvents\DispatchingEvent;
+use TNC\EventDispatcher\InternalEvents\InternalEvents;
 use TNC\EventDispatcher\Exception\NoClassException;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
@@ -55,13 +58,12 @@ trait EventDispatcherTrait
      */
     public function dispatch($eventName, Event $event = null)
     {
-        if (
-          $event !== null &&
-          $event instanceof TransportableEvent &&
-          $event->getTransportMode() !== TransportableEvent::TRANSPORT_MODE_SYNC
-        ) {
+        $transportMode = ($event !== null && $event instanceof TransportableEvent) ?
+          $event->getTransportMode() : TransportableEvent::TRANSPORT_MODE_SYNC;
 
-            switch ($event->getTransportMode()) {
+        if ($transportMode !== TransportableEvent::TRANSPORT_MODE_SYNC) {
+
+            switch ($transportMode) {
 
                 case TransportableEvent::TRANSPORT_MODE_ASYNC:
                     $this->sendToEndPoint($eventName, $event);
@@ -69,8 +71,13 @@ trait EventDispatcherTrait
 
                 case TransportableEvent::TRANSPORT_MODE_SYNC_PLUS:
                 case TransportableEvent::TRANSPORT_MODE_BOTH:
+
+                    $this->preDispatching($eventName, $event, $transportMode);
                     $event = parent::dispatch($eventName, $event);
+                    $this->afterDispatching($eventName, $event, $transportMode);
+
                     $this->sendToEndPoint($eventName, $event);
+
                     return $event;
 
                 default:
@@ -79,7 +86,15 @@ trait EventDispatcherTrait
             }
 
         } else {
-            return parent::dispatch($eventName, $event);
+
+            $this->preDispatching($eventName, $event, $transportMode);
+
+            $event = parent::dispatch($eventName, $event);
+
+            $this->afterDispatching($eventName, $event, $transportMode);
+
+            return $event;
+
         }
     }
 
@@ -123,7 +138,11 @@ trait EventDispatcherTrait
 
                 $event = $this->serializer->denormalize($wrappedEvent->getNormalizedEvent(), $className);
 
+                $this->preDispatching($eventName, $event, $transportMode);
+
                 $this->doDispatch($listeners, $eventName, $event);
+
+                $this->afterDispatching($eventName, $event, $transportMode);
 
                 return $event;
             }
@@ -215,5 +234,27 @@ trait EventDispatcherTrait
         }
 
         return $className;
+    }
+
+    /**
+     * execs actions before dispatching
+     */
+    protected function preDispatching($eventName, $event, $transportMode)
+    {
+        $this->dispatchInternalEvent(
+          InternalEvents::DISPATCHING,
+          new DispatchingEvent($eventName, $event, $transportMode)
+        );
+    }
+
+    /**
+     * execs actions after dispatching
+     */
+    protected function afterDispatching($eventName, $event, $transportMode)
+    {
+        $this->dispatchInternalEvent(
+          InternalEvents::DISPATCHED,
+          new DispatchedEvent($eventName, $event, $transportMode)
+        );
     }
 }

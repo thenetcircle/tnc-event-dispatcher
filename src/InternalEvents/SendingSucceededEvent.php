@@ -16,15 +16,13 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Event\InternalEvents;
+namespace TNC\EventDispatcher\InternalEvents;
 
 use Symfony\Component\EventDispatcher\Event;
 use TNC\EventDispatcher\WrappedEvent;
 
-class TransportFailureEvent extends Event
+class SendingSucceededEvent extends Event
 {
-    const NAME = 'event-dispatcher.transport.failure';
-
     /**
      * @var string
      */
@@ -36,22 +34,13 @@ class TransportFailureEvent extends Event
     protected $wrappedEvent;
 
     /**
-     * @var \Exception
-     */
-    protected $exception;
-
-    /**
-     * TransportSuccessEvent constructor.
-     *
      * @param string                            $message
      * @param \TNC\EventDispatcher\WrappedEvent $wrappedEvent
-     * @param \Exception                        $exception
      */
-    public function __construct($message, WrappedEvent $wrappedEvent, \Exception $exception)
+    public function __construct($message, WrappedEvent $wrappedEvent)
     {
         $this->message = $message;
         $this->wrappedEvent = $wrappedEvent;
-        $this->exception = $exception;
     }
 
     /**
@@ -68,13 +57,5 @@ class TransportFailureEvent extends Event
     public function getWrappedEvent()
     {
         return $this->wrappedEvent;
-    }
-
-    /**
-     * @return \Exception
-     */
-    public function getException()
-    {
-        return $this->exception;
     }
 }
