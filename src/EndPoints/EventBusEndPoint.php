@@ -64,10 +64,13 @@ class EventBusEndPoint extends AbstractEndPoint
      *
      * @param string                            $message
      * @param \TNC\EventDispatcher\WrappedEvent $wrappedEvent
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface
      */
     public function send($message, WrappedEvent $wrappedEvent)
     {
         $request = new Request('POST', '/', [], $message);
+
         $promise = $this->client->sendAsync($request);
         $promise->then(
           function (ResponseInterface $res) use ($message, $wrappedEvent) {
@@ -77,5 +80,7 @@ class EventBusEndPoint extends AbstractEndPoint
               $this->dispatchFailureEvent($message, $wrappedEvent, $e);
           }
         );
+
+        return $promise;
     }
 }

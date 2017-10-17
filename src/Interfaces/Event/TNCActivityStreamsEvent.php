@@ -20,7 +20,6 @@ namespace TNC\EventDispatcher\Interfaces\Event;
 
 use TNC\EventDispatcher\Exception\DenormalizeException;
 use TNC\EventDispatcher\Exception\NormalizeException;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
 
 interface TNCActivityStreamsEvent extends TransportableEvent
 {

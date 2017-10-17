@@ -27,6 +27,15 @@ class EventBusReceiver extends AbstractReceiver
     const SUCCESSFUL_RESPONSE = 'ok';
     const FAILED_RESPONSE     = 'ko';
 
+    /**
+     * Accepts new EventBus request, and dispatching to listeners
+     *
+     * @param \Psr\Http\Message\RequestInterface $request
+     *
+     * // TODO: tracing request, processing
+     *
+     * @return string
+     */
     public function newRequest(RequestInterface $request)
     {
         $body =  $request->getBody()->getContents();
@@ -34,6 +43,7 @@ class EventBusReceiver extends AbstractReceiver
         try {
             $this->dispatchReceivedEvent($body);
             $this->dispatcher->dispatchSerializedEvent($body);
+
             return self::SUCCESSFUL_RESPONSE;
         }
         catch (\Exception $e) {

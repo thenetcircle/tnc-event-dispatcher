@@ -32,7 +32,7 @@ use TNC\EventDispatcher\Serialization\Normalizer;
  *
  * @author     The NetCircle
  */
-class Serializer
+final class Serializer
 {
     protected $supportedNormalizers = array();
     protected $formatter            = null;

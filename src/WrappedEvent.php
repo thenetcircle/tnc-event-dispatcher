@@ -18,7 +18,7 @@
 
 namespace TNC\EventDispatcher;
 
-class WrappedEvent
+final class WrappedEvent
 {
     /**
      * @var string

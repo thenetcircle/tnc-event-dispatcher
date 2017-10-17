@@ -71,8 +71,6 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
 
         }
 
-
-
         return $this->normalizeActivity($activity);
     }
 
