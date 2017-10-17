@@ -108,11 +108,11 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
 
     public function testNormalizeEmptyActivityObject()
     {
-        $testEvent = new TestEvent(new Activity());
-        self::assertEquals(['version' => '1.0'], $this->normalizer->normalize($testEvent));
+        $testEvent = new TestEvent((new Activity())->setId('id'));
+        self::assertEquals(['version' => '1.0', 'id' => 'id'], $this->normalizer->normalize($testEvent));
 
         $testEvent->activity->getProvider(); // which will create a empty ActivityObject implicitly
-        self::assertEquals(['version' => '1.0'], $this->normalizer->normalize($testEvent));
+        self::assertEquals(['version' => '1.0', 'id' => 'id'], $this->normalizer->normalize($testEvent));
     }
 
     public function testAttachments()

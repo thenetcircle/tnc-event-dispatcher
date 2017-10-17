@@ -41,7 +41,7 @@ class EventBusEndPoint extends AbstractEndPoint
      *
      * @throws \TNC\EventDispatcher\Exception\InitializeException
      *
-     * // TODO: add fallbacker
+     * // TODO: add fallback
      */
     public function __construct($uri, $timeout = 3, array $requestOptions = [])
     {

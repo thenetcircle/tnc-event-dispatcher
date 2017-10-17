@@ -50,6 +50,29 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
     {
         $activity = $object->normalize($this->activityBuilder);
 
+        if (!is_object($activity) || !($activity instanceof Activity)) {
+            throw new NormalizeException(sprintf(
+              'The "normalize" method of class %s needs return a Activity Instance.', get_class($object)
+            ));
+        }
+
+        // generate a unique id if "id" is not set,
+        // format: {providerId}-{title}-{actorId}-{random}
+        if ($activity->getId() == '') {
+
+            $prefix = sprintf(
+              '%s-%s-%s-',
+              $activity->getProvider()->getId(),
+              $activity->getTitle(),
+              $activity->getActor()->getId()
+            );
+
+            $activity->setId(uniqid($prefix));
+
+        }
+
+
+
         return $this->normalizeActivity($activity);
     }
 
