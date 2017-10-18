@@ -40,6 +40,17 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
             $data['verb'] = substr(strrchr($eventName, '.'), 1);
         }
 
+        // generate a unique id if "id" is not set,
+        // format: ED[[-ProviderId][-Title][-ActorId]]-RandomString
+        if (!isset($data['id']) || $data['id'] == '') {
+            $prefix = 'ED';
+            if (isset($data['provider']['id'])) $prefix .= '-' . $data['provider']['id'];
+            if (isset($data['title'])) $prefix .= '-' . $data['title'];
+            if (isset($data['actor']['id'])) $prefix .= '-' . $data['actor']['id'];
+
+            $data['id'] = uniqid($prefix . '-');
+        }
+
         $data['generator'] = [
           'id'      => 'tnc-event-dispatcher',
           'objectType' => 'library',

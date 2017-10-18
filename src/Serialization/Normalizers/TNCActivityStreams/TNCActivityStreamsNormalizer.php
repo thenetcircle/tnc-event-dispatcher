@@ -56,21 +56,6 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
             ));
         }
 
-        // generate a unique id if "id" is not set,
-        // format: {providerId}-{title}-{actorId}-{random}
-        if ($activity->getId() == '') {
-
-            $prefix = sprintf(
-              '%s-%s-%s-',
-              $activity->getProvider()->getId(),
-              $activity->getTitle(),
-              $activity->getActor()->getId()
-            );
-
-            $activity->setId(uniqid($prefix));
-
-        }
-
         return $this->normalizeActivity($activity);
     }
 

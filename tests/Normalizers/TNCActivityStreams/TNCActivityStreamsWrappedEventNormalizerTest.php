@@ -53,16 +53,16 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
           'published' => 'published',
           'content'   => 'content',
           'actor'     => [
-            'id' => 'providerId',
-            'objectType' => 'providerType'
+            'id' => 'actorId',
+            'objectType' => 'actorType'
           ],
           'object'    => [
-            'id' => 'providerId',
-            'objectType' => 'providerType'
+            'id' => 'objectId',
+            'objectType' => 'objectType'
           ],
           'target'    => [
-            'id' => 'providerId',
-            'objectType' => 'providerType'
+            'id' => 'targetId',
+            'objectType' => 'targetType'
           ],
           'provider'  => [
             'id' => 'providerId',
@@ -156,5 +156,66 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
 
         self::assertEquals($expectedTestEvent, $serializer->denormalize($unserializedWrappedEvent->getNormalizedEvent(),
           TestEvent::class));
+    }
+
+    public function testSerializedEvent()
+    {
+        $serializer = new Serializer(
+          [$this->normalizer, new TNCActivityStreamsNormalizer()],
+          new JsonFormatter()
+        );
+
+        $data = [
+          'actor'     => [
+            'id'   => 'actorId',
+            'objectType' => 'actorType',
+            'content' => ['a' => 1, 'b' => 2],
+            'attachments' => [
+              [
+                'id'   => 'attachmentId1',
+                'objectType' => 'attachmentType1',
+                'content' => 'abc',
+                'attachments' => [
+                  [
+                    'id'   => 'subAttachmentId1',
+                    'objectType' => 'subAttachmentType1',
+                    'content' => 'subcontent',
+                  ]
+                ]
+              ],
+              [
+                'id'   => 'attachmentId2',
+                'objectType' => 'attachmentType2',
+                'content' => 'def',
+              ]
+            ]
+          ],
+          'object'    => [
+            'id' => 'objectId',
+            'objectType' => 'objectType'
+          ],
+          'target'    => [
+            'id' => 'targetId',
+            'objectType' => 'targetType'
+          ],
+          'provider'  => [
+            'id' => 'providerId',
+            'objectType' => 'providerType'
+          ],
+          'content'   => ['a' => 'testa', 'b' => 'testb']
+        ];
+
+        $builder = new DefaultActivityBuilder();
+        $builder->setFromArray($data);
+        $testEvent = new TestEvent($builder->getActivity());
+
+        $wrappedEvent = new WrappedEvent(
+          TransportableEvent::TRANSPORT_MODE_ASYNC,
+          'message.send',
+          $serializer->normalize($testEvent),
+          TransportableEvent::class
+        );
+
+        echo $serializer->serialize($wrappedEvent);
     }
 }
