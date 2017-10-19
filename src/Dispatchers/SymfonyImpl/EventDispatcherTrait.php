@@ -119,7 +119,7 @@ trait EventDispatcherTrait
             $eventName = $wrappedEvent->getEventName();
 
             if ($transportMode == TransportableEvent::TRANSPORT_MODE_BOTH) { // append suffix for both mode
-                $eventName .= '.aync';
+                $eventName .= '.async';
             }
 
             $className = $wrappedEvent->getClassName();
