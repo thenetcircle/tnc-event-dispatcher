@@ -18,6 +18,7 @@
 
 namespace TNC\EventDispatcher\Receivers;
 
+use Psr\Http\Message\RequestInterface;
 use TNC\EventDispatcher\InternalEvents\InternalEvents;
 use TNC\EventDispatcher\InternalEvents\ReceiverDispatchingFailedEvent;
 
@@ -29,15 +30,16 @@ class EventBusReceiver extends AbstractReceiver
     /**
      * Accepts new EventBus request, and dispatching to listeners
      *
-     * @param string $body
-     * @param array  $headers
+     * @param \Psr\Http\Message\RequestInterface $request
      *
      * // TODO: tracing request, processing
      *
      * @return string
      */
-    public function newRequest($body, $headers = [])
+    public function newRequest(RequestInterface $request)
     {
+        $body = $request->getBody()->getContents();
+
         try {
             $this->dispatchReceivedEvent($body);
             $this->dispatcher->dispatchSerializedEvent($body);

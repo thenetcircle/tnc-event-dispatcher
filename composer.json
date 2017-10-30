@@ -12,7 +12,7 @@
     "guzzlehttp/guzzle": "~6.0"
   },
   "suggest": {
-    "guzzlehttp/guzzle": "EventBusEndPoint requires it."
+    "guzzlehttp/guzzle": "EventBus requires it."
   },
   "autoload": {
     "psr-4": {
