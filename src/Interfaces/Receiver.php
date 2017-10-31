@@ -26,4 +26,13 @@ interface Receiver
      * @return \TNC\EventDispatcher\Interfaces\Receiver
      */
     public function withDispatcher(Dispatcher $dispatcher);
+
+    /**
+     * Dispatches a serialized event
+     *
+     * @param string $data
+     *
+     * @return \TNC\EventDispatcher\Interfaces\Event\TransportableEvent|null
+     */
+    public function dispatch($data);
 }

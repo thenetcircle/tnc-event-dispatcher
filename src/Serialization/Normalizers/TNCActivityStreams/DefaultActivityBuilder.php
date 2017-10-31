@@ -87,9 +87,13 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
 
     /**
      * @see \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+     *
+     * @return $this
      */
     public function __call($name, $arguments)
     {
-        return call_user_func_array([$this->activity, $name], $arguments);
+        call_user_func_array([$this->activity, $name], $arguments);
+
+        return $this;
     }
 }

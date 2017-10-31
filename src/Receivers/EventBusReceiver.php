@@ -19,8 +19,6 @@
 namespace TNC\EventDispatcher\Receivers;
 
 use Psr\Http\Message\RequestInterface;
-use TNC\EventDispatcher\InternalEvents\InternalEvents;
-use TNC\EventDispatcher\InternalEvents\ReceiverDispatchingFailedEvent;
 
 class EventBusReceiver extends AbstractReceiver
 {
@@ -41,19 +39,10 @@ class EventBusReceiver extends AbstractReceiver
         $body = $request->getBody()->getContents();
 
         try {
-            $this->dispatchReceivedEvent($body);
-            $this->dispatcher->dispatchSerializedEvent($body);
-
+            $this->dispatch($body);
             return self::SUCCESSFUL_RESPONSE;
         }
         catch (\Exception $e) {
-            if (null !== $this->dispatcher) {
-                $this->dispatcher->dispatchInternalEvent(
-                  InternalEvents::RECEIVER_DISPATCHING_FAILED,
-                  new ReceiverDispatchingFailedEvent($body, $e)
-                );
-            }
-
             return self::FAILED_RESPONSE;
         }
     }

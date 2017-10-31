@@ -18,10 +18,12 @@
 
 namespace TNC\EventDispatcher\Receivers;
 
+use TNC\EventDispatcher\Exception\InitializeException;
 use TNC\EventDispatcher\InternalEvents\InternalEvents;
 use TNC\EventDispatcher\InternalEvents\ReceivedEvent;
 use TNC\EventDispatcher\Interfaces\Dispatcher;
 use TNC\EventDispatcher\Interfaces\Receiver;
+use TNC\EventDispatcher\InternalEvents\ReceiverDispatchingFailedEvent;
 
 abstract class AbstractReceiver implements Receiver
 {
@@ -39,13 +41,30 @@ abstract class AbstractReceiver implements Receiver
         return $this;
     }
 
-    protected function dispatchReceivedEvent($data)
+    /**
+     * {@inheritdoc}
+     */
+    public function dispatch($data)
     {
-        if (null !== $this->dispatcher) {
+        if (null === $this->dispatcher) {
+            throw new InitializeException('Receiver requires a Dispatcher.');
+        }
+
+        $this->dispatcher->dispatchInternalEvent(
+          InternalEvents::RECEIVED,
+          new ReceivedEvent($data)
+        );
+
+        try {
+            return $this->dispatcher->dispatchSerializedEvent($data);
+        }
+        catch (\Exception $e) {
             $this->dispatcher->dispatchInternalEvent(
-              InternalEvents::RECEIVED,
-              new ReceivedEvent($data)
+              InternalEvents::RECEIVER_DISPATCHING_FAILED,
+              new ReceiverDispatchingFailedEvent($data, $e)
             );
+
+            throw $e;
         }
     }
 }
