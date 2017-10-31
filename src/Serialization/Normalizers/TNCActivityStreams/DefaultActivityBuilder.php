@@ -20,12 +20,22 @@ namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Provider;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Target;
 
+/**
+ * Providers multiple ways to build \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+ *
+ * @method $this setVersion(string $version)
+ * @method $this setId(string $id)
+ * @method $this setVerb(string $verb)
+ * @method $this setContent(mixed $content)
+ * @method $this setActor(mixed $actor)
+ * @method $this setObject(mixed $object)
+ * @method $this setTarget(mixed $target)
+ * @method $this setProvider(mixed $provider)
+ * @method $this setGenerator(mixed $generator)
+ * @method $this setPublished(string $published)
+ * @method $this setTitle(string $title)
+ */
 class DefaultActivityBuilder implements ActivityBuilderInterface
 {
     /**
@@ -64,19 +74,12 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
         $supportedKeys = array_keys($this->activity->getAll());
 
         foreach ($data as $key => $value) {
-
             if (!in_array($key, $supportedKeys)) {
                 throw new InvalidArgumentException(sprintf('Key %s is not supported.', $key));
             }
 
             $method = 'set' . ucfirst($key);
-            if (in_array($key, ['actor', 'object', 'target', 'provider', 'generator'])) {
-                $this->activity->{$method}($this->getActivityObjectFromData($value));
-            }
-            else {
-                $this->activity->{$method}($value);
-            }
-
+            $this->activity->{$method}($value);
         }
 
         return $this;
@@ -88,80 +91,5 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
     public function __call($name, $arguments)
     {
         return call_user_func_array([$this->activity, $name], $arguments);
-    }
-
-    /**
-     * @param mixed               $data
-     * @param ActivityObject|null $prototype
-     *
-     * @return ActivityObject
-     */
-    protected function getActivityObjectFromData($data, $prototype = null)
-    {
-        $object = null === $prototype ? new ActivityObject() : $prototype;
-
-        # Analyse $value
-        switch (true)
-        {
-            case is_null($data):
-                break;
-
-            case is_string($data):
-                $object->setId($data);
-                break;
-
-            case is_array($data):
-
-                # If value only includes two elements and index is number, Will consider the first element is id,
-                # second is objectType.
-                if (count($data) === 1 && isset($data[0])) {
-                    $object->setId($data[0]);
-                }
-                elseif (count($data) === 2 && isset($data[0])) {
-                    $object->setObjectType($data[0]);
-                    $object->setId($data[1]);
-                }
-                else {
-
-                    $supportedKeys = array_keys($object->getAll());
-
-                    foreach ($data as $key => $value) {
-
-                        if (!in_array($key, $supportedKeys)) {
-                            throw new InvalidArgumentException(
-                              sprintf('ActivityObject key %s is not supported.', $key)
-                            );
-                        }
-
-                        $method = 'set' . ucfirst($key);
-
-                        if ($key == 'attachments') {
-
-                            $attachments = array_map(
-                              function($subdata){
-                                return $this->getActivityObjectFromData($subdata);
-                              },
-                              (array) $value
-                            );
-
-                            $object->{$method}($attachments);
-
-                        }
-                        else {
-                            $object->{$method}($value);
-                        }
-
-                    }
-
-                }
-
-                break;
-
-            case is_object($data):
-                $object = $data;
-                break;
-        }
-
-        return $object;
     }
 }

@@ -182,13 +182,13 @@ class Activity
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $actor
+     * @param mixed $actor
      *
      * @return Activity
      */
     public function setActor($actor)
     {
-        $this->actor = $actor;
+        $this->actor = ActivityObjectBuilder::build($actor);
 
         return $this;
     }
@@ -202,13 +202,13 @@ class Activity
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $object
+     * @param mixed $object
      *
      * @return Activity
      */
     public function setObject($object)
     {
-        $this->object = $object;
+        $this->object = ActivityObjectBuilder::build($object);
 
         return $this;
     }
@@ -222,13 +222,13 @@ class Activity
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $target
+     * @param mixed $target
      *
      * @return Activity
      */
     public function setTarget($target)
     {
-        $this->target = $target;
+        $this->target = ActivityObjectBuilder::build($target);
 
         return $this;
     }
@@ -242,13 +242,13 @@ class Activity
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $provider
+     * @param mixed $provider
      *
      * @return Activity
      */
     public function setProvider($provider)
     {
-        $this->provider = $provider;
+        $this->provider = ActivityObjectBuilder::build($provider);
 
         return $this;
     }
@@ -282,13 +282,13 @@ class Activity
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $generator
+     * @param mixed $generator
      *
      * @return Activity
      */
     public function setGenerator($generator)
     {
-        $this->generator = $generator;
+        $this->generator = ActivityObjectBuilder::build($generator);
 
         return $this;
     }

@@ -20,10 +20,6 @@ namespace TNC\EventDispatcher\Tests\Normalizers\TNCActivityStreams;
 
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Actor;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Obj;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Provider;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Target;
 
 class DefaultActivityBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -148,7 +144,7 @@ class DefaultActivityBuilderTest extends \PHPUnit_Framework_TestCase
 
         # use array with two element
         $this->builder->setFromArray([
-          'actor' => ['type', 'id3']
+          'actor' => ['id3', 'type']
         ]);
         self::assertEquals('type', $this->builder->getActivity()->getActor()->getObjectType());
         self::assertEquals('id3', $this->builder->getActivity()->getActor()->getId());
@@ -160,7 +156,7 @@ class DefaultActivityBuilderTest extends \PHPUnit_Framework_TestCase
             'id' => 'id4',
             'content' => 'content',
             'attachments' => [ # the rule of attachments is as same as ActivityObject
-              ['subtype1', 'subid1'],
+              ['subid1', 'subtype1'],
               'subid2',
               [
                 'objectType' => 'subtype3',

@@ -143,19 +143,19 @@ class ActivityObject
      */
     public function setAttachments(array $attachments)
     {
-        $this->attachments = $attachments;
+        array_walk($attachments, [$this, 'addAttachment']);
 
         return $this;
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $attachment
+     * @param mixed $attachment
      *
      * @return ActivityObject
      */
-    public function addAttachment(ActivityObject $attachment)
+    public function addAttachment($attachment)
     {
-        $this->attachments[] = $attachment;
+        $this->attachments[] = ActivityObjectBuilder::build($attachment);
 
         return $this;
     }
@@ -169,13 +169,13 @@ class ActivityObject
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject $author
+     * @param mixed $author
      *
      * @return ActivityObject
      */
     public function setAuthor($author)
     {
-        $this->author = $author;
+        $this->author = ActivityObjectBuilder::build($author);
 
         return $this;
     }
