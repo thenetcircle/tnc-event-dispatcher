@@ -35,6 +35,20 @@ use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activi
  * @method $this setGenerator(mixed $generator)
  * @method $this setPublished(string $published)
  * @method $this setTitle(string $title)
+ *
+ * @method array  getAll()
+ * @method string getVersion()
+ * @method string getId()
+ * @method string getVerb()
+ * @method string getContent()
+ * @method string getPublished()
+ * @method string getTitle()
+ *
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getActor()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getObject()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getTarget()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getProvider()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getGenerator()
  */
 class DefaultActivityBuilder implements ActivityBuilderInterface
 {
@@ -92,8 +106,12 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
      */
     public function __call($name, $arguments)
     {
-        call_user_func_array([$this->activity, $name], $arguments);
-
-        return $this;
+        if (strpos($name, 'get') === 0) {
+            return call_user_func_array([$this->activity, $name], $arguments);
+        }
+        else {
+            call_user_func_array([$this->activity, $name], $arguments);
+            return $this;
+        }
     }
 }
