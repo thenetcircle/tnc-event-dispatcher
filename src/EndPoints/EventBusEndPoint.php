@@ -108,9 +108,6 @@ class EventBusEndPoint extends AbstractEndPoint
         $request = new Request('POST', '/', [], $message);
 
         $promise = $this->client->sendAsync($request);
-        $promise->then(function (ResponseInterface $res) use ($message, $wrappedEvent) {
-            $this->dispatchSuccessEvent($message, $wrappedEvent);
-        });
 
         if (null !== $this->asyncHandler) {
             $this->asyncHandler->tick();
@@ -130,9 +127,10 @@ class EventBusEndPoint extends AbstractEndPoint
             list($promise, $message, $wrappedEvent) = $requestData;
             try {
                 $response = $promise->wait();
-                if ($response->getBody() != self::EXPECTED_RESPONSE) {
-                    throw new SendingException('The response %s is not expected', $response->getBody());
+                if ($response->getBody()->getContents() != self::EXPECTED_RESPONSE) {
+                    throw new SendingException('The response %s is not expected', $response->getBody()->getContents());
                 }
+                $this->dispatchSuccessEvent($message, $wrappedEvent);
             } catch (\Exception $exception) {
                 if (null !== $this->fallback) {
                     try {
