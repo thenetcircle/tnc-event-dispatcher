@@ -6,14 +6,15 @@ The Workflow like this:
 
 ![Workflow](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/uploads/ae847041f3bb46d379c98701f9ada076/EventDispatcher_Diagram.png)
 
-Visit the [Wiki](http://gitlab/service-team/service-eventdispatcher/wikis/home) for more details, There is also a [Quick Start](http://gitlab/service-team/service-eventdispatcher/wikis/quickstart) for you to have a overview.
-You may also need to know [Serialization](http://gitlab/service-team/service-eventdispatcher/wikis/serialization) and [ActivityStreams](http://gitlab/service-team/service-eventdispatcher/wikis/activity-streams)
+Visit the [Wiki](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/wikis/home) for more details, There is also a [Quick Start](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/wikis/quickstart) for you to have a overview.
+You may also need to know [Serialization](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/wikis/serialization) and [ActivityStreams](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/wikis/activity-streams)
 
 ### Related Projects
 
-- [EventBus](https://github.com/thenetcircle/event-bus) A events distributing system with various different data sources and targets 
-- [TNCEventDispatcherBundle](http://gitlab/service-team/bundle-eventdispatcher) Symfony Bundle of EventDispatcher
-- [TNCEventDispatcher-Demo](http://gitlab/service-team/eventdispatcher-demo) A demo project of EventDispatcher Bundle based on Symfony Framework
+- [EventBus](https://github.com/thenetcircle/event-bus) A events distributing system with various different data sources and targets
+- [TNCEventDispatcherPlugin](http://gitlab.thenetcircle.lab/service-team/plugin-eventdispatcher) a wrapper of [TNCEventDispatcher](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher) for Symfony 1.x
+- [TNCEventDispatcherBundle](http://gitlab.thenetcircle.lab/service-team/bundle-eventdispatcher) Symfony Bundle of EventDispatcher
+- [TNCEventDispatcher-Demo](http://gitlab.thenetcircle.lab/service-team/eventdispatcher-demo) A demo project of EventDispatcher Bundle based on Symfony Framework
 
 ## Installation
 
