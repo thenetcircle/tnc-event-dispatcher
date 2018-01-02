@@ -43,32 +43,43 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
 
     public function testNormalizeAndDenormalize()
     {
-        $expectedData = [
+        $originalData = [
           'version'   => '1.0',
           'id'        => 'id',
           'verb'      => 'verb',
           'published' => 'published',
-          'content'   => 'content',
+          'content'   => [1, 2, 3, 'a', 'b', 'c'],
           'actor'     => [
             'id' => 'providerId',
-            'objectType' => 'providerType'
+            'objectType' => 'providerType',
+            'content' => 1
           ],
           'object'    => [
             'id' => 'providerId',
-            'objectType' => 'providerType'
+            'objectType' => 'providerType',
+            'content' => 'abc'
           ],
           'target'    => [
             'id' => 'providerId',
-            'objectType' => 'providerType'
+            'objectType' => 'providerType',
+            'content' => ['a'=>1, 'b'=>2, 'c'=>['a', 'b', 'c']]
           ],
           'provider'  => [
             'id' => 'providerId',
-            'objectType' => 'providerType'
+            'objectType' => 'providerType',
+            'content' => ['a', 'd', 3]
           ]
         ];
 
+        $expectedData = $originalData;
+        $expectedData['content'] = \json_encode($expectedData['content']);
+        $expectedData['actor']['content'] = \json_encode($expectedData['actor']['content']);
+        $expectedData['object']['content'] = \json_encode($expectedData['object']['content']);
+        $expectedData['target']['content'] = \json_encode($expectedData['target']['content']);
+        $expectedData['provider']['content'] = \json_encode($expectedData['provider']['content']);
+
         $builder = new DefaultActivityBuilder();
-        $builder->setFromArray($expectedData);
+        $builder->setFromArray($originalData);
         $testEvent = new TestEvent($builder->getActivity());
 
         self::assertEquals(true, $this->normalizer->supportsNormalization($testEvent));
@@ -117,7 +128,7 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
 
     public function testAttachments()
     {
-        $expectedData = [
+        $originalData = [
           'version'   => '1.0',
           'id'        => 'id',
           'verb'      => 'testVerb',
@@ -148,8 +159,39 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
           ]
         ];
 
+        $expectedData = [
+          'version'   => '1.0',
+          'id'        => 'id',
+          'verb'      => 'testVerb',
+          'published' => 'testPublished',
+          'actor'     => [
+            'id'   => 'actorId',
+            'objectType' => 'actorType',
+            'content' => '{"a":1,"b":2}',
+            'attachments' => [
+              [
+                'id'   => 'attachmentId1',
+                'objectType' => 'attachmentType1',
+                'content' => '"abc"',
+                'attachments' => [
+                  [
+                    'id'   => 'subAttachmentId1',
+                    'objectType' => 'subAttachmentType1',
+                    'content' => '"subcontent"',
+                  ]
+                ]
+              ],
+              [
+                'id'   => 'attachmentId2',
+                'objectType' => 'attachmentType2',
+                'content' => '"def"',
+              ]
+            ]
+          ]
+        ];
+
         $builder = new DefaultActivityBuilder();
-        $builder->setFromArray($expectedData);
+        $builder->setFromArray($originalData);
         $testEvent = new TestEvent($builder->getActivity());
 
         self::assertEquals(true, $this->normalizer->supportsNormalization($testEvent));

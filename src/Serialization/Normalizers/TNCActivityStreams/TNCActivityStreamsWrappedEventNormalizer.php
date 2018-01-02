@@ -54,10 +54,10 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
         $data['generator'] = [
           'id'      => 'tnc-event-dispatcher',
           'objectType' => 'library',
-          'content' => [
+          'content' => json_encode([
             'mode'  => $wrappedEvent->getTransportMode(),
             'class' => $wrappedEvent->getClassName()
-          ]
+          ])
         ];
 
         return $data;
@@ -79,9 +79,11 @@ class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
           isset($data['generator']) &&
           is_array($data['generator']) &&
           $data['generator']['id'] == 'tnc-event-dispatcher' &&
-          isset($data['generator']['content'])
+          isset($data['generator']['content']) &&
+          is_string($data['generator']['content'])
         ) {
-            $metadata = $data['generator']['content'];
+            $metadata = json_decode($data['generator']['content'], true);
+            if ($metadata === null) $metadata = [];
         }
 
         $transportMode = isset($metadata['mode']) ? $metadata['mode'] : TransportableEvent::TRANSPORT_MODE_ASYNC;

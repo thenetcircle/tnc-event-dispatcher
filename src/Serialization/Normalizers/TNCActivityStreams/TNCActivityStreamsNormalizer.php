@@ -56,7 +56,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
             ));
         }
 
-        return $this->normalizeActivity($activity);
+        return $this->normalizeActivity($activity->getAll());
     }
 
     /**
@@ -103,55 +103,68 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity
-     *
-     * @return array
-     */
-    protected function normalizeActivity(Activity $activity)
-    {
-        return $this->getNonEmptyProperties($activity->getAll());
-    }
-
-    /**
      * @param array $properties
      *
      * @return array
      */
-    protected function getNonEmptyProperties($properties)
+    protected function normalizeActivity(array $properties)
     {
         $data = [];
 
         foreach ($properties as $key => $value) {
-            if (
-              (is_string($value) && $value == '') ||
-              (is_array($value)  && count($value) === 0) ||
-              (is_object($value) && !($value instanceof ActivityObject)) ||
-              is_null($value)
-            ) {
-                continue;
-            }
 
-            switch (true) {
-
-                case is_array($value):
-                    if ($key == 'attachments') {
-                        $data[$key] = $this->getNonEmptyProperties($value);
-                    }
-                    else {
-                        $data[$key] = $value;
-                    }
+            switch(true)
+            {
+                // mixed
+                case $key == 'content':
+                    if ($value == '') continue;
+                    $value = \json_encode($value);
+                    if ($value === false) continue;
+                    $data[$key] = $value;
                     break;
 
-                case is_object($value):
-                    $_data = $this->getNonEmptyProperties($value->getAll());
+                // string
+                case in_array($key, ['version', 'id', 'title', 'url', 'verb', 'displayName', 'objectType', 'summary']):
+                    if (!is_string($value) || $value == '') continue;
+                    $data[$key] = $value;
+                    break;
+
+                // object
+                case in_array($key, ['actor', 'generator', 'object', 'provider', 'target', 'author']):
+                    if (is_null($value) || !($value instanceof ActivityObject)) continue;
+                    $_data = $this->normalizeActivity($value->getAll());
                     if (count($_data) > 0) {
                         $data[$key] = $_data;
                     }
                     break;
 
-                default:
-                    $data[$key] = (string)$value;
+                // datetime
+                case in_array($key, ['published', 'updated']):
+                    if (!is_string($value) || $value == '') continue;
+                    $data[$key] = $value;
+                    break;
 
+                // array of objects
+                case $key == 'attachments':
+                    if (!is_array($value) || count($value) === 0) continue;
+                    $_data = [];
+                    foreach($value as $atta) {
+                        if (!is_object($atta) || !($atta instanceof ActivityObject)) continue;
+                        $_subdata = $this->normalizeActivity($atta->getAll());
+                        if (count($_subdata) > 0) {
+                            $_data[] = $_subdata;
+                        }
+                    }
+                    if (count($_data) > 0) {
+                        $data[$key] = $_data;
+                    }
+                    break;
+
+                // array of string
+                case in_array($key, ['downstreamDuplicates', 'upstreamDuplicates']):
+                    if (!is_array($value) || count($value) === 0) continue;
+                    $data[$key] = $value;
+                    break;
             }
         }
 
@@ -165,8 +178,83 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
      */
     protected function denormalizeActivity(array $data)
     {
-        $builder = new DefaultActivityBuilder();
-        $builder->setFromArray($data);
-        return $builder->getActivity();
+        $activity = new Activity();
+
+        foreach ($data as $key => $value) {
+
+            switch(true)
+            {
+                // mixed
+                case $key == 'content':
+                    if (!is_string($value) || $value == '') continue;
+                    if (null === ($_content = json_decode($value, true))) continue;
+                    $activity->setContent($_content);
+                    break;
+
+                // activity object
+                case in_array($key, ['actor', 'generator', 'object', 'provider', 'target']):
+                    if (!is_array($value) || count($value) === 0) continue;
+                    $method = 'set' . ucfirst($key);
+                    $activity->{$method}($this->denormalizeActivityObject($value));
+                    break;
+
+                // string
+                case in_array($key, ['id', 'title', 'url', 'verb', 'published', 'updated']):
+                    $method = 'set' . ucfirst($key);
+                    $activity->{$method}($value);
+                    break;
+            }
+        }
+
+        return $activity;
     }
+
+    /**
+     * @param array $data
+     *
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     */
+    protected function denormalizeActivityObject(array $data)
+    {
+        $activityObject = new ActivityObject();
+
+        foreach ($data as $key => $value) {
+
+            switch(true)
+            {
+                // mixed
+                case $key == 'content':
+                    if (!is_string($value) || $value == '') continue;
+                    if (null === ($_content = json_decode($value, true))) continue;
+                    $activityObject->setContent($_content);
+                    break;
+
+                // object
+                case $key == 'author':
+                    if (!is_array($value)) continue;
+                    $activityObject->setAuthor($this->denormalizeActivityObject($value));
+                    break;
+
+                // array of objects
+                case $key == 'attachments':
+                    if (!is_array($value) || count($value) === 0) continue;
+                    foreach($value as $attaData) {
+                        $activityObject->addAttachment($this->denormalizeActivityObject($attaData));
+                    }
+                    break;
+
+                // string
+                case in_array(
+                  $key,
+                  ['displayName', 'id',  'objectType',  'summary', 'url', 'published', 'updated', 'downstreamDuplicates', 'upstreamDuplicates']
+                ):
+                    $method = 'set' . ucfirst($key);
+                    $activityObject->{$method}($value);
+                    break;
+            }
+        }
+
+        return $activityObject;
+    }
+
 }

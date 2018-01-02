@@ -73,13 +73,14 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
         $this->expectedData = $this->testData;
         $this->expectedData['title'] = 'message.send';
         $this->expectedData['verb'] = 'send';
+        $this->expectedData['content'] = \json_encode($this->expectedData['content']);
         $this->expectedData['generator'] = [
           'id' => 'tnc-event-dispatcher',
           'objectType' => 'library',
-          'content' => [
+          'content' => \json_encode([
             'mode'  => TransportableEvent::TRANSPORT_MODE_ASYNC,
             'class' => TransportableEvent::class
-          ]
+          ])
         ];
     }
 
@@ -94,10 +95,13 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
     {
         $eventName = 'message.send';
 
+        $normalizedEvent = $this->testData;
+        $normalizedEvent['content'] = \json_encode($normalizedEvent['content']);
+
         $wrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
           $eventName,
-          $this->testData,
+          $normalizedEvent,
           TransportableEvent::class
         );
 
@@ -165,7 +169,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
           new JsonFormatter()
         );
 
-        $data = [
+        /*$data = [
           'actor'     => [
             'id'   => 'actorId',
             'objectType' => 'actorType',
@@ -203,6 +207,28 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
             'objectType' => 'providerType'
           ],
           'content'   => ['a' => 'testa', 'b' => 'testb']
+        ];*/
+
+        $data = [
+          'actor'     => [
+            'id'   => '3',
+            'objectType' => 'user',
+            'content' => ['age' => 18, 'name' => 'Want Er Gou']
+          ],
+          'object'    => [
+            'id' => '0101',
+            'objectType' => 'quiz.subcategory',
+            'content' => [
+              'a' => 1,
+              'b' => 2,
+              'c' => 3,
+              'd' => 4
+            ]
+          ],
+          "published" => "2017-12-21T05:17:40+00:00",
+  "title" => "user.quiz.update",
+  "verb" => "update",
+  "id" => "ED-user.quiz.update-3-5a3b43f4e6297"
         ];
 
         $builder = new DefaultActivityBuilder();
