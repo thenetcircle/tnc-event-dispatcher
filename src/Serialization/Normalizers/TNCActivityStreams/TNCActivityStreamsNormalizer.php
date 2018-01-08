@@ -125,6 +125,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
 
                 // string
                 case in_array($key, ['version', 'id', 'title', 'url', 'verb', 'displayName', 'objectType', 'summary']):
+                    $value = (string)$value;
                     if (!is_string($value) || $value == '') continue;
                     $data[$key] = $value;
                     break;

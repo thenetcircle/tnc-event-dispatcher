@@ -232,4 +232,31 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
         self::assertJson($expectedData, $serializedData);
         self::assertEquals($testEvent, $serializer->unserialize($serializedData, TestEvent::class));
     }
+
+    public function testUserCase_IntIdMissed()
+    {
+        $builder = new DefaultActivityBuilder();
+        $builder->setActor([123, 'user_id']);
+        $builder->setObject([321, 'object_id']);
+        $builder->setTarget([456, 'target_user']);
+        $builder->setPublished('2018-01-01T00:00:00+08:00');
+        $testEvent = new TestEvent($builder->getActivity());
+
+        self::assertEquals([
+          'version' => '1.0',
+          'actor' => [
+            'id' => 123,
+            'objectType' => 'user_id'
+          ],
+          'object' => [
+            'id' => 321,
+            'objectType' => 'object_id'
+          ],
+          'target' => [
+            'id' => 456,
+            'objectType' => 'target_user'
+          ],
+          'published' => '2018-01-01T00:00:00+08:00',
+        ], $this->normalizer->normalize($testEvent));
+    }
 }
