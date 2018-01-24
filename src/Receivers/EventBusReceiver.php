@@ -23,27 +23,35 @@ use Psr\Http\Message\RequestInterface;
 class EventBusReceiver extends AbstractReceiver
 {
     const SUCCESSFUL_RESPONSE = 'ok';
-    const FAILED_RESPONSE     = 'ko';
 
     /**
-     * Accepts new EventBus request, and dispatching to listeners
+     * Handler and process a new http request, and dispatch to listeners
      *
      * @param \Psr\Http\Message\RequestInterface $request
      *
-     * // TODO: tracing request, processing
-     *
-     * @return string
+     * @return string "ok" -> success, others -> failure
      */
-    public function newRequest(RequestInterface $request)
+    public function handlerRequest(RequestInterface $request)
     {
         $body = $request->getBody()->getContents();
+        return $this->handlerSerializedEvent($body);
+    }
 
+    /**
+     * Handler and process a serialized event, and dispatch to listeners
+     *
+     * @param string $data
+     *
+     * @return string "ok" -> success, others -> failure
+     */
+    public function handlerSerializedEvent($data)
+    {
         try {
-            $this->dispatch($body);
+            $this->dispatch($data);
             return self::SUCCESSFUL_RESPONSE;
         }
         catch (\Exception $e) {
-            return self::FAILED_RESPONSE;
+            return $e->getMessage();
         }
     }
 }

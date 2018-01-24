@@ -86,6 +86,21 @@ class Activity
     private $generator = null;
 
     /**
+     * @var string
+     */
+    private $icon = '';
+
+    /**
+     * @var string
+     */
+    private $updated = '';
+
+    /**
+     * @var string
+     */
+    private $url = '';
+
+    /**
      * @return string
      */
     public function getVersion()
@@ -309,6 +324,66 @@ class Activity
     public function setTitle($title)
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * @param string $icon
+     *
+     * @return Activity
+     */
+    public function setIcon($icon)
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
+     * @param string $updated
+     *
+     * @return Activity
+     */
+    public function setUpdated($updated)
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return Activity
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
 
         return $this;
     }

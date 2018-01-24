@@ -61,6 +61,31 @@ class ActivityObject
     private $author = null;
 
     /**
+     * @var string
+     */
+    private $displayName = '';
+
+    /**
+     * @var string
+     */
+    private $image = '';
+
+    /**
+     * @var string
+     */
+    private $published = '';
+
+    /**
+     * @var string
+     */
+    private $updated = '';
+
+    /**
+     * @var string
+     */
+    private $url = '';
+
+    /**
      * @return array
      */
     public function getAll()
@@ -260,6 +285,106 @@ class ActivityObject
     public function setSummary($summary)
     {
         $this->summary = $summary;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDisplayName()
+    {
+        return $this->displayName;
+    }
+
+    /**
+     * @param string $displayName
+     *
+     * @return ActivityObject
+     */
+    public function setDisplayName($displayName)
+    {
+        $this->displayName = $displayName;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param string $image
+     *
+     * @return ActivityObject
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublished()
+    {
+        return $this->published;
+    }
+
+    /**
+     * @param string $published
+     *
+     * @return ActivityObject
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdated()
+    {
+        return $this->updated;
+    }
+
+    /**
+     * @param string $updated
+     *
+     * @return ActivityObject
+     */
+    public function setUpdated($updated)
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return ActivityObject
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
 
         return $this;
     }

@@ -124,7 +124,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
                     break;
 
                 // string
-                case in_array($key, ['version', 'id', 'title', 'url', 'verb', 'displayName', 'objectType', 'summary']):
+                case in_array($key, ['version', 'id', 'title', 'url', 'verb', 'displayName', 'objectType', 'summary', 'image', 'icon']):
                     $value = (string)$value;
                     if (!is_string($value) || $value == '') continue;
                     $data[$key] = $value;
@@ -200,7 +200,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
                     break;
 
                 // string
-                case in_array($key, ['id', 'title', 'url', 'verb', 'published', 'updated']):
+                case in_array($key, ['icon', 'id', 'title', 'url', 'verb', 'published', 'updated']):
                     $method = 'set' . ucfirst($key);
                     $activity->{$method}($value);
                     break;
@@ -247,7 +247,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
                 // string
                 case in_array(
                   $key,
-                  ['displayName', 'id',  'objectType',  'summary', 'url', 'published', 'updated', 'downstreamDuplicates', 'upstreamDuplicates']
+                  ['displayName', 'id',  'objectType',  'summary', 'url', 'published', 'updated', 'downstreamDuplicates', 'upstreamDuplicates', 'image']
                 ):
                     $method = 'set' . ucfirst($key);
                     $activityObject->{$method}($value);
