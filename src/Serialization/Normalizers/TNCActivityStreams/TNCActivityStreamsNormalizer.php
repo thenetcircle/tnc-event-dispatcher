@@ -188,8 +188,10 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
                 // mixed
                 case $key == 'content':
                     if (!is_string($value) || $value == '') continue;
-                    if (null === ($_content = json_decode($value, true))) continue;
-                    $activity->setContent($_content);
+                    if (null === ($_content = json_decode($value, true)))
+                        $activity->setContent($value);
+                    else
+                        $activity->setContent($_content);
                     break;
 
                 // activity object
@@ -226,8 +228,10 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
                 // mixed
                 case $key == 'content':
                     if (!is_string($value) || $value == '') continue;
-                    if (null === ($_content = json_decode($value, true))) continue;
-                    $activityObject->setContent($_content);
+                    if (null === ($_content = json_decode($value, true)))
+                        $activityObject->setContent($value);
+                    else
+                        $activityObject->setContent($_content);
                     break;
 
                 // object
