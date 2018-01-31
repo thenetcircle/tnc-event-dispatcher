@@ -72,9 +72,9 @@ trait EventDispatcherTrait
                 case TransportableEvent::TRANSPORT_MODE_SYNC_PLUS:
                 case TransportableEvent::TRANSPORT_MODE_BOTH:
 
-                    $this->preDispatching($eventName, $event, $transportMode);
+                    $this->preDispatch($eventName, $event, $transportMode);
                     $event = parent::dispatch($eventName, $event);
-                    $this->afterDispatching($eventName, $event, $transportMode);
+                    $this->postDispatch($eventName, $event, $transportMode);
 
                     $this->sendToEndPoint($eventName, $event);
 
@@ -87,11 +87,11 @@ trait EventDispatcherTrait
 
         } else {
 
-            $this->preDispatching($eventName, $event, $transportMode);
+            $this->preDispatch($eventName, $event, $transportMode);
 
             $event = parent::dispatch($eventName, $event);
 
-            $this->afterDispatching($eventName, $event, $transportMode);
+            $this->postDispatch($eventName, $event, $transportMode);
 
             return $event;
 
@@ -138,11 +138,11 @@ trait EventDispatcherTrait
 
                 $event = $this->serializer->denormalize($wrappedEvent->getNormalizedEvent(), $className);
 
-                $this->preDispatching($eventName, $event, $transportMode);
+                $this->preDispatch($eventName, $event, $transportMode);
 
                 $this->doDispatch($listeners, $eventName, $event);
 
-                $this->afterDispatching($eventName, $event, $transportMode);
+                $this->postDispatch($eventName, $event, $transportMode);
 
                 return $event;
             }
@@ -237,9 +237,9 @@ trait EventDispatcherTrait
     }
 
     /**
-     * execs actions before dispatching
+     * execs actions before dispatch events
      */
-    protected function preDispatching($eventName, $event, $transportMode)
+    protected function preDispatch($eventName, $event, $transportMode)
     {
         $this->dispatchInternalEvent(
           InternalEvents::DISPATCHING,
@@ -248,9 +248,9 @@ trait EventDispatcherTrait
     }
 
     /**
-     * execs actions after dispatching
+     * execs actions after dispatch events
      */
-    protected function afterDispatching($eventName, $event, $transportMode)
+    protected function postDispatch($eventName, $event, $transportMode)
     {
         $this->dispatchInternalEvent(
           InternalEvents::DISPATCHED,

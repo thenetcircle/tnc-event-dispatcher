@@ -22,8 +22,6 @@ use Psr\Http\Message\RequestInterface;
 
 class EventBusReceiver extends AbstractReceiver
 {
-    const SUCCESSFUL_RESPONSE = 'ok';
-
     /**
      * Handler and process a new http request, and dispatch to listeners
      *
@@ -48,7 +46,7 @@ class EventBusReceiver extends AbstractReceiver
     {
         try {
             $this->dispatch($data);
-            return self::SUCCESSFUL_RESPONSE;
+            return EventBusSignal::OK;
         }
         catch (\Exception $e) {
             return $e->getMessage();

@@ -34,7 +34,7 @@ You may also need to know [Serialization](http://gitlab.thenetcircle.lab/service
     }
 ],
 "require": {
-    "tnc/event-dispatcher": "v2.x-dev" # notice: use the released version for prod
+    "tnc/event-dispatcher": "~2.0"
 }
 ```
 
