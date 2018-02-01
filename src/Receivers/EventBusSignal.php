@@ -31,11 +31,6 @@ final class EventBusSignal
      */
     const EXPONENTIAL_BACKOFF = 'exponential_backoff';
 
-    /**
-     * @var string tells EventBus to save this event in to fallback storage
-     */
-    const TO_FALLBACK = 'to_fallback';
-
-
-    // all other response will be consider failure
+    // all other response will be consider failure, and the event will be sent to fallback
+    // storage by event-bus
 }
