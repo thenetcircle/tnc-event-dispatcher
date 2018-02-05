@@ -71,7 +71,6 @@ trait EventDispatcherTrait
 
                 case TransportableEvent::TRANSPORT_MODE_SYNC_PLUS:
                 case TransportableEvent::TRANSPORT_MODE_BOTH:
-
                     $this->preDispatch($eventName, $event, $transportMode);
                     $event = parent::dispatch($eventName, $event);
                     $this->postDispatch($eventName, $event, $transportMode);
@@ -86,15 +85,11 @@ trait EventDispatcherTrait
             }
 
         } else {
-
             $this->preDispatch($eventName, $event, $transportMode);
-
             $event = parent::dispatch($eventName, $event);
-
             $this->postDispatch($eventName, $event, $transportMode);
 
             return $event;
-
         }
     }
 

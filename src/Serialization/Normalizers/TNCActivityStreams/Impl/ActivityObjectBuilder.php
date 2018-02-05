@@ -50,7 +50,7 @@ class ActivityObjectBuilder
                 #   second is            "objectType".
                 #   third is             "content"
                 #   forth is             "attachments"
-                if (isset($data[0])) {
+                if (array_key_exists(0, $data)) {
                     switch (true) {
                         case count($data) >= 4:
                             $object->setAttachments($data[3]);

@@ -20,6 +20,7 @@ namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
 use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
+use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
 
 /**
  * Providers multiple ways to build \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
@@ -74,6 +75,14 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
     public function getActivity()
     {
         return $this->activity;
+    }
+
+    /**
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     */
+    public function createActivityObject()
+    {
+        return new ActivityObject();
     }
 
     /**
