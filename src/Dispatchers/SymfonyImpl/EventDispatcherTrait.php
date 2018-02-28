@@ -34,12 +34,12 @@ trait EventDispatcherTrait
     /**
      * @var Serializer
      */
-    private $serializer;
+    protected $serializer;
 
     /**
      * @var EndPoint
      */
-    private $endPoint;
+    protected $endPoint;
 
     /**
      * Dispatches an event to all listeners.
