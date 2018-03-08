@@ -54,6 +54,11 @@ class EventBusEndPoint extends AbstractEndPoint
     protected $fallback = null;
 
     /**
+     * @var string
+     */
+    protected $uri = '';
+
+    /**
      * EventBusEndPoint constructor.
      *
      * @param string   $uri
@@ -72,8 +77,9 @@ class EventBusEndPoint extends AbstractEndPoint
             throw new InitializeException('Dependency not found, EventBusEndPoint depends on GuzzleHttp(http://docs.guzzlephp.org/en/stable/).');
         }
 
+        $this->uri = $uri;
+
         $config = array_merge($requestOptions, [
-          'base_uri' => $uri,
           'timeout'  => $timeout
         ]);
 
@@ -105,7 +111,7 @@ class EventBusEndPoint extends AbstractEndPoint
      */
     public function send($message, WrappedEvent $wrappedEvent)
     {
-        $request = new Request('POST', '/', [], $message);
+        $request = new Request('POST', $this->uri, [], $message);
 
         $promise = $this->client->sendAsync($request);
 
