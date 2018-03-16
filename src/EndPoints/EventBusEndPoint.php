@@ -38,39 +38,58 @@ class EventBusEndPoint extends AbstractEndPoint
     /**
      * @var string
      */
-    protected $expectedResponse = '';
+    protected $expectedResponse = 'ok';
+
+    /**
+     * @var \GuzzleHttp\Promise\Promise[]
+     */
+    protected $flyingRequests = [];
+
+    /**
+     * @var callable|null
+     */
+    protected $fallback = null;
 
     /**
      * EventBusEndPoint constructor.
      *
      * @param string   $uri
      * @param float    $timeout        Float describing the timeout of the request in seconds. Use 0 to wait
-     *                                 indefinitely (the default behavior).
-     * @param string   $expectedResponse expected success response from EventBus
+     *                                 indefinitely.
      * @param array    $requestOptions @see http://docs.guzzlephp.org/en/stable/request-options.html
+     * @param string   $expectedResponse
+     * @param callable $fallback       a fallback function which takes
+     *                                 (string $message, \TNC\EventDispatcher\WrappedEvent $wrappedEvent, \Exception $e)
+     *                                 as parameters, and returns boolean as result
      *
      * @throws \TNC\EventDispatcher\Exception\InitializeException
      */
-    public function __construct($uri, $timeout = 3, $expectedResponse = 'ok', array $requestOptions = [])
-    {
+    public function __construct(
+        $uri,
+        $timeout = 5,
+        array $requestOptions = [],
+        $expectedResponse = 'ok',
+        callable $fallback = null
+    ) {
         if (!class_exists('\GuzzleHttp\Client')) {
             throw new InitializeException(
                 'Dependency not found, EventBusEndPoint depends on GuzzleHttp(http://docs.guzzlephp.org/en/stable/).'
             );
         }
 
-        $this->uri = $uri;
+        $this->uri              = $uri;
+        $this->expectedResponse = $expectedResponse;
+        $this->fallback         = $fallback;
 
-        $config = array_merge(
+        $config       = array_merge(
             $requestOptions,
             [
                 'timeout' => $timeout,
             ]
         );
-
         $this->client = new \GuzzleHttp\Client($config);
 
-        $this->expectedResponse = $expectedResponse;
+        register_shutdown_function([$this, 'waitFlyingRequests']);
     }
 
     /**
@@ -78,23 +97,58 @@ class EventBusEndPoint extends AbstractEndPoint
      *
      * @param string                            $message
      * @param \TNC\EventDispatcher\WrappedEvent $wrappedEvent
+     *
+     * @return \GuzzleHttp\Promise\PromiseInterface
      */
     public function send($message, WrappedEvent $wrappedEvent)
     {
         $request = new Request('POST', $this->uri, [], $message);
 
-        try {
-            $response = $this->client->send($request);
-            if ($response->getBody()->getContents() != $this->expectedResponse) {
-                throw new SendingException(
-                    'The response "%s" is not as same as expected "%s"',
-                    $response->getBody()->getContents(),
-                    $this->expectedResponse
-                );
+        $promise = $this->client->sendAsync($request);
+
+        array_push($this->flyingRequests, [$promise, $message, $wrappedEvent]);
+
+        return $promise;
+    }
+
+    /**
+     * Waiting all flying requests complete
+     */
+    public function waitFlyingRequests()
+    {
+        foreach ($this->flyingRequests as $requestData) {
+
+            /**
+             * @var $promise      \GuzzleHttp\Promise\PromiseInterface
+             * @var $message      string
+             * @var $wrappedEvent \TNC\EventDispatcher\WrappedEvent
+             */
+            list($promise, $message, $wrappedEvent) = $requestData;
+            try {
+                $response = $promise->wait();
+                if ($response->getBody()->getContents() != $this->expectedResponse) {
+                    throw new SendingException('The response %s is not expected', $response->getBody()->getContents());
+                }
+                $this->dispatchSuccessEvent($message, $wrappedEvent);
+            } catch (\Exception $exception) {
+                if (null !== $this->fallback) {
+                    try {
+                        $result = call_user_func($this->fallback, $message, $wrappedEvent, $exception);
+                        if ($result) {
+                            $this->dispatchSuccessEvent($message, $wrappedEvent);
+                        } else {
+                            throw new \Exception(
+                                sprintf('Get failed result %s from fallback.', $result), 0, $exception
+                            );
+                        }
+                    } catch (\Exception $fallbackException) {
+                        $this->dispatchFailureEvent($message, $wrappedEvent, $fallbackException);
+                    }
+                } else {
+                    $this->dispatchFailureEvent($message, $wrappedEvent, $exception);
+                }
             }
-            $this->dispatchSuccessEvent($message, $wrappedEvent);
-        } catch (\Exception $exception) {
-            $this->dispatchFailureEvent($message, $wrappedEvent, $exception);
+
         }
     }
 }
