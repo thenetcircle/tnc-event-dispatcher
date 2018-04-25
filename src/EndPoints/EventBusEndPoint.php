@@ -18,9 +18,9 @@
 
 namespace TNC\EventDispatcher\EndPoints;
 
+use GuzzleHttp\Pool;
 use GuzzleHttp\Psr7\Request;
 use TNC\EventDispatcher\Exception\InitializeException;
-use TNC\EventDispatcher\Exception\SendingException;
 use TNC\EventDispatcher\WrappedEvent;
 
 class EventBusEndPoint extends AbstractEndPoint
@@ -36,31 +36,28 @@ class EventBusEndPoint extends AbstractEndPoint
     protected $uri = '';
 
     /**
-     * @var string
+     * @var int
      */
-    protected $expectedResponse = 'ok';
+    protected $concurrency = 5;
 
     /**
-     * @var \GuzzleHttp\Promise\Promise[]
+     * @var array
      */
-    protected $flyingRequests = [];
+    protected $waitingMessages = [];
 
     /**
-     * @var callable|null
+     * @var int
      */
-    protected $fallback = null;
+    protected $maxWaiting = 1000;
 
     /**
      * EventBusEndPoint constructor.
      *
-     * @param string   $uri
-     * @param float    $timeout        Float describing the timeout of the request in seconds. Use 0 to wait
+     * @param string $uri
+     * @param float  $timeout          Float describing the timeout of the request in seconds. Use 0 to wait
      *                                 indefinitely.
-     * @param array    $requestOptions @see http://docs.guzzlephp.org/en/stable/request-options.html
-     * @param string   $expectedResponse
-     * @param callable $fallback       a fallback function which takes
-     *                                 (string $message, \TNC\EventDispatcher\WrappedEvent $wrappedEvent, \Exception $e)
-     *                                 as parameters, and returns boolean as result
+     * @param array  $requestOptions   @see http://docs.guzzlephp.org/en/stable/request-options.html
+     * @param int    $concurrency
      *
      * @throws \TNC\EventDispatcher\Exception\InitializeException
      */
@@ -68,8 +65,7 @@ class EventBusEndPoint extends AbstractEndPoint
         $uri,
         $timeout = 5,
         array $requestOptions = [],
-        $expectedResponse = 'ok',
-        callable $fallback = null
+        $concurrency = 5
     ) {
         if (!class_exists('\GuzzleHttp\Client')) {
             throw new InitializeException(
@@ -77,9 +73,8 @@ class EventBusEndPoint extends AbstractEndPoint
             );
         }
 
-        $this->uri              = $uri;
-        $this->expectedResponse = $expectedResponse;
-        $this->fallback         = $fallback;
+        $this->uri         = $uri;
+        $this->concurrency = $concurrency;
 
         $config       = array_merge(
             $requestOptions,
@@ -89,7 +84,7 @@ class EventBusEndPoint extends AbstractEndPoint
         );
         $this->client = new \GuzzleHttp\Client($config);
 
-        register_shutdown_function([$this, 'waitFlyingRequests']);
+        register_shutdown_function([$this, 'sendWaitingMessages']);
     }
 
     /**
@@ -102,53 +97,52 @@ class EventBusEndPoint extends AbstractEndPoint
      */
     public function send($message, WrappedEvent $wrappedEvent)
     {
-        $request = new Request('POST', $this->uri, [], $message);
+        array_push($this->waitingMessages, [$message, $wrappedEvent]);
 
-        $promise = $this->client->sendAsync($request);
-
-        array_push($this->flyingRequests, [$promise, $message, $wrappedEvent]);
-
-        return $promise;
+        if (count($this->waitingMessages) >= $this->maxWaiting) {
+            $this->sendWaitingMessages();
+        }
     }
 
     /**
-     * Waiting all flying requests complete
+     * Send all waiting messages
      */
-    public function waitFlyingRequests()
+    public function sendWaitingMessages()
     {
-        foreach ($this->flyingRequests as $requestData) {
+        if (!is_array($this->waitingMessages) || count($this->waitingMessages) === 0) {
+            return;
+        }
 
-            /**
-             * @var $promise      \GuzzleHttp\Promise\PromiseInterface
-             * @var $message      string
-             * @var $wrappedEvent \TNC\EventDispatcher\WrappedEvent
-             */
-            list($promise, $message, $wrappedEvent) = $requestData;
-            try {
-                $response = $promise->wait();
-                if ($response->getBody()->getContents() != $this->expectedResponse) {
-                    throw new SendingException('The response %s is not expected', $response->getBody()->getContents());
-                }
-                $this->dispatchSuccessEvent($message, $wrappedEvent);
-            } catch (\Exception $exception) {
-                if (null !== $this->fallback) {
-                    try {
-                        $result = call_user_func($this->fallback, $message, $wrappedEvent, $exception);
-                        if ($result) {
-                            $this->dispatchSuccessEvent($message, $wrappedEvent);
-                        } else {
-                            throw new \Exception(
-                                sprintf('Get failed result %s from fallback.', $result), 0, $exception
-                            );
-                        }
-                    } catch (\Exception $fallbackException) {
-                        $this->dispatchFailureEvent($message, $wrappedEvent, $fallbackException);
-                    }
-                } else {
-                    $this->dispatchFailureEvent($message, $wrappedEvent, $exception);
-                }
-            }
+        try {
+            $uri             = $this->uri;
+            $waitingMessages = $this->waitingMessages;
 
+            $requests = array_map(
+                function ($item) use ($uri) {
+                    return new Request('POST', $uri, [], $item[0]);
+                },
+                $waitingMessages
+            );
+
+            $pool = new Pool(
+                $this->client, $requests, [
+                    'concurrency' => $this->concurrency,
+                    'fulfilled'   => function ($response, $index) use ($waitingMessages) {
+                        list($message, $wrappedEvent) = $waitingMessages[$index];
+                        $this->dispatchSuccessEvent($message, $wrappedEvent);
+                    },
+                    'rejected'    => function ($reason, $index) use ($waitingMessages) {
+                        list($message, $wrappedEvent) = $waitingMessages[$index];
+                        $this->dispatchFailureEvent($message, $wrappedEvent, $reason);
+                    },
+                ]
+            );
+
+            $promise = $pool->promise();
+            $promise->wait();
+        }
+        finally {
+            $this->waitingMessages = [];
         }
     }
 }
