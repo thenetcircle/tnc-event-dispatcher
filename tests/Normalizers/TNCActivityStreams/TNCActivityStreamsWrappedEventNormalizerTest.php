@@ -48,7 +48,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
     {
         $this->normalizer = new TNCActivityStreamsWrappedEventNormalizer();
         $this->testData = [
-          'version'   => '1.0',
+          'version'   => '2.0',
           'id'        => 'id',
           'published' => 'published',
           'content'   => 'content',
