@@ -1,52 +1,15 @@
-# TNC EventDispatcher:
+# TNC EventDispatcher
 
-TNC EventDispatcher is a enhanced version of [Symfony EventDispatcher](https://symfony.com/doc/current/components/event_dispatcher.html), It works as same as Symfony EventDispatcher, just with asynchronous dispatching and receiving ability. It covers all Symfony EventDispatcher functions (like ContainerAware, Traceable etc...).
+[![Build Status](https://travis-ci.org/thenetcircle/tnc-event-dispatcher.svg?branch=master)](https://travis-ci.org/thenetcircle/tnc-event-dispatcher)
 
-The Workflow like this:
+TNC EventDispatcher is a alternative of [Symfony event-dispatcher](https://symfony.com/doc/current/components/event_dispatcher.html) for supporting asynchronous and unified structured events.  
+It works as same as Symfony event-dispatcher, has same interface and a few more options, can replace Symfony evnet-dispatcher seamlessly.
 
-![Workflow](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/uploads/ae847041f3bb46d379c98701f9ada076/EventDispatcher_Diagram.png)
+<a href="https://thenetcircle.github.io/tnc-event-dispatcher/assets/tnc_event_dispatcher_workflow.png" target="_blank">![Workflow](https://thenetcircle.github.io/tnc-event-dispatcher/assets/tnc_event_dispatcher_workflow.png)</a>
 
-Visit the [Wiki](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/wikis/home) for more details, There is also a [Quick Start](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/wikis/quickstart) for you to have a overview.
-You may also need to know [Serialization](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/wikis/serialization) and [ActivityStreams](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher/wikis/activity-streams)
+For more details please check the [Document](https://thenetcircle.github.io/tnc-event-dispatcher), or go through [Quick Start](https://thenetcircle.github.io/tnc-event-dispatcher/quickstart) for a quick overview.
 
-### Related Projects
-
-- [EventBus](https://github.com/thenetcircle/event-bus) A events distributing system with various different data sources and targets
-- [TNCEventDispatcherPlugin](http://gitlab.thenetcircle.lab/service-team/plugin-eventdispatcher) a wrapper of [TNCEventDispatcher](http://gitlab.thenetcircle.lab/service-team/service-eventdispatcher) for Symfony 1.x
-- [TNCEventDispatcherBundle](http://gitlab.thenetcircle.lab/service-team/bundle-eventdispatcher) Symfony Bundle of EventDispatcher
-- [TNCEventDispatcher-Demo](http://gitlab.thenetcircle.lab/service-team/eventdispatcher-demo) A demo project of EventDispatcher Bundle based on Symfony Framework
-
-## Installation
-
-### Requirements
-
-- PHP 5.6+
-
-### Using Composer
-
-- add following code in your project's composer.json
-
-```json
-"repositories": [
-    {
-      "type": "git",
-      "url": "gitlab@gitlab.thenetcircle.lab:service-team/service-eventdispatcher.git"
-    }
-],
-"require": {
-    "tnc/event-dispatcher": "~2.0"
-}
-```
-
-- update project
-
-```json
-composer update
-```
-
-## Support
-
-Benn<<benn@thenetcircle.com>> from Service Team
+## Usage
 
 ## Contributing
 Feedbacks and pull requests are welcome and appreciative. You can contact me by mail or slack or open a issue.   

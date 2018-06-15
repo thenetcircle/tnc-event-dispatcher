@@ -18,7 +18,6 @@
 
 namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\ContainerAwareEventDispatcher as BaseContainerAwareEventDispatcher;
 use TNC\EventDispatcher\Interfaces\Dispatcher;
