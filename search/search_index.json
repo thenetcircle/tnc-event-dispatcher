@@ -1,0 +1,24 @@
+{
+    "docs": [
+        {
+            "location": "/",
+            "text": "What's TNC EventDispatcher\n\n\nTNC EventDispatcher is a alternative of \nSymfony event-dispatcher\n for supporting asynchronous and unified structured events.\nIt works as same as Symfony event-dispatcher, has same interface and a few more options, can replace Symfony evnet-dispatcher seamlessly.\n\n\n\n\nAbout Contributing\n\n\nFeedbacks and pull requests are welcome and appreciative. For major changes, please open an issue first to discuss what you would like to change.\n\n\nChange Logs\n\n\nClick to check Change Logs",
+            "title": "Home"
+        },
+        {
+            "location": "/#whats-tnc-eventdispatcher",
+            "text": "TNC EventDispatcher is a alternative of  Symfony event-dispatcher  for supporting asynchronous and unified structured events.\nIt works as same as Symfony event-dispatcher, has same interface and a few more options, can replace Symfony evnet-dispatcher seamlessly.",
+            "title": "What's TNC EventDispatcher"
+        },
+        {
+            "location": "/#about-contributing",
+            "text": "Feedbacks and pull requests are welcome and appreciative. For major changes, please open an issue first to discuss what you would like to change.",
+            "title": "About Contributing"
+        },
+        {
+            "location": "/#change-logs",
+            "text": "Click to check Change Logs",
+            "title": "Change Logs"
+        }
+    ]
+}
