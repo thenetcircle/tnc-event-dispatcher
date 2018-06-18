@@ -2,13 +2,38 @@
     "docs": [
         {
             "location": "/",
-            "text": "What's TNC EventDispatcher\n\n\nTNC EventDispatcher is a alternative of \nSymfony event-dispatcher\n for supporting asynchronous and unified structured events.\nIt works as same as Symfony event-dispatcher, has same interface and a few more options, can replace Symfony evnet-dispatcher seamlessly.\n\n\n\n\nAbout Contributing\n\n\nFeedbacks and pull requests are welcome and appreciative. For major changes, please open an issue first to discuss what you would like to change.\n\n\nChange Logs\n\n\nClick to check Change Logs",
-            "title": "Home"
+            "text": "Background\n\n\nEvent Dispatcher is a core function of Symfony Framework since very earlier version, For other PHP frameworks as well.\n\nIt's a very cool and effecient idea for decoupling modules or functions.\n\n\nsymfony-event-dispatcher\n is one of most popular Event Dispatcher implementations in PHP world. It's also being used on other PHP frameworks.\n\n\nWhat's tnc-event-dispatcher?\n\n\ntnc-event-dispatcher is a alternative of \nsymfony-event-dispatcher\n for supporting asynchronous and unified structured events. It works as same as symfony-event-dispatcher, has same user interface with a few more options, can replace symfony-event-dispatcher seamlessly.  \n\n\n \n\n\nUser cases of tnc-event-dispatcher:\n\n\n\n\nHeavy Listeners\n\n\nDistrubuted Listeners\n\n\nShared Events across multiple systems\n\n\nStructred data collecting\n\n\n...\n\n\n\n\ntnc-event-dispatcher includes following core components: \nDispatcher\n, \nSerializer\n, \nEndPoint\n, \nReceiver\n.\n\nIt is highly inspired by symfony-event-dispatcher, But not limited on that, symfony-event-dispatcher is one of the Dispatcher implementations of tnc-event-dispatcher, It intends to support other Event Dispatcher implementations as well. \n\n\nHow to install?\n\n\nRequirements\n\n\n\n\nPHP 5.6+\n\n\n\n\nInstall From Composer\n\n\n> composer install tnc/event-dispatcher\n\n\n\n\nHow to use?\n\n\n<?php\nnamespace TNC\\EventDispatcher;\n\ntry {\n    /**\n     * 1. Initialize Serializer\n     * \n     * Serializer is using to serialize your event to be a string.\n     * It includes a couple of Normalizers and a Formatter.\n     */     \n    # Specify Normalizers\n    $supportedNormalizers = [\n        new Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsWrappedEventNormalizer(),\n        new Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsNormalizer()\n    ];\n    # Specify Serialization Format\n    $formatter  = new Serialization\\Formatters\\JsonFormatter();\n    # Initialize Serializer\n    $serializer = new Serializer($supportedNormalizers, $formatter);\n\n\n    /**\n     * 2. Initialize EndPoint\n     * \n     * If you are going to dispatch a async event, which needs a EndPoint to hold the request and send back to Receiver.\n     * Mostly the EndPoint is a Queue, such as Redis, Rabbitmq, Kafka or EventBus (https://github .com/thenetcircle/event-bus)\n     */\n    $endPoint = new EndPoints\\EventBusEndPoint('http://localhost:8000');\n\n\n    /**\n     * 3. Initialize tnc-event-dispatcher, And add some Listeners\n     */\n    $dispatcher = new Dispatchers\\SymfonyImpl\\EventDispatcher($serializer, $endPoint);\n    # Suppose we have a Symfony Event Listener and a Event Subscriber here\n    $dispatcher->addListener('message.send', new SymfonyEventListener());\n    $dispatcher->addSubscriber(new SymfonyEventSubscriber());\n\n    /**\n     * 4. Dispatch Events\n     */\n    $dispatcher->dispatch(\n        'message.send',\n        new AsyncEvent(\n            [\n                'messageId'   => '1',\n                'messageBody' => 'abc'\n            ]\n        )\n    );\n}\ncatch (\\Exception $e) {\n    // Handling Exception\n}\n\n/**\n * 5. Receiving and handling the AsyncEvent\n * \n * After the Event dispatched to the EndPoint, It will be delivered to the Receiver asynchronously.\n * Following are Receiver part, Which could be running on another PHP process\n */\ntry {\n    # Initialize a Receiver(use EventBusReceiver as a example here, could be RabbitMQReceiver, RedisReceiver, ...)\n    $receiver = new Receivers\\EventBusReceiver();\n    # Set Dispatcher we defined before\n    $receiver->withDispatcher($dispatcher);\n    # Dispatch the serliazed-event we received from the EndPoint\n    $receiver->dispatch($serliazedEvent);\n}\ncatch (\\Exception $e) {\n    // Handling Exception\n}\n\n\n\n\nAbout Contributing\n\n\nFeedbacks and pull requests are welcome and appreciative. For major changes, please open an issue first to discuss what you would like to change.\n\n\nChange Logs\n\n\nClick to check Change Logs",
+            "title": "Overview"
         },
         {
-            "location": "/#whats-tnc-eventdispatcher",
-            "text": "TNC EventDispatcher is a alternative of  Symfony event-dispatcher  for supporting asynchronous and unified structured events.\nIt works as same as Symfony event-dispatcher, has same interface and a few more options, can replace Symfony evnet-dispatcher seamlessly.",
-            "title": "What's TNC EventDispatcher"
+            "location": "/#background",
+            "text": "Event Dispatcher is a core function of Symfony Framework since very earlier version, For other PHP frameworks as well. \nIt's a very cool and effecient idea for decoupling modules or functions.  symfony-event-dispatcher  is one of most popular Event Dispatcher implementations in PHP world. It's also being used on other PHP frameworks.",
+            "title": "Background"
+        },
+        {
+            "location": "/#whats-tnc-event-dispatcher",
+            "text": "tnc-event-dispatcher is a alternative of  symfony-event-dispatcher  for supporting asynchronous and unified structured events. It works as same as symfony-event-dispatcher, has same user interface with a few more options, can replace symfony-event-dispatcher seamlessly.       User cases of tnc-event-dispatcher:   Heavy Listeners  Distrubuted Listeners  Shared Events across multiple systems  Structred data collecting  ...   tnc-event-dispatcher includes following core components:  Dispatcher ,  Serializer ,  EndPoint ,  Receiver . \nIt is highly inspired by symfony-event-dispatcher, But not limited on that, symfony-event-dispatcher is one of the Dispatcher implementations of tnc-event-dispatcher, It intends to support other Event Dispatcher implementations as well.",
+            "title": "What's tnc-event-dispatcher?"
+        },
+        {
+            "location": "/#how-to-install",
+            "text": "",
+            "title": "How to install?"
+        },
+        {
+            "location": "/#requirements",
+            "text": "PHP 5.6+",
+            "title": "Requirements"
+        },
+        {
+            "location": "/#install-from-composer",
+            "text": "> composer install tnc/event-dispatcher",
+            "title": "Install From Composer"
+        },
+        {
+            "location": "/#how-to-use",
+            "text": "<?php\nnamespace TNC\\EventDispatcher;\n\ntry {\n    /**\n     * 1. Initialize Serializer\n     * \n     * Serializer is using to serialize your event to be a string.\n     * It includes a couple of Normalizers and a Formatter.\n     */     \n    # Specify Normalizers\n    $supportedNormalizers = [\n        new Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsWrappedEventNormalizer(),\n        new Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsNormalizer()\n    ];\n    # Specify Serialization Format\n    $formatter  = new Serialization\\Formatters\\JsonFormatter();\n    # Initialize Serializer\n    $serializer = new Serializer($supportedNormalizers, $formatter);\n\n\n    /**\n     * 2. Initialize EndPoint\n     * \n     * If you are going to dispatch a async event, which needs a EndPoint to hold the request and send back to Receiver.\n     * Mostly the EndPoint is a Queue, such as Redis, Rabbitmq, Kafka or EventBus (https://github .com/thenetcircle/event-bus)\n     */\n    $endPoint = new EndPoints\\EventBusEndPoint('http://localhost:8000');\n\n\n    /**\n     * 3. Initialize tnc-event-dispatcher, And add some Listeners\n     */\n    $dispatcher = new Dispatchers\\SymfonyImpl\\EventDispatcher($serializer, $endPoint);\n    # Suppose we have a Symfony Event Listener and a Event Subscriber here\n    $dispatcher->addListener('message.send', new SymfonyEventListener());\n    $dispatcher->addSubscriber(new SymfonyEventSubscriber());\n\n    /**\n     * 4. Dispatch Events\n     */\n    $dispatcher->dispatch(\n        'message.send',\n        new AsyncEvent(\n            [\n                'messageId'   => '1',\n                'messageBody' => 'abc'\n            ]\n        )\n    );\n}\ncatch (\\Exception $e) {\n    // Handling Exception\n}\n\n/**\n * 5. Receiving and handling the AsyncEvent\n * \n * After the Event dispatched to the EndPoint, It will be delivered to the Receiver asynchronously.\n * Following are Receiver part, Which could be running on another PHP process\n */\ntry {\n    # Initialize a Receiver(use EventBusReceiver as a example here, could be RabbitMQReceiver, RedisReceiver, ...)\n    $receiver = new Receivers\\EventBusReceiver();\n    # Set Dispatcher we defined before\n    $receiver->withDispatcher($dispatcher);\n    # Dispatch the serliazed-event we received from the EndPoint\n    $receiver->dispatch($serliazedEvent);\n}\ncatch (\\Exception $e) {\n    // Handling Exception\n}",
+            "title": "How to use?"
         },
         {
             "location": "/#about-contributing",
@@ -18,6 +43,101 @@
         {
             "location": "/#change-logs",
             "text": "Click to check Change Logs",
+            "title": "Change Logs"
+        },
+        {
+            "location": "/dispatcher/",
+            "text": "Summary\n\n\nDispatcher is the user interface of tnc-event-dispatcher, It holds Serializer and EndPoint, binds Listeners, accepts Event and dispatches them to corresponding Listeners or EndPoint.\n\n\ntnc-event-dispatcher\n is gonna to have multiple Dispatcher implementations to adapte different frameworks. Currently only Symfony Event Dispatcher is implemented. \n\n\nSymfony Event Dispatcher\n\n\nSymfony Event Dispatcher Implementation intends to replace the original symfony-event-dispatcher seamlessly.\n\nThey have similar user interface, Just some more extra options.\n\n\nDefine a Event\n\n\nFor Event port, The original Events are fully supported without any changes. Just define the event and dispatch it.\n\nBut there are some more event types tnc-event-dispatcher supports. They are:\n\n\n\n\nsync\n\n  works as same as origin event, the event will be dispatched to listeners directly.\n\n\nsync_plus \n\n  same as \"sync\" mode, except that after the event has been dispatched to local listeners, i will also send to EndPoint for remote listeners, but it will not be dispatched to local listeners again.\n\n\nasync\n\n  the event will be sent to EndPoint only, and after the receiver got it, will be dispatched to listeners.\n\n\nboth\n\n  the event will be dispatched to local listeners who are listening on the event name, and then send to EndPoint as well, after the receiver got it, will be dispatched to listeners who are listening on \"$eventName.async\"\n\n\n\n\nLet's define a AsyncEvent, Which is as same as Symfony Event with implements TransportableEvent interface(have to implement getTransportMode method to specify the type of the Event).\n\n\n<?php\nuse Symfony\\Component\\EventDispatcher\\Event;\nuse TNC\\EventDispatcher\\Interfaces\\Event\\TransportableEvent;\n\n/**\n * AsyncEvent will be send to the EndPoint\n */\nclass AsyncEvent extends Event implements TransportableEvent\n{\n    const NAME = 'message.send';\n\n    private $data = [];\n\n    public function __construct($data)\n    {\n        $this->data = $data;\n    }\n\n    /**\n     * Returns transport mode of this event\n     *\n     * It supports one of these:\n     *\n     *  - \"sync\"      works as same as origin event, the event will be dispatched to listeners directly.\n     *\n     *  - \"sync_plus\" same as \"sync\" mode, except that after the event has been dispatched to local listeners, i will\n     *                also send to EndPoint for remote listeners, but it will not be dispatched to local listeners\n     *                again.\n     *\n     *  - \"async\"     the event will be sent to EndPoint only, and after the receiver got it, will be dispatched to\n     *                listeners.\n     *\n     *  - \"both\"      the event will be dispatched to local listeners who are listening on the event name, and then\n     *                send to EndPoint as well, after the receiver got it, will be dispatched to listeners who are\n     *                listening on \"$eventName.async\"\n     *\n     * @see \\TNC\\EventDispatcher\\Interfaces\\Event\\TransportableEvent\n     *\n     * @return string\n     */\n    public function getTransportMode()\n    {\n        // TODO: Implement getTransportMode() method.\n    }\n}\n\n\n\n\nDispatch the Event\n\n\nDispatcher has totally same interface of symfony-event-dispatcher\n\n\n<?php\n# Initialize tnc-event-dispatcher\n$dispatcher = new Dispatchers\\SymfonyImpl\\EventDispatcher($serializer, $endPoint);\n\n# Suppose we have a Symfony Event Listener and a Event Subscriber here\n$dispatcher->addListener('message.send', new SymfonyEventListener());\n$dispatcher->addSubscriber(new SymfonyEventSubscriber());\n\n# Dispatch a event 'message.send', the event will be sent to the EndPoint\n$dispatcher->dispatch(\n    'message.send',\n    new AsyncEvent(\n        [\n            'messageId'   => '1',\n            'messageBody' => 'abc'\n        ]\n    )\n);",
+            "title": "Dispatcher"
+        },
+        {
+            "location": "/dispatcher/#summary",
+            "text": "Dispatcher is the user interface of tnc-event-dispatcher, It holds Serializer and EndPoint, binds Listeners, accepts Event and dispatches them to corresponding Listeners or EndPoint.  tnc-event-dispatcher  is gonna to have multiple Dispatcher implementations to adapte different frameworks. Currently only Symfony Event Dispatcher is implemented.",
+            "title": "Summary"
+        },
+        {
+            "location": "/dispatcher/#symfony-event-dispatcher",
+            "text": "Symfony Event Dispatcher Implementation intends to replace the original symfony-event-dispatcher seamlessly. \nThey have similar user interface, Just some more extra options.",
+            "title": "Symfony Event Dispatcher"
+        },
+        {
+            "location": "/dispatcher/#define-a-event",
+            "text": "For Event port, The original Events are fully supported without any changes. Just define the event and dispatch it. \nBut there are some more event types tnc-event-dispatcher supports. They are:   sync \n  works as same as origin event, the event will be dispatched to listeners directly.  sync_plus  \n  same as \"sync\" mode, except that after the event has been dispatched to local listeners, i will also send to EndPoint for remote listeners, but it will not be dispatched to local listeners again.  async \n  the event will be sent to EndPoint only, and after the receiver got it, will be dispatched to listeners.  both \n  the event will be dispatched to local listeners who are listening on the event name, and then send to EndPoint as well, after the receiver got it, will be dispatched to listeners who are listening on \"$eventName.async\"   Let's define a AsyncEvent, Which is as same as Symfony Event with implements TransportableEvent interface(have to implement getTransportMode method to specify the type of the Event).  <?php\nuse Symfony\\Component\\EventDispatcher\\Event;\nuse TNC\\EventDispatcher\\Interfaces\\Event\\TransportableEvent;\n\n/**\n * AsyncEvent will be send to the EndPoint\n */\nclass AsyncEvent extends Event implements TransportableEvent\n{\n    const NAME = 'message.send';\n\n    private $data = [];\n\n    public function __construct($data)\n    {\n        $this->data = $data;\n    }\n\n    /**\n     * Returns transport mode of this event\n     *\n     * It supports one of these:\n     *\n     *  - \"sync\"      works as same as origin event, the event will be dispatched to listeners directly.\n     *\n     *  - \"sync_plus\" same as \"sync\" mode, except that after the event has been dispatched to local listeners, i will\n     *                also send to EndPoint for remote listeners, but it will not be dispatched to local listeners\n     *                again.\n     *\n     *  - \"async\"     the event will be sent to EndPoint only, and after the receiver got it, will be dispatched to\n     *                listeners.\n     *\n     *  - \"both\"      the event will be dispatched to local listeners who are listening on the event name, and then\n     *                send to EndPoint as well, after the receiver got it, will be dispatched to listeners who are\n     *                listening on \"$eventName.async\"\n     *\n     * @see \\TNC\\EventDispatcher\\Interfaces\\Event\\TransportableEvent\n     *\n     * @return string\n     */\n    public function getTransportMode()\n    {\n        // TODO: Implement getTransportMode() method.\n    }\n}",
+            "title": "Define a Event"
+        },
+        {
+            "location": "/dispatcher/#dispatch-the-event",
+            "text": "Dispatcher has totally same interface of symfony-event-dispatcher  <?php\n# Initialize tnc-event-dispatcher\n$dispatcher = new Dispatchers\\SymfonyImpl\\EventDispatcher($serializer, $endPoint);\n\n# Suppose we have a Symfony Event Listener and a Event Subscriber here\n$dispatcher->addListener('message.send', new SymfonyEventListener());\n$dispatcher->addSubscriber(new SymfonyEventSubscriber());\n\n# Dispatch a event 'message.send', the event will be sent to the EndPoint\n$dispatcher->dispatch(\n    'message.send',\n    new AsyncEvent(\n        [\n            'messageId'   => '1',\n            'messageBody' => 'abc'\n        ]\n    )\n);",
+            "title": "Dispatch the Event"
+        },
+        {
+            "location": "/serializer/",
+            "text": "Summary\n\n\nSerializer is a core component of tnc-event-dispatcher, It helps to serilize Events to be transportable, Also unserilize Serialized-Events to be Event objects again.\n\n\nSerializer is inspired by \nSymfony Serializer\n, It also includes two parts, Normalizer and Formatter, The workflow like this: \n\n\n\n\nNormalizer takes care of transform Events to be a Array and the reverse, And Formatter is working on transform the Array to be a formatted string and the reverse, like Json, XML, ...\n\n\nExample\n\n\n<?php\nnamespace TNC\\EventDispatcher;\n\n# Specify Normalizers\n$supportedNormalizers = [\n    new Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsWrappedEventNormalizer(),\n    new Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsNormalizer()\n];\n\n# Specify Serialization Format\n$formatter  = new Serialization\\Formatters\\JsonFormatter();\n\n# Initialize Serializer\n$serializer = new Serializer($supportedNormalizers, $formatter);\n\n\n\n\nNormalizer\n\n\nActivity Normalizers\n\n\nActivity Streams\n\n\nActivity Streams is a data format which defines a Activity, For more details please check their \nDocument\n\n\nTNC\\EventDispatcher\\Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsWrappedEventNormalizer\n\n\nNorlimize a WrappedEvent to be a Activity Streams Array or the reverse\n\n\n\n\nSupported Normalization\n\n\n\n\n$object instanceof WrappedEvent\n\n\n\n\nSupported Denormalization\n\n\n\n\n$className == WrappedEvent::class\n\n\nSerialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsNormalizer\n\n\nNorlimize a Event to be a Activity Streams Array or the reverse\n\n\n\n\nSupported Normalization\n\n\n\n\n$object instanceof TNCActivityStreamsEvent\n\n\n\n\nSupported Denormalization\n\n\n\n\nis_subclass_of($className, TNCActivityStreamsEvent::class)\n\n\nFormatter\n\n\nJSON Formatter\n\n\nTNC\\EventDispatcher\\Serialization\\Formatters\\JsonFormatter",
+            "title": "Serializer"
+        },
+        {
+            "location": "/serializer/#summary",
+            "text": "Serializer is a core component of tnc-event-dispatcher, It helps to serilize Events to be transportable, Also unserilize Serialized-Events to be Event objects again.  Serializer is inspired by  Symfony Serializer , It also includes two parts, Normalizer and Formatter, The workflow like this:    Normalizer takes care of transform Events to be a Array and the reverse, And Formatter is working on transform the Array to be a formatted string and the reverse, like Json, XML, ...",
+            "title": "Summary"
+        },
+        {
+            "location": "/serializer/#example",
+            "text": "<?php\nnamespace TNC\\EventDispatcher;\n\n# Specify Normalizers\n$supportedNormalizers = [\n    new Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsWrappedEventNormalizer(),\n    new Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsNormalizer()\n];\n\n# Specify Serialization Format\n$formatter  = new Serialization\\Formatters\\JsonFormatter();\n\n# Initialize Serializer\n$serializer = new Serializer($supportedNormalizers, $formatter);",
+            "title": "Example"
+        },
+        {
+            "location": "/serializer/#normalizer",
+            "text": "",
+            "title": "Normalizer"
+        },
+        {
+            "location": "/serializer/#activity-normalizers",
+            "text": "",
+            "title": "Activity Normalizers"
+        },
+        {
+            "location": "/serializer/#activity-streams",
+            "text": "Activity Streams is a data format which defines a Activity, For more details please check their  Document",
+            "title": "Activity Streams"
+        },
+        {
+            "location": "/serializer/#tnceventdispatcherserializationnormalizerstncactivitystreamstncactivitystreamswrappedeventnormalizer",
+            "text": "Norlimize a WrappedEvent to be a Activity Streams Array or the reverse   Supported Normalization   $object instanceof WrappedEvent   Supported Denormalization   $className == WrappedEvent::class",
+            "title": "TNC\\EventDispatcher\\Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsWrappedEventNormalizer"
+        },
+        {
+            "location": "/serializer/#serializationnormalizerstncactivitystreamstncactivitystreamsnormalizer",
+            "text": "Norlimize a Event to be a Activity Streams Array or the reverse   Supported Normalization   $object instanceof TNCActivityStreamsEvent   Supported Denormalization   is_subclass_of($className, TNCActivityStreamsEvent::class)",
+            "title": "Serialization\\Normalizers\\TNCActivityStreams\\TNCActivityStreamsNormalizer"
+        },
+        {
+            "location": "/serializer/#formatter",
+            "text": "",
+            "title": "Formatter"
+        },
+        {
+            "location": "/serializer/#json-formatter",
+            "text": "",
+            "title": "JSON Formatter"
+        },
+        {
+            "location": "/serializer/#tnceventdispatcherserializationformattersjsonformatter",
+            "text": "",
+            "title": "TNC\\EventDispatcher\\Serialization\\Formatters\\JsonFormatter"
+        },
+        {
+            "location": "/endpoint/",
+            "text": "",
+            "title": "EndPoint"
+        },
+        {
+            "location": "/receiver/",
+            "text": "",
+            "title": "Receiver"
+        },
+        {
+            "location": "/change_logs/",
+            "text": "",
             "title": "Change Logs"
         }
     ]

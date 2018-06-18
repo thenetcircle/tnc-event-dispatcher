@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Dispatcher - tnc-event-dispatcher</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="../css/highlight.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Dispatcher";
+    var mkdocs_page_input_path = "dispatcher.md";
+    var mkdocs_page_url = "/dispatcher/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js"></script>
+  <script src="../js/modernizr-2.8.3.min.js"></script>
+  <script type="text/javascript" src="../js/highlight.pack.js"></script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> tnc-event-dispatcher</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+      
+
+
+  
+    
+
+
+<ul class="" href="../">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="../">Overview</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="current" href="../dispatcher/">
+  
+  
+  
+  <li class="current toctree-l1">
+    <a class="current" href="../dispatcher/">Dispatcher</a>
+    
+  
+  
+  
+  <ul class="current subnav">
+    
+      
+
+  
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#summary" title="Dispatcher">Summary</a>
+  </li>
+
+    
+      
+
+  
+  
+
+
+  <li class=" toctree-l2">
+    
+      <a href="#symfony-event-dispatcher" title="Dispatcher"
+          class="">
+        Symfony Event Dispatcher
+      </a>
+    
+    <ul class=" subnav">
+      
+        
+
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#define-a-event" title="Dispatcher">Define a Event</a>
+  </li>
+
+      
+        
+
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#dispatch-the-event" title="Dispatcher">Dispatch the Event</a>
+  </li>
+
+      
+    </ul>
+  </li>
+
+    
+  </ul>
+
+  </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="../serializer/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="../serializer/">Serializer</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="../endpoint/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="../endpoint/">EndPoint</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="../receiver/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="../receiver/">Receiver</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="../change_logs/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="../change_logs/">Change Logs</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">tnc-event-dispatcher</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Dispatcher</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/thenetcircle/tnc-event-dispatcher/edit/master/docs/dispatcher.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="summary">Summary</h1>
+<p>Dispatcher is the user interface of tnc-event-dispatcher, It holds Serializer and EndPoint, binds Listeners, accepts Event and dispatches them to corresponding Listeners or EndPoint.<br />
+<strong>tnc-event-dispatcher</strong> is gonna to have multiple Dispatcher implementations to adapte different frameworks. Currently only Symfony Event Dispatcher is implemented. </p>
+<h1 id="symfony-event-dispatcher">Symfony Event Dispatcher</h1>
+<p>Symfony Event Dispatcher Implementation intends to replace the original symfony-event-dispatcher seamlessly.<br />
+They have similar user interface, Just some more extra options.</p>
+<h2 id="define-a-event">Define a Event</h2>
+<p>For Event port, The original Events are fully supported without any changes. Just define the event and dispatch it.<br />
+But there are some more event types tnc-event-dispatcher supports. They are:</p>
+<ul>
+<li>sync<br />
+  works as same as origin event, the event will be dispatched to listeners directly.</li>
+<li>sync_plus <br />
+  same as "sync" mode, except that after the event has been dispatched to local listeners, i will also send to EndPoint for remote listeners, but it will not be dispatched to local listeners again.</li>
+<li>async<br />
+  the event will be sent to EndPoint only, and after the receiver got it, will be dispatched to listeners.</li>
+<li>both<br />
+  the event will be dispatched to local listeners who are listening on the event name, and then send to EndPoint as well, after the receiver got it, will be dispatched to listeners who are listening on "$eventName.async"</li>
+</ul>
+<p>Let's define a AsyncEvent, Which is as same as Symfony Event with implements TransportableEvent interface(have to implement getTransportMode method to specify the type of the Event).</p>
+<pre><code class="php">&lt;?php
+use Symfony\Component\EventDispatcher\Event;
+use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
+
+/**
+ * AsyncEvent will be send to the EndPoint
+ */
+class AsyncEvent extends Event implements TransportableEvent
+{
+    const NAME = 'message.send';
+
+    private $data = [];
+
+    public function __construct($data)
+    {
+        $this-&gt;data = $data;
+    }
+
+    /**
+     * Returns transport mode of this event
+     *
+     * It supports one of these:
+     *
+     *  - &quot;sync&quot;      works as same as origin event, the event will be dispatched to listeners directly.
+     *
+     *  - &quot;sync_plus&quot; same as &quot;sync&quot; mode, except that after the event has been dispatched to local listeners, i will
+     *                also send to EndPoint for remote listeners, but it will not be dispatched to local listeners
+     *                again.
+     *
+     *  - &quot;async&quot;     the event will be sent to EndPoint only, and after the receiver got it, will be dispatched to
+     *                listeners.
+     *
+     *  - &quot;both&quot;      the event will be dispatched to local listeners who are listening on the event name, and then
+     *                send to EndPoint as well, after the receiver got it, will be dispatched to listeners who are
+     *                listening on &quot;$eventName.async&quot;
+     *
+     * @see \TNC\EventDispatcher\Interfaces\Event\TransportableEvent
+     *
+     * @return string
+     */
+    public function getTransportMode()
+    {
+        // TODO: Implement getTransportMode() method.
+    }
+}
+</code></pre>
+
+<h2 id="dispatch-the-event">Dispatch the Event</h2>
+<p>Dispatcher has totally same interface of symfony-event-dispatcher</p>
+<pre><code class="php">&lt;?php
+# Initialize tnc-event-dispatcher
+$dispatcher = new Dispatchers\SymfonyImpl\EventDispatcher($serializer, $endPoint);
+
+# Suppose we have a Symfony Event Listener and a Event Subscriber here
+$dispatcher-&gt;addListener('message.send', new SymfonyEventListener());
+$dispatcher-&gt;addSubscriber(new SymfonyEventSubscriber());
+
+# Dispatch a event 'message.send', the event will be sent to the EndPoint
+$dispatcher-&gt;dispatch(
+    'message.send',
+    new AsyncEvent(
+        [
+            'messageId'   =&gt; '1',
+            'messageBody' =&gt; 'abc'
+        ]
+    )
+);
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../serializer/" class="btn btn-neutral float-right" title="Serializer">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/thenetcircle/tnc-event-dispatcher/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href=".." style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../serializer/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/require.js"></script>
+      <script src="../search/search.js"></script>
+
+</body>
+</html>

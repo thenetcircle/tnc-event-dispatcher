@@ -8,7 +8,7 @@
   <meta name="description" content="None">
   
   <link rel="shortcut icon" href="./img/favicon.ico">
-  <title>Home - tnc-event-dispatcher</title>
+  <title>Overview - tnc-event-dispatcher</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
   <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
 
@@ -18,7 +18,7 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Home";
+    var mkdocs_page_name = "Overview";
     var mkdocs_page_input_path = "index.md";
     var mkdocs_page_url = "/";
   </script>
@@ -57,8 +57,11 @@
   
   
   <li class="current toctree-l1">
-    <a class="current" href="./">Home</a>
+    <a class="current" href="./">Overview</a>
     
+  
+  
+  
   
   
   
@@ -73,7 +76,7 @@
 
 
   <li class="toctree-l2 toc-item">
-    <a href="#whats-tnc-eventdispatcher" title="Home">What's TNC EventDispatcher</a>
+    <a href="#background" title="Overview">Background</a>
   </li>
 
     
@@ -84,7 +87,48 @@
 
 
   <li class="toctree-l2 toc-item">
-    <a href="#about-contributing" title="Home">About Contributing</a>
+    <a href="#whats-tnc-event-dispatcher" title="Overview">What's tnc-event-dispatcher?</a>
+  </li>
+
+    
+      
+
+  
+  
+
+
+  <li class=" toctree-l2">
+    
+      <a href="#how-to-install" title="Overview"
+          class="">
+        How to install?
+      </a>
+    
+    <ul class=" subnav">
+      
+        
+
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#requirements" title="Overview">Requirements</a>
+  </li>
+
+      
+        
+
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#install-from-composer" title="Overview">Install From Composer</a>
+  </li>
+
+      
+    </ul>
   </li>
 
     
@@ -95,13 +139,150 @@
 
 
   <li class="toctree-l2 toc-item">
-    <a href="#change-logs" title="Home">Change Logs</a>
+    <a href="#how-to-use" title="Overview">How to use?</a>
+  </li>
+
+    
+      
+
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#about-contributing" title="Overview">About Contributing</a>
+  </li>
+
+    
+      
+
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#change-logs" title="Overview">Change Logs</a>
   </li>
 
     
   </ul>
 
   </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="./dispatcher/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="./dispatcher/">Dispatcher</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="./serializer/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="./serializer/">Serializer</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="./endpoint/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="./endpoint/">EndPoint</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="./receiver/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="./receiver/">Receiver</a>
+      </li>
+</ul>
+
+<!--
+ | This is a hacky way to pass setting from the template generator to the
+ | javascript that drives the dropdown functionality
+-->
+<div style="width: 1px; height: 1px; visibility: none;">
+
+</div>
+
+
+
+  
+    
+
+
+<ul class="" href="./change_logs/">
+  
+  
+  
+  <li class=" toctree-l1">
+    <a class="" href="./change_logs/">Change Logs</a>
+      </li>
 </ul>
 
 <!--
@@ -134,7 +315,7 @@
     
       
     
-    <li>Home</li>
+    <li>Overview</li>
     <li class="wy-breadcrumbs-aside">
       
         <a href="https://github.com/thenetcircle/tnc-event-dispatcher/edit/master/docs/index.md"
@@ -147,10 +328,107 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="whats-tnc-eventdispatcher">What's TNC EventDispatcher</h1>
-<p>TNC EventDispatcher is a alternative of <a href="https://symfony.com/doc/current/components/event_dispatcher.html">Symfony event-dispatcher</a> for supporting asynchronous and unified structured events.
-It works as same as Symfony event-dispatcher, has same interface and a few more options, can replace Symfony evnet-dispatcher seamlessly.</p>
-<p><a href="assets/tnc_event_dispatcher_workflow.png" target="_blank"><img alt="Workflow" src="./assets/tnc_event_dispatcher_workflow.png" /></a></p>
+                <h1 id="background">Background</h1>
+<p>Event Dispatcher is a core function of Symfony Framework since very earlier version, For other PHP frameworks as well.<br />
+It's a very cool and effecient idea for decoupling modules or functions.<br />
+<a href="https://symfony.com/doc/current/components/event_dispatcher.html">symfony-event-dispatcher</a> is one of most popular Event Dispatcher implementations in PHP world. It's also being used on other PHP frameworks.</p>
+<h1 id="whats-tnc-event-dispatcher">What's tnc-event-dispatcher?</h1>
+<p>tnc-event-dispatcher is a alternative of <a href="https://symfony.com/doc/current/components/event_dispatcher.html">symfony-event-dispatcher</a> for supporting asynchronous and unified structured events. It works as same as symfony-event-dispatcher, has same user interface with a few more options, can replace symfony-event-dispatcher seamlessly.  </p>
+<p><a href="assets/tnc_event_dispatcher_workflow.png" target="_blank"><img alt="Workflow" src="./assets/tnc_event_dispatcher_workflow.png" /></a> </p>
+<p>User cases of tnc-event-dispatcher:</p>
+<ul>
+<li>Heavy Listeners</li>
+<li>Distrubuted Listeners</li>
+<li>Shared Events across multiple systems</li>
+<li>Structred data collecting</li>
+<li>...</li>
+</ul>
+<p>tnc-event-dispatcher includes following core components: <strong>Dispatcher</strong>, <strong>Serializer</strong>, <strong>EndPoint</strong>, <strong>Receiver</strong>.<br />
+It is highly inspired by symfony-event-dispatcher, But not limited on that, symfony-event-dispatcher is one of the Dispatcher implementations of tnc-event-dispatcher, It intends to support other Event Dispatcher implementations as well. </p>
+<h1 id="how-to-install">How to install?</h1>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>PHP 5.6+</li>
+</ul>
+<h2 id="install-from-composer">Install From Composer</h2>
+<pre><code class="sh">&gt; composer install tnc/event-dispatcher
+</code></pre>
+
+<h1 id="how-to-use">How to use?</h1>
+<pre><code class="php">&lt;?php
+namespace TNC\EventDispatcher;
+
+try {
+    /**
+     * 1. Initialize Serializer
+     * 
+     * Serializer is using to serialize your event to be a string.
+     * It includes a couple of Normalizers and a Formatter.
+     */     
+    # Specify Normalizers
+    $supportedNormalizers = [
+        new Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer(),
+        new Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer()
+    ];
+    # Specify Serialization Format
+    $formatter  = new Serialization\Formatters\JsonFormatter();
+    # Initialize Serializer
+    $serializer = new Serializer($supportedNormalizers, $formatter);
+
+
+    /**
+     * 2. Initialize EndPoint
+     * 
+     * If you are going to dispatch a async event, which needs a EndPoint to hold the request and send back to Receiver.
+     * Mostly the EndPoint is a Queue, such as Redis, Rabbitmq, Kafka or EventBus (https://github .com/thenetcircle/event-bus)
+     */
+    $endPoint = new EndPoints\EventBusEndPoint('http://localhost:8000');
+
+
+    /**
+     * 3. Initialize tnc-event-dispatcher, And add some Listeners
+     */
+    $dispatcher = new Dispatchers\SymfonyImpl\EventDispatcher($serializer, $endPoint);
+    # Suppose we have a Symfony Event Listener and a Event Subscriber here
+    $dispatcher-&gt;addListener('message.send', new SymfonyEventListener());
+    $dispatcher-&gt;addSubscriber(new SymfonyEventSubscriber());
+
+    /**
+     * 4. Dispatch Events
+     */
+    $dispatcher-&gt;dispatch(
+        'message.send',
+        new AsyncEvent(
+            [
+                'messageId'   =&gt; '1',
+                'messageBody' =&gt; 'abc'
+            ]
+        )
+    );
+}
+catch (\Exception $e) {
+    // Handling Exception
+}
+
+/**
+ * 5. Receiving and handling the AsyncEvent
+ * 
+ * After the Event dispatched to the EndPoint, It will be delivered to the Receiver asynchronously.
+ * Following are Receiver part, Which could be running on another PHP process
+ */
+try {
+    # Initialize a Receiver(use EventBusReceiver as a example here, could be RabbitMQReceiver, RedisReceiver, ...)
+    $receiver = new Receivers\EventBusReceiver();
+    # Set Dispatcher we defined before
+    $receiver-&gt;withDispatcher($dispatcher);
+    # Dispatch the serliazed-event we received from the EndPoint
+    $receiver-&gt;dispatch($serliazedEvent);
+}
+catch (\Exception $e) {
+    // Handling Exception
+}
+</code></pre>
+
 <h1 id="about-contributing">About Contributing</h1>
 <p>Feedbacks and pull requests are welcome and appreciative. For major changes, please open an issue first to discuss what you would like to change.</p>
 <h1 id="change-logs">Change Logs</h1>
@@ -159,6 +437,13 @@ It works as same as Symfony event-dispatcher, has same interface and a few more 
             </div>
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dispatcher/" class="btn btn-neutral float-right" title="Dispatcher">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+    </div>
   
 
   <hr/>
@@ -185,6 +470,8 @@ It works as same as Symfony event-dispatcher, has same interface and a few more 
       
       
       
+        <span style="margin-left: 15px"><a href="dispatcher/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
     </span>
 </div>
     <script>var base_url = '.';</script>
@@ -197,5 +484,5 @@ It works as same as Symfony event-dispatcher, has same interface and a few more 
 
 <!--
 MkDocs version : 0.17.4
-Build Date UTC : 2018-06-15 10:02:57
+Build Date UTC : 2018-06-18 10:25:55
 -->
