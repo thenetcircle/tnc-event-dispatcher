@@ -6,8 +6,7 @@ It's a very cool and effecient idea for decoupling modules or functions.
 
 # What's tnc-event-dispatcher?
 
-tnc-event-dispatcher is a alternative of [symfony-event-dispatcher](https://symfony.com/doc/current/components/event_dispatcher.html) for supporting asynchronous and unified structured events.  
-It works as same as symfony-event-dispatcher, has same user interface of symfony-event-dispatcher with a few more options, can replace Symfony evnet-dispatcher seamlessly.  
+tnc-event-dispatcher is a alternative of [symfony-event-dispatcher](https://symfony.com/doc/current/components/event_dispatcher.html) for supporting asynchronous and unified structured events. It works as same as symfony-event-dispatcher, has same user interface with a few more options, can replace symfony-event-dispatcher seamlessly.  
  
 <a href="assets/tnc_event_dispatcher_workflow.png" target="_blank">![Workflow](assets/tnc_event_dispatcher_workflow.png)</a> 
 
