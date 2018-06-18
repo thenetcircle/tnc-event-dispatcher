@@ -2,5 +2,9 @@ site_name: tnc-event-dispatcher
 theme: rtd-dropdown
 repo_url: https://github.com/thenetcircle/tnc-event-dispatcher
 pages:
-  - Home: index.md
-  - Quick Start: quickstart.md
+  - Overview: index.md
+  - Dispatcher: dispatcher.md
+  - Serializer: serializer.md
+  - EndPoint: endpoint.md
+  - Receiver: receiver.md
+  - Change Logs: change_logs.md
