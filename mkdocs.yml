@@ -3,3 +3,4 @@ theme: rtd-dropdown
 repo_url: https://github.com/thenetcircle/tnc-event-dispatcher
 pages:
   - Home: index.md
+  - Quick Start: quickstart.md
