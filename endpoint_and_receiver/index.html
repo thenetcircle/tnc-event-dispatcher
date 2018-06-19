@@ -8,7 +8,7 @@
   
   
   <link rel="shortcut icon" href="../img/favicon.ico">
-  <title>EndPoint - tnc-event-dispatcher</title>
+  <title>EndPoint & Receiver - tnc-event-dispatcher</title>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
   <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
 
@@ -18,9 +18,9 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "EndPoint";
-    var mkdocs_page_input_path = "endpoint.md";
-    var mkdocs_page_url = "/endpoint/";
+    var mkdocs_page_name = "EndPoint & Receiver";
+    var mkdocs_page_input_path = "endpoint_and_receiver.md";
+    var mkdocs_page_url = "/endpoint_and_receiver/";
   </script>
   
   <script src="../js/jquery-2.1.1.min.js"></script>
@@ -121,37 +121,96 @@
     
 
 
-<ul class="current" href="../endpoint/">
+<ul class="current" href="../endpoint_and_receiver/">
   
   
   
   <li class="current toctree-l1">
-    <a class="current" href="../endpoint/">EndPoint</a>
+    <a class="current" href="../endpoint_and_receiver/">EndPoint & Receiver</a>
     
+  
+  
+  
+  <ul class="current subnav">
+    
+      
+
+  
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#summary" title="EndPoint & Receiver">Summary</a>
   </li>
-</ul>
 
-<!--
- | This is a hacky way to pass setting from the template generator to the
- | javascript that drives the dropdown functionality
--->
-<div style="width: 1px; height: 1px; visibility: none;">
-
-</div>
-
-
-
-  
     
+      
+
+  
+  
 
 
-<ul class="" href="../receiver/">
+  <li class=" toctree-l2">
+    
+      <a href="#implementations" title="EndPoint & Receiver"
+          class="">
+        Implementations
+      </a>
+    
+    <ul class=" subnav">
+      
+        
+
   
   
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#eventbus" title="EndPoint & Receiver">EventBus</a>
+  </li>
+
+      
+        
+
   
-  <li class=" toctree-l1">
-    <a class="" href="../receiver/">Receiver</a>
-      </li>
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#redis" title="EndPoint & Receiver">Redis</a>
+  </li>
+
+      
+        
+
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#rabbitmq" title="EndPoint & Receiver">RabbitMQ</a>
+  </li>
+
+      
+        
+
+  
+  
+
+
+  <li class="toctree-l2 toc-item">
+    <a href="#kafka" title="EndPoint & Receiver">Kafka</a>
+  </li>
+
+      
+    </ul>
+  </li>
+
+    
+  </ul>
+
+  </li>
 </ul>
 
 <!--
@@ -207,10 +266,10 @@
     
       
     
-    <li>EndPoint</li>
+    <li>EndPoint & Receiver</li>
     <li class="wy-breadcrumbs-aside">
       
-        <a href="https://github.com/thenetcircle/tnc-event-dispatcher/edit/master/docs/endpoint.md"
+        <a href="https://github.com/thenetcircle/tnc-event-dispatcher/edit/master/docs/endpoint_and_receiver.md"
           class="icon icon-github"> Edit on GitHub</a>
       
     </li>
@@ -220,7 +279,89 @@
           <div role="main">
             <div class="section">
               
-                
+                <h1 id="summary">Summary</h1>
+<p>EndPoint intends to be the place which holds/stores Events for a while, Usually it's a Queue Implementation, for example: RabbitMQ EndPoint, Redis EndPoint, Kafka EndPoint. In our company, we use our own <a href="https://github.com/thenetcircle/event-bus">EventBus</a> as a EndPoint.<br />
+Receiver is the reverse of EndPoint, It pulls Events from corresponding EndPoint and send it back to Dispatcher again. So it really depends what EndPoint is, there are also corresponding Receivers like: RabbitMQ Receover, Redis Receover, Kafka Receover, EventBus Receiver, ...</p>
+<p>EndPoint and Receiver is simple:<br />
+Any class implements TNC\EventDispatcher\Interfaces\EndPoint interface could be a EndPoint, <br />
+Any class implements TNC\EventDispatcher\Interfaces\Receiver could be a Receiver.</p>
+<h1 id="implementations">Implementations</h1>
+<h2 id="eventbus">EventBus</h2>
+<ul>
+<li>EndPoint</li>
+</ul>
+<table>
+  <tr>
+    <th>class</th><td>TNC\EventDispatcher\EndPoints\EventBusEndPoint</td>
+  </tr>
+  <tr>
+    <th>dependencies</th><td>
+    EventBus
+    </td>
+  </tr>
+  <tr>
+    <th>arguments</th><td></td>
+  </tr>
+</table>
+
+<ul>
+<li>Receiver</li>
+</ul>
+<table>
+  <tr>
+    <th>class</th><td>TNC\EventDispatcher\Receivers\EventBusReceiver</td>
+  </tr>
+  <tr>
+    <th>dependencies</th><td>
+    EventBus
+    </td>
+  </tr>
+  <tr>
+    <th>arguments</th><td></td>
+  </tr>
+</table>
+
+<h2 id="redis">Redis</h2>
+<ul>
+<li>EndPoint</li>
+</ul>
+<table>
+  <tr>
+    <th>class</th><td>TNC\EventDispatcher\EndPoints\Redis\PHPRedisEndPoint</td>
+  </tr>
+  <tr>
+    <th>dependencies</th><td>
+    Redis<br>
+    PHPRedis
+    </td>
+  </tr>
+  <tr>
+    <th>arguments</th><td></td>
+  </tr>
+</table>
+
+<ul>
+<li>Receiver</li>
+</ul>
+<p>Not implemented yet</p>
+<h2 id="rabbitmq">RabbitMQ</h2>
+<ul>
+<li>EndPoint</li>
+</ul>
+<p>Not implemented yet</p>
+<ul>
+<li>Receiver</li>
+</ul>
+<p>Not implemented yet</p>
+<h2 id="kafka">Kafka</h2>
+<ul>
+<li>EndPoint</li>
+</ul>
+<p>Not implemented yet</p>
+<ul>
+<li>Receiver</li>
+</ul>
+<p>Not implemented yet</p>
               
             </div>
           </div>
@@ -228,7 +369,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../receiver/" class="btn btn-neutral float-right" title="Receiver">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../change_logs/" class="btn btn-neutral float-right" title="Change Logs">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../serializer/" class="btn btn-neutral" title="Serializer"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -262,7 +403,7 @@
         <span><a href="../serializer/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../receiver/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../change_logs/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>

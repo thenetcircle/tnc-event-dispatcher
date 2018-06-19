@@ -157,7 +157,7 @@
 
 
   <li class="toctree-l2 toc-item">
-    <a href="#activity-normalizers" title="Serializer">Activity Normalizers</a>
+    <a href="#activitystreams-normalizers" title="Serializer">ActivityStreams Normalizers</a>
   </li>
 
       
@@ -214,35 +214,12 @@
     
 
 
-<ul class="" href="../endpoint/">
+<ul class="" href="../endpoint_and_receiver/">
   
   
   
   <li class=" toctree-l1">
-    <a class="" href="../endpoint/">EndPoint</a>
-      </li>
-</ul>
-
-<!--
- | This is a hacky way to pass setting from the template generator to the
- | javascript that drives the dropdown functionality
--->
-<div style="width: 1px; height: 1px; visibility: none;">
-
-</div>
-
-
-
-  
-    
-
-
-<ul class="" href="../receiver/">
-  
-  
-  
-  <li class=" toctree-l1">
-    <a class="" href="../receiver/">Receiver</a>
+    <a class="" href="../endpoint_and_receiver/">EndPoint & Receiver</a>
       </li>
 </ul>
 
@@ -335,29 +312,383 @@ $serializer = new Serializer($supportedNormalizers, $formatter);
 </code></pre>
 
 <h1 id="normalizer">Normalizer</h1>
-<h2 id="activity-normalizers">Activity Normalizers</h2>
-<h3 id="activity-streams">Activity Streams</h3>
-<p>Activity Streams is a data format which defines a Activity, For more details please check their <a href="http://activitystrea.ms/specs/json/1.0/">Document</a></p>
-<h3 id="tnceventdispatcherserializationnormalizerstncactivitystreamstncactivitystreamswrappedeventnormalizer">TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer</h3>
-<p>Norlimize a WrappedEvent to be a Activity Streams Array or the reverse</p>
+<h2 id="activitystreams-normalizers">ActivityStreams Normalizers</h2>
+<p>Activity Streams is a data format which defines a action, an activity consists of an actor, a verb, an an object, and a target. It tells the story of a person performing an action on or with an object. For more details please check their <a href="http://activitystrea.ms/specs/json/1.0/">Document</a><br />
+TNC EventDispatcher internally providers <a href="http://activitystrea.ms/specs/json/1.0/">ActivityStreams</a> Normalizers implementation.</p>
+<h3 id="conventions">Conventions</h3>
 <ul>
-<li>Supported Normalization</li>
+<li>EventName</li>
+<li>Use only lowercase letters, numbers, dots (.) and underscores (_);</li>
+<li>Prefix names with a namespace followed by a dot (e.g. order., user.*);</li>
+<li>End names with a verb that indicates what action it is (e.g. user.login, payment.subscribe).</li>
 </ul>
-<p>$object instanceof WrappedEvent</p>
+<h3 id="classes">Classes</h3>
 <ul>
-<li>Supported Denormalization</li>
+<li><strong>TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer</strong> 
+  Norlimize a WrappedEvent to be a Activity Streams Array or the reverse</li>
 </ul>
-<p>$className == WrappedEvent::class</p>
-<h3 id="serializationnormalizerstncactivitystreamstncactivitystreamsnormalizer">Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer</h3>
-<p>Norlimize a Event to be a Activity Streams Array or the reverse</p>
+<table>
+<thead>
+<tr>
+<th>Supported Normalization</th>
+<th>Supported Denormalization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$object instanceof WrappedEvent</td>
+<td>$className == WrappedEvent::class</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li>Supported Normalization</li>
+<li><strong>Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer</strong><br />
+  Norlimize a Event to be a Activity Streams Array or the reverse</li>
 </ul>
-<p>$object instanceof TNCActivityStreamsEvent</p>
+<table>
+<thead>
+<tr>
+<th>Supported Normalization</th>
+<th>Supported Denormalization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$object instanceof TNCActivityStreamsEvent</td>
+<td>is_subclass_of($className, TNCActivityStreamsEvent::class)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="usage">Usage</h3>
+<p>In tnc-event-dispatcher, ActivityStreams is supported by TNCActivityStreamsNormalizer.</p>
+<p>TNCActivityStreamsNormalizer only supports object which implements TNCActivityStreamsEvent interface(see above), If you check the source code of the Normalizer, it looks like this:</p>
+<pre><code class="php">&lt;?php
+class TNCActivityStreamsNormalizer {
+
+# ...    
+
+    public function supportsNormalization($object)
+    {
+        return ($object instanceof TNCActivityStreamsEvent);
+    }
+
+    public function supportsDenormalization($data, $className)
+    {
+        if (!class_exists($className)) {
+            return false;
+        }
+
+        return is_subclass_of($className, TNCActivityStreamsEvent::class);
+    }
+
+# ...        
+
+}
+</code></pre>
+
+<p>So a proper Event which wants to be normalized as ActivityStreams format, it have to implement TNCActivityStreamsEvent interface.</p>
+<pre><code class="php">&lt;?php
+class TestEvent implements TNCActivityStreamsEvent
+{
+    public function getTransportMode()
+
+    public function normalize(ActivityBuilderInterface $builder)
+
+    public function denormalize(Activity $activity)
+}
+</code></pre>
+
+<p>When TNCActivityStreamsNormalizer do normalize, it will call the "normalize" method of the object, with a ActivityBuilderInterface implementation(default is DefaultActivityBuilder, can be changed as a constructor parameter of TNCActivityStreamsNormalizer).
+When do denormalize, it will call the "denormalize" method with a Activity instance(without call constructor), you can restore the Event here.</p>
+<pre><code class="php">&lt;?php
+$normalizer = new TNCActivityStreamsNormalizer();
+$event = new TestEvent();
+
+$normalizedData = $normalizer-&gt;normalize($event);
+$restoredEvent = $normalizer-&gt;denormalize($normalizedData, TestEvent::class);
+</code></pre>
+
+<h4 id="defaultactivitybuilder">DefaultActivityBuilder</h4>
+<p>TNCActivityStreamsNormalizer come with a default ActivityBuilderInterface implementation which is DefaultActivityBuilder, it can be used to create a Activity. <br />
+For more usage, visit the test cases.</p>
+<pre><code class="php">&lt;?php
+$builder = new DefaultActivityBuilder();
+
+# fill the Activity by array
+$builder-&gt;setFromArray([
+   'actor' =&gt; [
+     'objectType' =&gt; 'type2',
+     'id' =&gt; 'id4',
+     'content' =&gt; 'content',
+     'attachments' =&gt; [ # the rule of attachments is as same as ActivityObject
+       ['subtype1', 'subid1'],
+       'subid2',
+       [
+         'objectType' =&gt; 'subtype3',
+         'id' =&gt; 'subid3'
+       ]
+     ]
+   ]
+ ]);
+
+# use methods
+$builder-&gt;setId('123');
+$builder-&gt;setVerb('message.send');
+$builder-&gt;setPublished('now');
+$builder-&gt;setActor((new ActivityObject())-&gt;setId('123'));
+...
+
+# get the built Activity
+$builder-&gt;getActivity();
+</code></pre>
+
+<h3 id="user-cases">User Cases</h3>
+<h4 id="case1-benn-logged-in">Case1: benn logged in</h4>
 <ul>
-<li>Supported Denormalization</li>
+<li>Event</li>
 </ul>
-<p>is_subclass_of($className, TNCActivityStreamsEvent::class)</p>
+<p>I choose "user.login" as the EventName, Which is following the convention "namespace.verb"</p>
+<p>Example Code:</p>
+<pre><code class="php">&lt;?php
+class UserLoginEvent implements TNCActivityStreamsEvent
+{
+    const NAME = &quot;user.login&quot;;
+
+    private $user = null;
+
+    public function __constructor(User $user) { $this-&gt;user = $user; }
+
+    public function getTransportMode() { return self::TRANSPORT_MODE_ASYNC; }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder $builder 
+     */
+    public function normalize($builder)
+    {
+        $builder-&gt;setActor(
+          (new ActivityObject())-&gt;setObjectType('user')-&gt;setId($this-&gt;user-&gt;getId())
+        );
+        return $builder-&gt;getActivity();
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity 
+     */
+    public function denormalize($activity) 
+    {
+        $this-&gt;user = UsersRepository::find($activity-&gt;getActor()-&gt;getId());
+    }
+}
+
+$dispatcher-&gt;dispatch(UserLoginEvent::NAME, new UserLoginEvent($user));
+</code></pre>
+
+<ul>
+<li>Formatted Data (ActivityStreams)</li>
+</ul>
+<table>
+  <tr>
+    <th>title</th>
+    <td>user.login</td>
+  </tr>
+  <tr>
+    <th>verb</th>
+    <td>login</td>
+  </tr>
+  <tr>
+    <th>actor</th>
+    <td>{ objectType: "user", id: 123456 }</td>
+  </tr>    
+  <tr>
+    <th>id</th>
+    <td>Generated Unique String</td>
+  </tr>
+  <tr>
+    <th>published</th>
+    <td>2017-10-13T11:31:34+08:00</td>
+  </tr>
+  <tr>
+    <th>provider</th>
+    <td>{ objectType: "community", id: "Poppen" }</td>
+  </tr>
+  <tr>
+    <th>generator</th>
+    <td>{ id: "tnc-event-dispatcher", content: { mode: "async", class: "UserLoginEvent" } }</td>
+  </tr>
+</table>
+
+<h4 id="case2-benn-visited-fans-profile">Case2: benn visited <strong>fan's profile</strong></h4>
+<p>Example Code:</p>
+<pre><code class="php">&lt;?php
+class ProfileVisitEvent implements TNCActivityStreamsEvent
+{
+    const NAME = &quot;user.visit&quot;;
+
+    private $visitor = null;
+    private $target = null;
+
+    public function __constructor(User $visitor, User $target) { 
+        $this-&gt;visitor = $visitor;
+        $this-&gt;target = $target;
+    }
+
+    public function getTransportMode() { return self::TRANSPORT_MODE_ASYNC; }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder $builder 
+     */
+    public function normalize($builder)
+    {
+        $builder-&gt;setFromArray(
+          [
+            'actor' =&gt; ['user', $this-&gt;visitor-&gt;getId()],
+            'object' =&gt; ['profile', $this-&gt;target-&gt;getName()]
+          ]
+        );
+        return $builder-&gt;getActivity();
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity 
+     */
+    public function denormalize($activity) 
+    {
+        $this-&gt;visitor = UsersRepository::find($activity-&gt;getActor()-&gt;getId());
+        $this-&gt;target = UsersRepository::findByName($activity-&gt;getObject()-&gt;getId());
+    }
+}
+
+$dispatcher-&gt;dispatch(ProfileVisitEvent::NAME, new ProfileVisitEvent($visitor, $target));
+</code></pre>
+
+<ul>
+<li>Formatted Data (ActivityStreams)</li>
+</ul>
+<table>
+  <tr>
+    <th>title</th>
+    <td>user.visit</td>
+  </tr>
+  <tr>
+    <th>verb</th>
+    <td>visit</td>
+  </tr>
+  <tr>
+    <th>actor</th>
+    <td>{ objectType: "user", id: 12345 }</td>
+  </tr>
+  <tr>
+    <th>object</th>
+    <td>{ objectType: "profile", id: "fan" }</td>
+  </tr>
+  <tr>
+    <th>id</th>
+    <td>Generated Unique String</td>
+  </tr>
+  <tr>
+    <th>published</th>
+    <td>2017-10-13T11:31:34+08:00</td>
+  </tr>
+  <tr>
+    <th>provider</th>
+    <td>{ objectType: "community", id: "Poppen" }</td>
+  </tr>
+  <tr>
+    <th>generator</th>
+    <td>{ id: "tnc-event-dispatcher", content: { mode: "async", class: "UserLoginEvent" } }</td>
+  </tr>
+</table>
+
+<h4 id="case3-benn-sent-a-message-to-leo">Case3: benn sent a message <strong>to</strong> leo</h4>
+<p>Example Code:</p>
+<pre><code class="php">&lt;?php
+class MessageSendEvent implements TNCActivityStreamsEvent
+{
+    const NAME = &quot;message.send&quot;;
+
+    private $sender = null;
+    private $receiver = null;
+    private $message = null;
+
+    public function __constructor(User $sender, Message $message, User $receiver) { 
+        $this-&gt;sender = $sender;
+        $this-&gt;message = $message;
+        $this-&gt;receiver = $receiver;
+    }
+
+    public function getTransportMode() { return self::TRANSPORT_MODE_ASYNC; }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder $builder 
+     */
+    public function normalize($builder)
+    {
+        $builder-&gt;setFromArray(
+          [
+            'actor' =&gt; ['user', $this-&gt;visitor-&gt;getId()],
+            'object' =&gt; ['message', $this-&gt;message-&gt;getId()],
+            'target' =&gt; ['user', $this-&gt;receiver-&gt;getId()]
+          ]
+        );
+        return $builder-&gt;getActivity();
+    }
+
+    /**
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity 
+     */
+    public function denormalize($activity) 
+    {
+        $this-&gt;sender = UsersRepository::find($activity-&gt;getActor()-&gt;getId());
+        $this-&gt;message = UsersRepository::find($activity-&gt;getObject()-&gt;getId());
+        $this-&gt;receiver = UsersRepository::find($activity-&gt;getTarget()-&gt;getId());
+    }
+}
+
+$dispatcher-&gt;dispatch(MessageSendEvent::NAME, new MessageSendEvent($visitor, $target));
+</code></pre>
+
+<ul>
+<li>Formatted Data (ActivityStreams)</li>
+</ul>
+<table>
+  <tr>
+    <th>title</th>
+    <td>message.send</td>
+  </tr>
+  <tr>
+    <th>verb</th>
+    <td>send</td>
+  </tr>
+  <tr>
+    <th>actor</th>
+    <td>{ objectType: "user", id: 12345 }</td>
+  </tr>
+  <tr>
+    <th>object</th>
+    <td>{ objectType: "message", id: 112231 }</td>
+  </tr>
+  <tr>
+      <th>target</th>
+      <td>{ objectType: "user", id: 88929 }</td>
+    </tr>
+  <tr>
+    <th>id</th>
+    <td>Generated Unique String</td>
+  </tr>
+  <tr>
+    <th>published</th>
+    <td>2017-10-13T11:31:34+08:00</td>
+  </tr>
+  <tr>
+    <th>provider</th>
+    <td>{ objectType: "community", id: "Poppen" }</td>
+  </tr>
+  <tr>
+    <th>generator</th>
+    <td>{ id: "tnc-event-dispatcher", content: { mode: "async", class: "UserLoginEvent" } }</td>
+  </tr>
+</table>
+
 <h1 id="formatter">Formatter</h1>
 <h2 id="json-formatter">JSON Formatter</h2>
 <h3 id="tnceventdispatcherserializationformattersjsonformatter">TNC\EventDispatcher\Serialization\Formatters\JsonFormatter</h3>
@@ -368,7 +699,7 @@ $serializer = new Serializer($supportedNormalizers, $formatter);
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../endpoint/" class="btn btn-neutral float-right" title="EndPoint">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../endpoint_and_receiver/" class="btn btn-neutral float-right" title="EndPoint & Receiver">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
         <a href="../dispatcher/" class="btn btn-neutral" title="Dispatcher"><span class="icon icon-circle-arrow-left"></span> Previous</a>
@@ -402,7 +733,7 @@ $serializer = new Serializer($supportedNormalizers, $formatter);
         <span><a href="../dispatcher/" style="color: #fcfcfc;">&laquo; Previous</a></span>
       
       
-        <span style="margin-left: 15px"><a href="../endpoint/" style="color: #fcfcfc">Next &raquo;</a></span>
+        <span style="margin-left: 15px"><a href="../endpoint_and_receiver/" style="color: #fcfcfc">Next &raquo;</a></span>
       
     </span>
 </div>
