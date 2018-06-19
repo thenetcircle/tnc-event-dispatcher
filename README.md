@@ -27,6 +27,8 @@ It is highly inspired by symfony-event-dispatcher, But not limited on that, symf
 
 ## Install From Composer
 
+Since the vendor namespace "tnc" was occupied by someone else, We can not publish to Packagist, You need to add this git repository url to "repository" of your composer.json before run following command.
+
 ```sh
 > composer install tnc/event-dispatcher
 ```
