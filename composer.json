@@ -1,8 +1,15 @@
 {
   "name": "tnc/event-dispatcher",
-  "description": "A alternative of symfony-event-dispatcher for supporting asynchronous and unified structured events",
   "type": "library",
+  "description": "A alternative of symfony-event-dispatcher for supporting asynchronous and unified structured events",
+  "keywords": ["event dispatcher", "queue", "event"],
   "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "Benn Ma",
+      "email": "bennmsg@gmail.com"
+    }
+  ],
   "require-dev": {
     "phpunit/phpunit": "^5.0",
     "guzzlehttp/guzzle": "~6.0",
