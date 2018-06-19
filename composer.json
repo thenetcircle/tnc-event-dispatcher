@@ -1,6 +1,6 @@
 {
   "name": "tnc/event-dispatcher",
-  "description": "A alternative async EventDispatcher, based on Symfony EventDispatcher",
+  "description": "A alternative of symfony-event-dispatcher for supporting asynchronous and unified structured events",
   "type": "library",
   "license": "Apache-2.0",
   "require-dev": {
