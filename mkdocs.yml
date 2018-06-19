@@ -5,6 +5,5 @@ pages:
   - Overview: index.md
   - Dispatcher: dispatcher.md
   - Serializer: serializer.md
-  - EndPoint: endpoint.md
-  - Receiver: receiver.md
+  - EndPoint & Receiver: endpoint_and_receiver.md
   - Change Logs: change_logs.md
