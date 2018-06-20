@@ -27,10 +27,21 @@ It is highly inspired by symfony-event-dispatcher, But not limited on that, symf
 
 ## Install From Composer
 
-Since the vendor namespace "tnc" was occupied by someone else, We can not publish to Packagist, You need to add this git repository url to "repository" of your composer.json before run following command.
+Since the vendor namespace "tnc" was occupied by someone else, We can not publish to Packagist, You need to add this git repository url to "repository" of your composer.json first.
+
+```yaml
+"repositories": [
+    {
+        "type": "vcs",
+        "url":  "git@github.com:thenetcircle/tnc-event-dispatcher.git"
+    }
+]
+```
+
+Then run install command.
 
 ```sh
-> composer install tnc/event-dispatcher
+> composer require tnc/event-dispatcher
 ```
 
 # How to use?
