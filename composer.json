@@ -30,6 +30,9 @@
       "TNC\\EventDispatcher\\Tests\\": "tests/"
     }
   },
+  "archive": {
+    "exclude": ["/docs", "/mkdocs.yml", "/.travis.yml", "/.editorconfig"]
+  },
   "scripts": {
     "test": "phpunit"
   },
