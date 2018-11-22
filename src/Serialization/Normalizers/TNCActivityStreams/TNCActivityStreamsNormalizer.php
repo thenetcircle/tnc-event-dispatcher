@@ -28,13 +28,17 @@ use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activi
 class TNCActivityStreamsNormalizer extends AbstractNormalizer
 {
     /**
-     * @var null|\TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\ActivityBuilderInterface
+     * @var callable
      */
-    protected $activityBuilder = null;
+    protected $getActivityBuilderFunc;
 
-    public function __construct(ActivityBuilderInterface $activityBuilder = null)
+    public function __construct(callable $getActivityBuilderFunc = null)
     {
-        $this->activityBuilder = null === $activityBuilder ? new DefaultActivityBuilder() : $activityBuilder;
+        $this->getActivityBuilderFunc =
+            null === $getActivityBuilderFunc ?
+                function() {
+                    return new DefaultActivityBuilder();
+                } : $getActivityBuilderFunc;
     }
 
     /**
@@ -48,7 +52,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
      */
     public function normalize($object)
     {
-        $activity = $object->normalize($this->activityBuilder);
+        $activity = $object->normalize(call_user_func($this->getActivityBuilderFunc));
 
         if (!is_object($activity) || !($activity instanceof Activity)) {
             throw new NormalizeException(sprintf(
