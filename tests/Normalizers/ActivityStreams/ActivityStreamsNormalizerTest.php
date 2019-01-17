@@ -16,24 +16,24 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests\Normalizers\TNCActivityStreams;
+namespace TNC\EventDispatcher\Tests\Normalizers\ActivityStreams;
 
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityBuilder;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsNormalizer;
 use TNC\EventDispatcher\Serializer;
 
-class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
+class ActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var TNCActivityStreamsNormalizer
+     * @var ActivityStreamsNormalizer
      */
     public $normalizer;
 
     public function setUp()
     {
-        $this->normalizer = new TNCActivityStreamsNormalizer();
+        $this->normalizer = new ActivityStreamsNormalizer();
     }
 
     public function tearDown()
@@ -78,7 +78,7 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
         $expectedData['target']['content'] = \json_encode($expectedData['target']['content']);
         $expectedData['provider']['content'] = \json_encode($expectedData['provider']['content']);
 
-        $builder = new DefaultActivityBuilder();
+        $builder = new ActivityBuilder();
         $builder->setFromArray($originalData);
         $testEvent = new TestEvent($builder->getActivity());
 
@@ -105,7 +105,7 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
           ]
         ];
 
-        $builder = new DefaultActivityBuilder();
+        $builder = new ActivityBuilder();
         $builder->setFromArray($expectedData);
         $testEvent = new TestEvent($builder->getActivity());
 
@@ -190,7 +190,7 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
           ]
         ];
 
-        $builder = new DefaultActivityBuilder();
+        $builder = new ActivityBuilder();
         $builder->setFromArray($originalData);
         $testEvent = new TestEvent($builder->getActivity());
 
@@ -222,7 +222,7 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
           ]
         ];
 
-        $builder = new DefaultActivityBuilder();
+        $builder = new ActivityBuilder();
         $builder->setFromArray($data);
         $testEvent = new TestEvent($builder->getActivity());
 
@@ -235,7 +235,7 @@ class TNCActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
 
     public function testUserCase_IntIdMissed()
     {
-        $builder = new DefaultActivityBuilder();
+        $builder = new ActivityBuilder();
         $builder->setActor([123, 'user_id']);
         $builder->setObject([321, 'object_id']);
         $builder->setTarget([456, 'target_user']);

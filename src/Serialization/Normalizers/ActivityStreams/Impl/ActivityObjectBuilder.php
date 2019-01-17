@@ -16,7 +16,7 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
+namespace TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
 

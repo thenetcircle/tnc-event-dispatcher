@@ -16,35 +16,21 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
+namespace TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams;
 
 use TNC\EventDispatcher\Exception\DenormalizeException;
 use TNC\EventDispatcher\Exception\NormalizeException;
-use TNC\EventDispatcher\Interfaces\Event\TNCActivityStreamsEvent;
+use TNC\EventDispatcher\Interfaces\Event\ActivityStreamsEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\AbstractNormalizer;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject;
 
-class TNCActivityStreamsNormalizer extends AbstractNormalizer
+class ActivityStreamsNormalizer extends AbstractNormalizer
 {
-    /**
-     * @var callable
-     */
-    protected $getActivityBuilderFunc;
-
-    public function __construct(callable $getActivityBuilderFunc = null)
-    {
-        $this->getActivityBuilderFunc =
-            null === $getActivityBuilderFunc ?
-                function() {
-                    return new DefaultActivityBuilder();
-                } : $getActivityBuilderFunc;
-    }
-
     /**
      * Normalizes the Object to be a semi-result, Then can be using for Formatter
      *
-     * @param TNCActivityStreamsEvent $object
+     * @param ActivityStreamsEvent $object
      *
      * @return array
      *
@@ -52,7 +38,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
      */
     public function normalize($object)
     {
-        $activity = $object->normalize(call_user_func($this->getActivityBuilderFunc));
+        $activity = $object->normalize(new ActivityBuilder());
 
         if (!is_object($activity) || !($activity instanceof Activity)) {
             throw new NormalizeException(sprintf(
@@ -69,7 +55,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
      * @param array  $data
      * @param string $className
      *
-     * @return TNCActivityStreamsEvent
+     * @return ActivityStreamsEvent
      *
      * @throws DenormalizeException
      */
@@ -78,7 +64,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
         /** @var Activity $activity */
         $activity = $this->denormalizeActivity($data);
 
-        /** @var TNCActivityStreamsEvent $object */
+        /** @var ActivityStreamsEvent $object */
         $reflectionClass = new \ReflectionClass($className);
         $object = $reflectionClass->newInstanceWithoutConstructor();
         $object->denormalize($activity);
@@ -91,7 +77,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
      */
     public function supportsNormalization($object)
     {
-        return ($object instanceof TNCActivityStreamsEvent);
+        return ($object instanceof ActivityStreamsEvent);
     }
 
     /**
@@ -103,7 +89,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
             return false;
         }
 
-        return is_subclass_of($className, TNCActivityStreamsEvent::class);
+        return is_subclass_of($className, ActivityStreamsEvent::class);
     }
 
     /**
@@ -179,7 +165,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
     /**
      * @param array $data
      *
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity
      */
     protected function denormalizeActivity(array $data)
     {
@@ -219,7 +205,7 @@ class TNCActivityStreamsNormalizer extends AbstractNormalizer
     /**
      * @param array $data
      *
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject
      */
     protected function denormalizeActivityObject(array $data)
     {

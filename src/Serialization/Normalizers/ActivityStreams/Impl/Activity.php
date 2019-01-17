@@ -16,7 +16,7 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
+namespace TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl;
 
 /**
  * ActivityStreams
@@ -189,7 +189,7 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject
      */
     public function getActor()
     {
@@ -209,7 +209,7 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject
      */
     public function getObject()
     {
@@ -229,7 +229,7 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject
      */
     public function getTarget()
     {
@@ -249,7 +249,7 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject
      */
     public function getProvider()
     {
@@ -289,7 +289,7 @@ class Activity
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject
      */
     public function getGenerator()
     {

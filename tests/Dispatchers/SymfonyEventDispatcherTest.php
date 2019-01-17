@@ -23,9 +23,9 @@ use Symfony\Component\EventDispatcher\Tests\AbstractEventDispatcherTest;
 use TNC\EventDispatcher\Dispatchers\SymfonyImpl\EventDispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsWrappedEventNormalizer;
 use TNC\EventDispatcher\Serializer;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsNormalizer;
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
 
 class SymfonyEventDispatcherTest extends AbstractEventDispatcherTest
@@ -50,7 +50,7 @@ class SymfonyEventDispatcherTest extends AbstractEventDispatcherTest
     protected function createEventDispatcher()
     {
         $serializer = new Serializer(
-          [new TNCActivityStreamsWrappedEventNormalizer(), new TNCActivityStreamsNormalizer()],
+          [new ActivityStreamsWrappedEventNormalizer(), new ActivityStreamsNormalizer()],
           new JsonFormatter()
         );
 

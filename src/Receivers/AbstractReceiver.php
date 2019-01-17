@@ -42,9 +42,15 @@ abstract class AbstractReceiver implements Receiver
     }
 
     /**
-     * {@inheritdoc}
+     * @param $data
+     *
+     * @return \TNC\EventDispatcher\Interfaces\Event\TransportableEvent
+     *
+     * @throws \TNC\EventDispatcher\Exception\InitializeException
+     * @throws \TNC\EventDispatcher\Exception\InvalidArgumentException
+     * @throws \Exception
      */
-    public function dispatch($data)
+    public function dispatchSerializedEvent($data)
     {
         if (null === $this->dispatcher) {
             throw new InitializeException('Receiver requires a Dispatcher.');

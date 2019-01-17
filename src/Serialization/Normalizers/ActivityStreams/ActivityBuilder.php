@@ -16,14 +16,14 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
+namespace TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams;
 
 use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject;
 
 /**
- * Providers multiple ways to build \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+ * Builder of Activity
  *
  * @method $this setVersion(string $version)
  * @method $this setId(string $id)
@@ -45,13 +45,13 @@ use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activi
  * @method string getPublished()
  * @method string getTitle()
  *
- * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getActor()
- * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getObject()
- * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getTarget()
- * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getProvider()
- * @method \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject getGenerator()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject getActor()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject getObject()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject getTarget()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject getProvider()
+ * @method \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject getGenerator()
  */
-class DefaultActivityBuilder implements ActivityBuilderInterface
+class ActivityBuilder
 {
     /**
      * @var Activity
@@ -61,7 +61,7 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
     /**
      * TNCActivityBuilder constructor.
      *
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity|null $activity
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity|null $activity
      */
     public function __construct(Activity $activity = null)
     {
@@ -70,7 +70,7 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity
      */
     public function getActivity()
     {
@@ -78,7 +78,7 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject
      */
     public function createActivityObject()
     {
@@ -88,7 +88,7 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
     /**
      * @param array $data
      *
-     * @return DefaultActivityBuilder
+     * @return ActivityBuilder
      *
      * @throws InvalidArgumentException
      */
@@ -109,7 +109,7 @@ class DefaultActivityBuilder implements ActivityBuilderInterface
     }
 
     /**
-     * @see \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+     * @see \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity
      *
      * @return $this
      */

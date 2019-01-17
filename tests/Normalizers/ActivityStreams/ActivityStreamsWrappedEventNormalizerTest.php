@@ -16,21 +16,21 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests\Normalizers\TNCActivityStreams;
+namespace TNC\EventDispatcher\Tests\Normalizers\ActivityStreams;
 
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityBuilder;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsNormalizer;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsWrappedEventNormalizer;
 use TNC\EventDispatcher\Serializer;
 use TNC\EventDispatcher\WrappedEvent;
 
-class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_TestCase
+class ActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var TNCActivityStreamsWrappedEventNormalizer
+     * @var ActivityStreamsWrappedEventNormalizer
      */
     public $normalizer;
 
@@ -46,7 +46,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
 
     public function setUp()
     {
-        $this->normalizer = new TNCActivityStreamsWrappedEventNormalizer();
+        $this->normalizer = new ActivityStreamsWrappedEventNormalizer();
         $this->testData = [
           'version'   => '2.0',
           'id'        => 'id',
@@ -122,12 +122,12 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
     public function testWithSerializer()
     {
         $serializer = new Serializer(
-          [$this->normalizer, new TNCActivityStreamsNormalizer()],
+          [$this->normalizer, new ActivityStreamsNormalizer()],
           new JsonFormatter()
         );
         $eventName = 'message.send';
 
-        $builder = new DefaultActivityBuilder();
+        $builder = new ActivityBuilder();
         $builder->setFromArray($this->testData);
         $testEvent = new TestEvent($builder->getActivity());
 
@@ -165,7 +165,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
     public function testSerializedEvent()
     {
         $serializer = new Serializer(
-          [$this->normalizer, new TNCActivityStreamsNormalizer()],
+          [$this->normalizer, new ActivityStreamsNormalizer()],
           new JsonFormatter()
         );
 
@@ -231,7 +231,7 @@ class TNCActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_Te
   "id" => "ED-user.quiz.update-3-5a3b43f4e6297"
         ];
 
-        $builder = new DefaultActivityBuilder();
+        $builder = new ActivityBuilder();
         $builder->setFromArray($data);
         $testEvent = new TestEvent($builder->getActivity());
 

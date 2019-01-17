@@ -18,38 +18,28 @@
 
 namespace TNC\EventDispatcher\Receivers;
 
-use Psr\Http\Message\RequestInterface;
-
 class EventBusReceiver extends AbstractReceiver
 {
     /**
-     * Handler and process a new http request, and dispatch to listeners
-     *
-     * @param \Psr\Http\Message\RequestInterface $request
-     *
-     * @return string "ok" -> success, others -> failure
+     * @var string tells EventBus this event was properly processed.
      */
-    public function handlerRequest(RequestInterface $request)
-    {
-        $body = $request->getBody()->getContents();
-        return $this->handlerSerializedEvent($body);
-    }
+    const SIGNAL_OK = 'ok';
 
     /**
-     * Handler and process a serialized event, and dispatch to listeners
-     *
-     * @param string $data
-     *
-     * @return string "ok" -> success, others -> failure
+     * @var string tells EventBus to use a exponential backoff strategy to retry the event.
+     *             https://en.wikipedia.org/wiki/Exponential_backoff
      */
-    public function handlerSerializedEvent($data)
+    const SIGNAL_EXPONENTIAL_BACKOFF = 'exponential_backoff';
+
+    // all other response will be consider failure, and the event will be sent to fallback
+    // storage by event-bus
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dispatch($data)
     {
-        try {
-            $this->dispatch($data);
-            return EventBusSignal::OK;
-        }
-        catch (\Exception $e) {
-            return $e->getMessage();
-        }
+        $dispatchedEvent = $this->dispatchSerializedEvent($data);
+        return new Result(self::SIGNAL_OK,  $dispatchedEvent);
     }
 }

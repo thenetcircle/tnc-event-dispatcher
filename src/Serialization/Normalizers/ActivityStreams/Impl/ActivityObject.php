@@ -16,7 +16,7 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl;
+namespace TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl;
 
 class ActivityObject
 {
@@ -154,7 +154,7 @@ class ActivityObject
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject[]
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject[]
      */
     public function getAttachments()
     {
@@ -162,7 +162,7 @@ class ActivityObject
     }
 
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject[] $attachments
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject[] $attachments
      *
      * @return ActivityObject
      */
@@ -186,7 +186,7 @@ class ActivityObject
     }
 
     /**
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject
      */
     public function getAuthor()
     {

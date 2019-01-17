@@ -16,14 +16,14 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams;
+namespace TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams;
 
 use TNC\EventDispatcher\Exception\DenormalizeException;
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
 use TNC\EventDispatcher\Serialization\Normalizers\AbstractNormalizer;
 use TNC\EventDispatcher\WrappedEvent;
 
-class TNCActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
+class ActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
 {
     const CONTAINER_FIELD = 'generator';
 

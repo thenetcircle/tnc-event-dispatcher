@@ -16,21 +16,21 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests\Normalizers\TNCActivityStreams;
+namespace TNC\EventDispatcher\Tests\Normalizers\ActivityStreams;
 
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\ActivityObject;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityBuilder;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\ActivityObject;
 
 class DefaultActivityBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var DefaultActivityBuilder
+     * @var ActivityBuilder
      */
     public $builder;
 
     public function setUp()
     {
-        $this->builder = new DefaultActivityBuilder();
+        $this->builder = new ActivityBuilder();
     }
 
     public function tearDown()

@@ -32,7 +32,9 @@ interface Receiver
      *
      * @param string $data
      *
-     * @return \TNC\EventDispatcher\Interfaces\Event\TransportableEvent|null
+     * @return \TNC\EventDispatcher\Receivers\Result
+     *
+     * @throws \Exception
      */
     public function dispatch($data);
 }

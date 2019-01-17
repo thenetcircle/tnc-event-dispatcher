@@ -16,8 +16,8 @@ namespace TNC\EventDispatcher;
 
 # Specify Normalizers
 $supportedNormalizers = [
-    new Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer(),
-    new Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer()
+    new Serialization\Normalizers\ActivityStreams\ActivityStreamsWrappedEventNormalizer(),
+    new Serialization\Normalizers\ActivityStreams\ActivityStreamsNormalizer()
 ];
 
 # Specify Serialization Format
@@ -43,35 +43,35 @@ TNC EventDispatcher internally providers [ActivityStreams](http://activitystrea.
 
 ### Classes
 
-- **TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer** 
+- **TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsWrappedEventNormalizer** 
   Norlimize a WrappedEvent to be a Activity Streams Array or the reverse
 
 | Supported Normalization | Supported Denormalization |
 |-------------------------|---------------------------|
 | $object instanceof WrappedEvent | $className == WrappedEvent::class |
 
-- **Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer**  
+- **Serialization\Normalizers\ActivityStreams\ActivityStreamsNormalizer**  
   Norlimize a Event to be a Activity Streams Array or the reverse
 
 | Supported Normalization | Supported Denormalization |
 |-------------------------|---------------------------|
-| $object instanceof TNCActivityStreamsEvent | is_subclass_of($className, TNCActivityStreamsEvent::class) |
+| $object instanceof ActivityStreamsEvent | is_subclass_of($className, ActivityStreamsEvent::class) |
 
 ### Usage
 
-In tnc-event-dispatcher, ActivityStreams is supported by TNCActivityStreamsNormalizer.
+In tnc-event-dispatcher, ActivityStreams is supported by ActivityStreamsNormalizer.
 
-TNCActivityStreamsNormalizer only supports object which implements TNCActivityStreamsEvent interface(see above), If you check the source code of the Normalizer, it looks like this:
+ActivityStreamsNormalizer only supports object which implements ActivityStreamsEvent interface(see above), If you check the source code of the Normalizer, it looks like this:
 
 ```php
 <?php
-class TNCActivityStreamsNormalizer {
+class ActivityStreamsNormalizer {
     
 # ...    
 
     public function supportsNormalization($object)
     {
-        return ($object instanceof TNCActivityStreamsEvent);
+        return ($object instanceof ActivityStreamsEvent);
     }
     
     public function supportsDenormalization($data, $className)
@@ -80,7 +80,7 @@ class TNCActivityStreamsNormalizer {
             return false;
         }
 
-        return is_subclass_of($className, TNCActivityStreamsEvent::class);
+        return is_subclass_of($className, ActivityStreamsEvent::class);
     }
     
 # ...        
@@ -88,11 +88,11 @@ class TNCActivityStreamsNormalizer {
 }
 ```
 
-So a proper Event which wants to be normalized as ActivityStreams format, it have to implement TNCActivityStreamsEvent interface.
+So a proper Event which wants to be normalized as ActivityStreams format, it have to implement ActivityStreamsEvent interface.
 
 ```php
 <?php
-class TestEvent implements TNCActivityStreamsEvent
+class TestEvent implements ActivityStreamsEvent
 {
     public function getTransportMode()
     
@@ -102,12 +102,12 @@ class TestEvent implements TNCActivityStreamsEvent
 }
 ```
 
-When TNCActivityStreamsNormalizer do normalize, it will call the "normalize" method of the object, with a ActivityBuilderInterface implementation(default is DefaultActivityBuilder, can be changed as a constructor parameter of TNCActivityStreamsNormalizer).
+When ActivityStreamsNormalizer do normalize, it will call the "normalize" method of the object, with a ActivityBuilderInterface implementation(default is DefaultActivityBuilder, can be changed as a constructor parameter of TNCActivityStreamsNormalizer).
 When do denormalize, it will call the "denormalize" method with a Activity instance(without call constructor), you can restore the Event here.
 
 ```php
 <?php
-$normalizer = new TNCActivityStreamsNormalizer();
+$normalizer = new ActivityStreamsNormalizer();
 $event = new TestEvent();
 
 $normalizedData = $normalizer->normalize($event);
@@ -116,7 +116,7 @@ $restoredEvent = $normalizer->denormalize($normalizedData, TestEvent::class);
 
 #### DefaultActivityBuilder
 
-TNCActivityStreamsNormalizer come with a default ActivityBuilderInterface implementation which is DefaultActivityBuilder, it can be used to create a Activity.   
+ActivityStreamsNormalizer come with a default ActivityBuilderInterface implementation which is DefaultActivityBuilder, it can be used to create a Activity.   
 For more usage, visit the test cases.
 
 ```php
@@ -164,7 +164,7 @@ Example Code:
 
 ```php
 <?php
-class UserLoginEvent implements TNCActivityStreamsEvent
+class UserLoginEvent implements ActivityStreamsEvent
 {
     const NAME = "user.login";
     
@@ -175,7 +175,7 @@ class UserLoginEvent implements TNCActivityStreamsEvent
     public function getTransportMode() { return self::TRANSPORT_MODE_ASYNC; }
     
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder $builder 
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\DefaultActivityBuilder $builder 
      */
     public function normalize($builder)
     {
@@ -186,7 +186,7 @@ class UserLoginEvent implements TNCActivityStreamsEvent
     }
     
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity 
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity $activity 
      */
     public function denormalize($activity) 
     {
@@ -236,7 +236,7 @@ Example Code:
 
 ```php
 <?php
-class ProfileVisitEvent implements TNCActivityStreamsEvent
+class ProfileVisitEvent implements ActivityStreamsEvent
 {
     const NAME = "user.visit";
     
@@ -251,7 +251,7 @@ class ProfileVisitEvent implements TNCActivityStreamsEvent
     public function getTransportMode() { return self::TRANSPORT_MODE_ASYNC; }
     
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder $builder 
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\DefaultActivityBuilder $builder 
      */
     public function normalize($builder)
     {
@@ -265,7 +265,7 @@ class ProfileVisitEvent implements TNCActivityStreamsEvent
     }
     
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity 
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity $activity 
      */
     public function denormalize($activity) 
     {
@@ -322,7 +322,7 @@ Example Code:
 
 ```php
 <?php
-class MessageSendEvent implements TNCActivityStreamsEvent
+class MessageSendEvent implements ActivityStreamsEvent
 {
     const NAME = "message.send";
     
@@ -339,7 +339,7 @@ class MessageSendEvent implements TNCActivityStreamsEvent
     public function getTransportMode() { return self::TRANSPORT_MODE_ASYNC; }
     
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder $builder 
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\DefaultActivityBuilder $builder 
      */
     public function normalize($builder)
     {
@@ -354,7 +354,7 @@ class MessageSendEvent implements TNCActivityStreamsEvent
     }
     
     /**
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity 
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity $activity 
      */
     public function denormalize($activity) 
     {

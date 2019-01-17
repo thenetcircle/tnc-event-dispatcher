@@ -59,8 +59,8 @@ try {
      */     
     # Specify Normalizers
     $supportedNormalizers = [
-        new Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsWrappedEventNormalizer(),
-        new Serialization\Normalizers\TNCActivityStreams\TNCActivityStreamsNormalizer()
+        new Serialization\Normalizers\ActivityStreams\ActivityStreamsWrappedEventNormalizer(),
+        new Serialization\Normalizers\ActivityStreams\ActivityStreamsNormalizer()
     ];
     # Specify Serialization Format
     $formatter  = new Serialization\Formatters\JsonFormatter();

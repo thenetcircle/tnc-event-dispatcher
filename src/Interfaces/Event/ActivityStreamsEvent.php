@@ -18,14 +18,14 @@
 
 namespace TNC\EventDispatcher\Interfaces\Event;
 
-interface TNCActivityStreamsEvent extends TransportableEvent
+interface ActivityStreamsEvent extends TransportableEvent
 {
     /**
      * Normalizes a Event to be a Activity
      *
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\DefaultActivityBuilder $builder
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityBuilder $builder
      *
-     * @return \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity
+     * @return \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity
      *
      * @throws \TNC\EventDispatcher\Exception\NormalizeException
      */
@@ -34,7 +34,7 @@ interface TNCActivityStreamsEvent extends TransportableEvent
     /**
      * Denormalizes a Acitivty to be a Event
      *
-     * @param \TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity $activity
+     * @param \TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity $activity
      *
      * @throws \TNC\EventDispatcher\Exception\DenormalizeException
      */

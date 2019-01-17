@@ -16,13 +16,13 @@
  *     Beineng Ma <baineng.ma@gmail.com>
  */
 
-namespace TNC\EventDispatcher\Tests\Normalizers\TNCActivityStreams;
+namespace TNC\EventDispatcher\Tests\Normalizers\ActivityStreams;
 
-use \TNC\EventDispatcher\Interfaces\Event\TNCActivityStreamsEvent;
+use \TNC\EventDispatcher\Interfaces\Event\ActivityStreamsEvent;
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
-use TNC\EventDispatcher\Serialization\Normalizers\TNCActivityStreams\Impl\Activity;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\Impl\Activity;
 
-class TestEvent implements TNCActivityStreamsEvent
+class TestEvent implements ActivityStreamsEvent
 {
     /**
      * @var Activity
