@@ -18,26 +18,32 @@
 
 namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
-use Psr\Log\LoggerInterface;
-use \Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher as BaseTraceableEventDispatcher;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Stopwatch\Stopwatch;
-use TNC\EventDispatcher\Interfaces\Dispatcher;
+use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcherInterface;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use TNC\EventDispatcher\Interfaces\Dispatcher as TNCEventDispatcher;
 
-class TraceableEventDispatcher extends BaseTraceableEventDispatcher implements Dispatcher
+class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNCEventDispatcher
 {
     /**
-     * @var Dispatcher
+     * @var TraceableEventDispatcherInterface
      */
-    private $dispatcher;
+    private $traceableEventDispatcher;
+
+    /**
+     * @var TNCEventDispatcher
+     */
+    private $tncEventDispatcher;
 
     /**
      * {@inheritdoc}
      */
-    public function __construct(EventDispatcherInterface $dispatcher, Stopwatch $stopwatch, LoggerInterface $logger = null)
-    {
-        parent::__construct($dispatcher, $stopwatch, $logger);
-        $this->dispatcher = $dispatcher;
+    public function __construct(
+        TraceableEventDispatcherInterface $traceableEventDispatcher,
+        TNCEventDispatcher $tncEventDispatcher
+    ) {
+        $this->traceableEventDispatcher = $traceableEventDispatcher;
+        $this->tncEventDispatcher       = $tncEventDispatcher;
     }
 
     /**
@@ -45,7 +51,7 @@ class TraceableEventDispatcher extends BaseTraceableEventDispatcher implements D
      */
     public function dispatchSerializedEvent($serializedEvent)
     {
-        $this->dispatcher->dispatchSerializedEvent($serializedEvent);
+        return $this->tncEventDispatcher->dispatchSerializedEvent($serializedEvent);
     }
 
     /**
@@ -53,6 +59,61 @@ class TraceableEventDispatcher extends BaseTraceableEventDispatcher implements D
      */
     public function dispatchInternalEvent($eventName, $event = null)
     {
-        return $this->dispatcher->dispatchInternalEvent($eventName, $event);
+        return $this->tncEventDispatcher->dispatchInternalEvent($eventName, $event);
+    }
+
+    public function dispatch($eventName, Event $event = null)
+    {
+        return $this->traceableEventDispatcher->dispatch($eventName, $event);
+    }
+
+    public function addListener($eventName, $listener, $priority = 0)
+    {
+        return $this->traceableEventDispatcher->addListener($eventName, $listener, $priority);
+    }
+
+    public function addSubscriber(EventSubscriberInterface $subscriber)
+    {
+        return $this->traceableEventDispatcher->addSubscriber($subscriber);
+    }
+
+    public function removeListener($eventName, $listener)
+    {
+        return $this->traceableEventDispatcher->removeListener($eventName, $listener);
+    }
+
+    public function removeSubscriber(EventSubscriberInterface $subscriber)
+    {
+        return $this->traceableEventDispatcher->removeSubscriber($subscriber);
+    }
+
+    public function getListeners($eventName = null)
+    {
+        return $this->traceableEventDispatcher->getListeners($eventName);
+    }
+
+    public function getListenerPriority($eventName, $listener)
+    {
+        return $this->traceableEventDispatcher->getListenerPriority($eventName, $listener);
+    }
+
+    public function hasListeners($eventName = null)
+    {
+        return $this->traceableEventDispatcher->hasListeners($eventName);
+    }
+
+    public function getCalledListeners()
+    {
+        return $this->traceableEventDispatcher->getCalledListeners();
+    }
+
+    public function getNotCalledListeners()
+    {
+        return $this->traceableEventDispatcher->getNotCalledListeners();
+    }
+
+    public function reset()
+    {
+        return $this->traceableEventDispatcher->reset();
     }
 }

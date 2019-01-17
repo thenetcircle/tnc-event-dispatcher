@@ -14,8 +14,7 @@
     "phpunit/phpunit": "^5.0",
     "guzzlehttp/guzzle": "~6.0",
     "psr/log": "^1.0",
-    "symfony/event-dispatcher": "3.2.*",
-    "symfony/dependency-injection": "3.2.*"
+    "symfony/event-dispatcher": "~3.4|~4.0"
   },
   "suggest": {
     "guzzlehttp/guzzle": "if use HTTP related EndPoint, such as EventBusEndPoint"

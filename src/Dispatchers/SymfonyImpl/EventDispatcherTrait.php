@@ -53,8 +53,6 @@ trait EventDispatcherTrait
      *
      *
      * @return Event
-     *
-     * @throws InvalidArgumentException
      */
     public function dispatch($eventName, Event $event = null)
     {
