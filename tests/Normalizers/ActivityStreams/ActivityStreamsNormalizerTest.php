@@ -44,7 +44,7 @@ class ActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeAndDenormalize()
     {
         $originalData = [
-          'version'   => '2.0',
+          'version'   => '3.0',
           'id'        => 'id',
           'verb'      => 'verb',
           'published' => 'published',
@@ -93,7 +93,7 @@ class ActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testIncompleteData()
     {
         $expectedData = [
-          'version'   => '2.0',
+          'version'   => '3.0',
           'id'        => 'id',
           'verb'      => 'testVerb',
           'published' => 'testPublished',
@@ -120,16 +120,16 @@ class ActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
     public function testNormalizeEmptyActivityObject()
     {
         $testEvent = new TestEvent((new Activity())->setId('id'));
-        self::assertEquals(['version' => '2.0', 'id' => 'id'], $this->normalizer->normalize($testEvent));
+        self::assertEquals(['version' => '3.0', 'id' => 'id'], $this->normalizer->normalize($testEvent));
 
         $testEvent->activity->getProvider(); // which will create a empty ActivityObject implicitly
-        self::assertEquals(['version' => '2.0', 'id' => 'id'], $this->normalizer->normalize($testEvent));
+        self::assertEquals(['version' => '3.0', 'id' => 'id'], $this->normalizer->normalize($testEvent));
     }
 
     public function testAttachments()
     {
         $originalData = [
-          'version'   => '2.0',
+          'version'   => '3.0',
           'id'        => 'id',
           'verb'      => 'testVerb',
           'published' => 'testPublished',
@@ -160,7 +160,7 @@ class ActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
         ];
 
         $expectedData = [
-          'version'   => '2.0',
+          'version'   => '3.0',
           'id'        => 'id',
           'verb'      => 'testVerb',
           'published' => 'testPublished',
@@ -210,7 +210,7 @@ class ActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
         );
 
         $data = [
-          'version'   => '2.0',
+          'version'   => '3.0',
           'id'        => 'id',
           'verb'      => 'testVerb',
           'published' => 'testPublished',
@@ -243,7 +243,7 @@ class ActivityStreamsNormalizerTest extends \PHPUnit_Framework_TestCase
         $testEvent = new TestEvent($builder->getActivity());
 
         self::assertEquals([
-          'version' => '2.0',
+          'version' => '3.0',
           'actor' => [
             'id' => 123,
             'objectType' => 'user_id'

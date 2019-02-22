@@ -48,7 +48,7 @@ class ActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_TestC
     {
         $this->normalizer = new ActivityStreamsWrappedEventNormalizer();
         $this->testData = [
-          'version'   => '2.0',
+          'version'   => '3.0',
           'id'        => 'id',
           'published' => 'published',
           'content'   => 'content',
