@@ -66,7 +66,7 @@ class ActivityBuilder
     public function __construct(Activity $activity = null)
     {
         $this->activity = null === $activity ? new Activity() : $activity;
-        $this->activity->setPublished((new \DateTime())->format(\DateTime::RFC3339));
+        $this->activity->setPublished((new \DateTime())->format(\DateTime::RFC3339_EXTENDED));
     }
 
     /**
