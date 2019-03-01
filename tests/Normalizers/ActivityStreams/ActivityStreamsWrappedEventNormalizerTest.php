@@ -244,4 +244,35 @@ class ActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_TestC
 
         echo $serializer->serialize($wrappedEvent);
     }
+
+    public function testTitlePrefix()
+    {
+        $normalizer = new ActivityStreamsWrappedEventNormalizer(['title_prefix' => 'tnc.']);
+
+        $eventName = 'tnc.message.send';
+
+        $normalizedEvent = $this->testData;
+        $normalizedEvent['content'] = \json_encode($normalizedEvent['content']);
+
+        $wrappedEvent = new WrappedEvent(
+          TransportableEvent::TRANSPORT_MODE_ASYNC,
+          $eventName,
+          $normalizedEvent,
+          TransportableEvent::class
+        );
+        $data = $normalizer->normalize($wrappedEvent);
+
+        $expectedData = $this->expectedData;
+        $expectedData['title'] = $expectedData['title'];
+        self::assertEquals($expectedData, $data);
+
+        $expectedWrappedEvent = new WrappedEvent(
+          TransportableEvent::TRANSPORT_MODE_ASYNC,
+          $eventName,
+          $data,
+          TransportableEvent::class
+        );
+        self::assertEquals(true, $normalizer->supportsDenormalization($data, WrappedEvent::class));
+        self::assertEquals($expectedWrappedEvent, $normalizer->denormalize($data, WrappedEvent::class));
+    }
 }

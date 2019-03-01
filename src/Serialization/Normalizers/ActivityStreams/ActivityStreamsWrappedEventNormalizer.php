@@ -28,6 +28,18 @@ class ActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
     const CONTAINER_FIELD = 'generator';
 
     /**
+     * @var string
+     */
+    protected $titlePrefix = '';
+
+    public function __construct($options = [])
+    {
+        if (isset($options['title_prefix']) && !empty($options['title_prefix'])) {
+            $this->titlePrefix = $options['title_prefix'];
+        }
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function normalize($wrappedEvent)
@@ -35,7 +47,7 @@ class ActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
         $data         = $wrappedEvent->getNormalizedEvent();
 
         $eventName = $wrappedEvent->getEventName();
-        $data['title'] = $eventName;
+        $data['title'] = $this->stripTitlePrefix($eventName);
         if (strpos($eventName, '.') !== false) {
             $data['verb'] = substr(strrchr($eventName, '.'), 1);
         }
@@ -72,7 +84,7 @@ class ActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
             throw new DenormalizeException('The field "title" is required.');
         }
 
-        $eventName = $data['title'];
+        $eventName = $this->addTitlePrefix($data['title']);
         $metadata  = [];
 
         if (
@@ -106,5 +118,31 @@ class ActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
     public function supportsDenormalization($data, $className)
     {
         return $className == WrappedEvent::class;
+    }
+
+    /**
+     * @param $eventName
+     *
+     * @return string
+     */
+    private function stripTitlePrefix($eventName)
+    {
+        if (!empty($this->titlePrefix) && strpos($eventName, $this->titlePrefix) === 0) {
+            return substr($eventName, strlen($this->titlePrefix));
+        }
+        return $eventName;
+    }
+
+    /**
+     * @param $eventName
+     *
+     * @return string
+     */
+    private function addTitlePrefix($eventName)
+    {
+        if (!empty($this->titlePrefix) && strpos($eventName, $this->titlePrefix) !== 0) {
+            return $this->titlePrefix . $eventName;
+        }
+        return $eventName;
     }
 }
