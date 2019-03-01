@@ -262,9 +262,7 @@ class ActivityStreamsWrappedEventNormalizerTest extends \PHPUnit_Framework_TestC
         );
         $data = $normalizer->normalize($wrappedEvent);
 
-        $expectedData = $this->expectedData;
-        $expectedData['title'] = $expectedData['title'];
-        self::assertEquals($expectedData, $data);
+        self::assertEquals($this->expectedData, $data);
 
         $expectedWrappedEvent = new WrappedEvent(
           TransportableEvent::TRANSPORT_MODE_ASYNC,
