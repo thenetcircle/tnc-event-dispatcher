@@ -60,7 +60,7 @@ class ActivityStreamsWrappedEventNormalizer extends AbstractNormalizer
             if (isset($data['title'])) $prefix .= '-' . $data['title'];
             if (isset($data['actor']['id'])) $prefix .= '-' . $data['actor']['id'];
 
-            $data['id'] = uniqid($prefix . '-');
+            $data['id'] = uniqid($prefix . '-', true);
         }
 
         $data['generator'] = [
