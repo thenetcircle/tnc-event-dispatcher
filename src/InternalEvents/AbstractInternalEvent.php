@@ -18,26 +18,6 @@
 
 namespace TNC\EventDispatcher\InternalEvents;
 
-class ReceivedEvent extends AbstractInternalEvent
+class AbstractInternalEvent
 {
-    /**
-     * @var string
-     */
-    protected $data;
-
-    /**
-     * @param string $data
-     */
-    public function __construct($data)
-    {
-        $this->data         = $data;
-    }
-
-    /**
-     * @return string
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
 }

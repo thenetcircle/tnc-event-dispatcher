@@ -18,10 +18,9 @@
 
 namespace TNC\EventDispatcher\InternalEvents;
 
-use Symfony\Component\EventDispatcher\Event;
 use TNC\EventDispatcher\WrappedEvent;
 
-class SendingSucceededEvent extends Event
+class SendingSucceededEvent extends AbstractInternalEvent
 {
     /**
      * @var string

@@ -18,9 +18,7 @@
 
 namespace TNC\EventDispatcher\InternalEvents;
 
-use Symfony\Component\EventDispatcher\Event;
-
-class DispatchedEvent extends Event
+class DispatchedEvent extends AbstractInternalEvent
 {
     /**
      * @var string
@@ -28,7 +26,7 @@ class DispatchedEvent extends Event
     protected $eventName;
 
     /**
-     * @var Event
+     * @var object
      */
     protected $event;
 
@@ -38,9 +36,9 @@ class DispatchedEvent extends Event
     protected $transportMode;
 
     /**
-     * @param $eventName
-     * @param $event
-     * @param $transportMode
+     * @param string $eventName
+     * @param object $event
+     * @param string $transportMode
      */
     public function __construct($eventName, $event, $transportMode)
     {
@@ -58,7 +56,7 @@ class DispatchedEvent extends Event
     }
 
     /**
-     * @return \Symfony\Component\EventDispatcher\Event
+     * @return object
      */
     public function getEvent()
     {

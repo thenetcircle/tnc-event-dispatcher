@@ -18,9 +18,7 @@
 
 namespace TNC\EventDispatcher\InternalEvents;
 
-use Symfony\Component\EventDispatcher\Event;
-
-class ReceiverDispatchingFailedEvent extends Event
+class ReceiverDispatchingFailedEvent extends AbstractInternalEvent
 {
     /**
      * Received data

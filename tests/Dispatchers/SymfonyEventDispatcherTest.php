@@ -19,16 +19,16 @@
 namespace TNC\EventDispatcher\Tests\Dispatchers;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\EventDispatcher\Tests\AbstractEventDispatcherTest;
+use Symfony\Component\EventDispatcher\Tests\EventDispatcherTest;
 use TNC\EventDispatcher\Dispatchers\SymfonyImpl\EventDispatcher;
 use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
+use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
+use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsNormalizer;
 use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsWrappedEventNormalizer;
 use TNC\EventDispatcher\Serializer;
-use TNC\EventDispatcher\Serialization\Normalizers\ActivityStreams\ActivityStreamsNormalizer;
-use TNC\EventDispatcher\Serialization\Formatters\JsonFormatter;
 
-class SymfonyEventDispatcherTest extends AbstractEventDispatcherTest
+class SymfonyEventDispatcherTest extends EventDispatcherTest
 {
     /**
      * @var EventDispatcher

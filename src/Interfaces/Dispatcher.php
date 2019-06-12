@@ -18,48 +18,30 @@
 
 namespace TNC\EventDispatcher\Interfaces;
 
-use Symfony\Component\EventDispatcher\Event;
-use TNC\EventDispatcher\Exception\InvalidArgumentException;
-use TNC\EventDispatcher\Interfaces\Event\TransportableEvent;
-
 interface Dispatcher
 {
     /**
-     * Dispatches an event to all listeners.
-     * A TransportableEvent with non SYNC transport mode will be send to predefined EndPoint.
+     * Dispatches an event to all registered local or remote listeners.
      *
-     * @param string $eventName The name of the event to dispatch. The name of
-     *                          the event is the name of the method that is
-     *                          invoked on listeners.
-     * @param Event  $event     The event to pass to the event handlers/listeners
-     *                          If not supplied, an empty Event instance is created.
+     * A [\TNC\EventDispatcher\Interfaces\Event\TransportableEvent] with non SYNC transport mode will be send to
+     * predefined remote endpoint.
      *
+     * @param object      $event     The event to pass to the event handlers/listeners.
+     * @param string|null $eventName The name of the event to dispatch. If not supplied,
+         *                           the class of $event should be used instead.
      *
-     * @return Event
+     * @return object The passed $event MUST be returned
      *
-     * @throws InvalidArgumentException
+     * @throws \TNC\EventDispatcher\Exception\InvalidArgumentException
      */
-    public function dispatch($eventName, Event $event = null);
+    public function dispatch($event/*, string $eventName = null*/);
 
     /**
      * Dispatches a event which has been serialized already, Usually it comes from a Receiver
      *
      * @param string $serializedEvent
      *
-     * @return TransportableEvent|null
+     * @return \TNC\EventDispatcher\Interfaces\Event\TransportableEvent|null
      */
     public function dispatchSerializedEvent($serializedEvent);
-
-    /**
-     * Dispatches a internal event
-     * @see dispatcher()
-     *
-     * @param string $eventName
-     * @param object $event
-     *
-     * @return object
-     *
-     * @throws InvalidArgumentException
-     */
-    public function dispatchInternalEvent($eventName, $event = null);
 }

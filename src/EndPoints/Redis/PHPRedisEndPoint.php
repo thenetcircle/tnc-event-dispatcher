@@ -19,8 +19,8 @@
 namespace TNC\EventDispatcher\EndPoints\Redis;
 
 use TNC\EventDispatcher\EndPoints\AbstractEndPoint;
-use TNC\EventDispatcher\WrappedEvent;
 use TNC\EventDispatcher\Exception\InitializeException;
+use TNC\EventDispatcher\WrappedEvent;
 
 class PHPRedisEndPoint extends AbstractEndPoint
 {

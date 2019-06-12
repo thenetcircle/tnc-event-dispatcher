@@ -18,11 +18,11 @@
 
 namespace TNC\EventDispatcher\EndPoints;
 
+use TNC\EventDispatcher\Interfaces\Dispatcher;
+use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\InternalEvents\InternalEvents;
 use TNC\EventDispatcher\InternalEvents\SendingFailedEvent;
 use TNC\EventDispatcher\InternalEvents\SendingSucceededEvent;
-use TNC\EventDispatcher\Interfaces\Dispatcher;
-use TNC\EventDispatcher\Interfaces\EndPoint;
 use TNC\EventDispatcher\WrappedEvent;
 
 abstract class AbstractEndPoint implements EndPoint
@@ -44,9 +44,9 @@ abstract class AbstractEndPoint implements EndPoint
     protected function dispatchSuccessEvent($message, WrappedEvent $wrappedEvent)
     {
         if (null !== $this->dispatcher) {
-            $this->dispatcher->dispatchInternalEvent(
-                InternalEvents::SENDING_SUCCEEDED,
-                new SendingSucceededEvent($message, $wrappedEvent)
+            $this->dispatcher->dispatch(
+                new SendingSucceededEvent($message, $wrappedEvent),
+                InternalEvents::SENDING_SUCCEEDED
             );
         }
     }
@@ -54,9 +54,9 @@ abstract class AbstractEndPoint implements EndPoint
     protected function dispatchFailureEvent($message, WrappedEvent $wrappedEvent, \Exception $e)
     {
         if (null !== $this->dispatcher) {
-            $this->dispatcher->dispatchInternalEvent(
-                InternalEvents::SENDING_FAILED,
-                new SendingFailedEvent($message, $wrappedEvent, $e)
+            $this->dispatcher->dispatch(
+                new SendingFailedEvent($message, $wrappedEvent, $e),
+                InternalEvents::SENDING_FAILED
             );
         }
     }
