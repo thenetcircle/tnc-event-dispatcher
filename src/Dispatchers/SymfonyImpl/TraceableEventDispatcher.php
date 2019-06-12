@@ -134,4 +134,12 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNC
     {
         return $this->traceableEventDispatcher->getNotCalledListeners();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function reset()
+    {
+        return $this->traceableEventDispatcher->reset();
+    }
 }
