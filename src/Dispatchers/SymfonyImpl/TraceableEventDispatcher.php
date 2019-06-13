@@ -47,24 +47,6 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNC
 
     /**
      * {@inheritdoc}
-     *
-     * @param string|null $eventName
-     */
-    public function dispatch($event/*, string $eventName = null*/)
-    {
-        return call_user_func_array([$this->traceableEventDispatcher, 'dispatch'], func_get_args());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function dispatchSerializedEvent($serializedEvent)
-    {
-        return $this->tncEventDispatcher->dispatchSerializedEvent($serializedEvent);
-    }
-
-    /**
-     * {@inheritdoc}
      */
     public function addListener($eventName, $listener, $priority = 0)
     {
@@ -121,10 +103,28 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNC
 
     /**
      * {@inheritdoc}
+     *
+     * @param string|null $eventName
+     */
+    public function dispatch($event/*, string $eventName = null*/)
+    {
+        return call_user_func_array([$this->traceableEventDispatcher, 'dispatch'], func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function dispatchSerializedEvent($serializedEvent)
+    {
+        return $this->tncEventDispatcher->dispatchSerializedEvent($serializedEvent);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getCalledListeners()
     {
-        return $this->traceableEventDispatcher->getCalledListeners();
+        return call_user_func_array([$this->traceableEventDispatcher, 'getCalledListeners'], func_get_args());
     }
 
     /**
@@ -132,7 +132,15 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNC
      */
     public function getNotCalledListeners()
     {
-        return $this->traceableEventDispatcher->getNotCalledListeners();
+        return call_user_func_array([$this->traceableEventDispatcher, 'getNotCalledListeners'], func_get_args());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOrphanedEvents()
+    {
+        return call_user_func_array([$this->traceableEventDispatcher, 'getOrphanedEvents'], func_get_args());
     }
 
     /**
@@ -141,5 +149,18 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNC
     public function reset()
     {
         return $this->traceableEventDispatcher->reset();
+    }
+
+    /**
+     * Proxies all method calls to the original event dispatcher.
+     *
+     * @param string $method    The method name
+     * @param array  $arguments The method arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        return $this->traceableEventDispatcher->{$method}(...$arguments);
     }
 }
