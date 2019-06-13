@@ -18,11 +18,12 @@
 
 namespace TNC\EventDispatcher\Dispatchers\SymfonyImpl;
 
+use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcher as SymfonyTraceableEventDispatcher;
 use Symfony\Component\EventDispatcher\Debug\TraceableEventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use TNC\EventDispatcher\Interfaces\Dispatcher as TNCEventDispatcher;
 
-class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNCEventDispatcher
+class TraceableEventDispatcher extends SymfonyTraceableEventDispatcher implements TNCEventDispatcher
 {
     /**
      * @var TraceableEventDispatcherInterface
@@ -108,7 +109,7 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNC
      */
     public function dispatch($event/*, string $eventName = null*/)
     {
-        return call_user_func_array([$this->traceableEventDispatcher, 'dispatch'], func_get_args());
+        return $this->traceableEventDispatcher->dispatch(...func_get_args());
     }
 
     /**
@@ -124,7 +125,7 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNC
      */
     public function getCalledListeners()
     {
-        return call_user_func_array([$this->traceableEventDispatcher, 'getCalledListeners'], func_get_args());
+        return $this->traceableEventDispatcher->getCalledListeners(...func_get_args());
     }
 
     /**
@@ -132,15 +133,15 @@ class TraceableEventDispatcher implements TraceableEventDispatcherInterface, TNC
      */
     public function getNotCalledListeners()
     {
-        return call_user_func_array([$this->traceableEventDispatcher, 'getNotCalledListeners'], func_get_args());
+        return $this->traceableEventDispatcher->getNotCalledListeners(...func_get_args());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getOrphanedEvents()
+    public function getOrphanedEvents(/* Request $request = null */): array
     {
-        return call_user_func_array([$this->traceableEventDispatcher, 'getOrphanedEvents'], func_get_args());
+        return $this->traceableEventDispatcher->getOrphanedEvents(...func_get_args());
     }
 
     /**
