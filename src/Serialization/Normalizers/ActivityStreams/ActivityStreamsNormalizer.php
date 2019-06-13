@@ -107,22 +107,22 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
             {
                 // mixed
                 case $key == 'content':
-                    if ($value == '') continue;
+                    if ($value == '') continue 2;
                     $value = \json_encode($value);
-                    if ($value === false) continue;
+                    if ($value === false) continue 2;
                     $data[$key] = $value;
                     break;
 
                 // string
                 case in_array($key, ['version', 'id', 'title', 'url', 'verb', 'displayName', 'objectType', 'summary', 'image', 'icon']):
                     $value = (string)$value;
-                    if (!is_string($value) || $value == '') continue;
+                    if (!is_string($value) || $value == '') continue 2;
                     $data[$key] = $value;
                     break;
 
                 // object
                 case in_array($key, ['actor', 'generator', 'object', 'provider', 'target', 'author']):
-                    if (is_null($value) || !($value instanceof ActivityObject)) continue;
+                    if (is_null($value) || !($value instanceof ActivityObject)) continue 2;
                     $_data = $this->normalizeActivity($value->getAll());
                     if (count($_data) > 0) {
                         $data[$key] = $_data;
@@ -131,13 +131,13 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
 
                 // datetime
                 case in_array($key, ['published', 'updated']):
-                    if (!is_string($value) || $value == '') continue;
+                    if (!is_string($value) || $value == '') continue 2;
                     $data[$key] = $value;
                     break;
 
                 // array of objects
                 case $key == 'attachments':
-                    if (!is_array($value) || count($value) === 0) continue;
+                    if (!is_array($value) || count($value) === 0) continue 2;
                     $_data = [];
                     foreach($value as $atta) {
                         if (!is_object($atta) || !($atta instanceof ActivityObject)) continue;
@@ -153,7 +153,7 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
 
                 // array of string
                 case in_array($key, ['downstreamDuplicates', 'upstreamDuplicates']):
-                    if (!is_array($value) || count($value) === 0) continue;
+                    if (!is_array($value) || count($value) === 0) continue 2;
                     $data[$key] = $value;
                     break;
             }
@@ -177,7 +177,7 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
             {
                 // mixed
                 case $key == 'content':
-                    if (!is_string($value) || $value == '') continue;
+                    if (!is_string($value) || $value == '') continue 2;
                     if (null === ($_content = json_decode($value, true)))
                         $activity->setContent($value);
                     else
@@ -186,7 +186,7 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
 
                 // activity object
                 case in_array($key, ['actor', 'generator', 'object', 'provider', 'target']):
-                    if (!is_array($value) || count($value) === 0) continue;
+                    if (!is_array($value) || count($value) === 0) continue 2;
                     $method = 'set' . ucfirst($key);
                     $activity->{$method}($this->denormalizeActivityObject($value));
                     break;
@@ -217,7 +217,7 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
             {
                 // mixed
                 case $key == 'content':
-                    if (!is_string($value) || $value == '') continue;
+                    if (!is_string($value) || $value == '') continue 2;
                     if (null === ($_content = json_decode($value, true)))
                         $activityObject->setContent($value);
                     else
@@ -226,13 +226,13 @@ class ActivityStreamsNormalizer extends AbstractNormalizer
 
                 // object
                 case $key == 'author':
-                    if (!is_array($value)) continue;
+                    if (!is_array($value)) continue 2;
                     $activityObject->setAuthor($this->denormalizeActivityObject($value));
                     break;
 
                 // array of objects
                 case $key == 'attachments':
-                    if (!is_array($value) || count($value) === 0) continue;
+                    if (!is_array($value) || count($value) === 0) continue 2;
                     foreach($value as $attaData) {
                         $activityObject->addAttachment($this->denormalizeActivityObject($attaData));
                     }
