@@ -122,22 +122,28 @@ class TraceableEventDispatcher extends SymfonyTraceableEventDispatcher implement
 
     /**
      * {@inheritdoc}
+     *
+     * @param Request|null $request The request to get listeners for
      */
-    public function getCalledListeners()
+    public function getCalledListeners(/* Request $request = null */)
     {
         return $this->traceableEventDispatcher->getCalledListeners(...func_get_args());
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @param Request|null $request The request to get listeners for
      */
-    public function getNotCalledListeners()
+    public function getNotCalledListeners(/* Request $request = null */)
     {
         return $this->traceableEventDispatcher->getNotCalledListeners(...func_get_args());
     }
 
     /**
      * {@inheritdoc}
+     *
+     * @param Request|null $request The request to get orphaned events for
      */
     public function getOrphanedEvents(/* Request $request = null */): array
     {
